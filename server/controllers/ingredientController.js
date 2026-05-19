@@ -109,17 +109,17 @@ export const getSingleIngredient = async (req, res, next) => {
   }
 };
 
-export const updateIngredient = async (req, res, next) => {
+export const updateIngredient = async (req, res) => {
   // TODO : Admin feature
   return res.json({ message: 'This is the update ingredient controller' });
 };
 
-export const hideIngredient = async (req, res, next) => {
+export const hideIngredient = async (req, res) => {
   // TODO : Admin feature
   return res.json({ message: 'This is the hide ingredient controller' });
 };
 
-export const reactivateIngredient = async (req, res, next) => {
+export const reactivateIngredient = async (req, res) => {
   // TODO : Admin feature
   return res.json({ message: 'This is the reactivate ingredient controller' });
 };

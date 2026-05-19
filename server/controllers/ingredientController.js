@@ -4,30 +4,55 @@ import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import ConflictError from '../errors/ConflictError.js';
 
+const ingredientFields = 'id, name, status, created_by_user_id';
+
+// Helper function to create consistent responses for ingredient conflicts
+const sendIngredientConflict = (res, ingredient) =>
+  res.status(StatusCodes.CONFLICT).json({
+    message: 'Ingredient already exists',
+    ingredient,
+  });
+
+// Helper function to check for global or user-owned ingredients
+const findVisibleIngredientByName = async (name, userId, excludedId = null) => {
+  const values = [name, userId];
+  let excludedIdFilter = '';
+
+  // Make sure to not edit the current ingredient if given one
+  if (excludedId !== null) {
+    values.push(excludedId);
+    excludedIdFilter = `AND id <> $${values.length}`;
+  }
+
+  const result = await query(
+    `
+    SELECT ${ingredientFields}
+    FROM ingredients
+    WHERE name = $1 AND (created_by_user_id IS NULL OR created_by_user_id = $2) ${excludedIdFilter}
+    LIMIT 1
+    `,
+    values
+  );
+
+  return result.rows[0];
+};
+
 export const createIngredient = async (req, res, next) => {
   try {
     const { name } = req.body;
     const userId = req.user.userId;
 
-    const existingIngredientResult = await query(
-      `
-      SELECT id, name, status, created_by_user_id
-      FROM ingredients
-      WHERE name = $1 AND (created_by_user_id IS NULL OR created_by_user_id = $2)
-      LIMIT 1
-      `,
-      [name, userId]
-    );
-
-    if (existingIngredientResult.rows[0]) {
-      return next(new ConflictError('Ingredient already exists'));
+    // Prevent duplicate global or user-owned ingredients
+    const existingIngredient = await findVisibleIngredientByName(name, userId);
+    if (existingIngredient) {
+      return sendIngredientConflict(res, existingIngredient);
     }
 
     const result = await query(
       `
       INSERT INTO ingredients (name, created_by_user_id)
       VALUES ($1, $2)
-      RETURNING id, name, status, created_by_user_id
+      RETURNING ${ingredientFields}
       `,
       [name, userId]
     );
@@ -37,6 +62,15 @@ export const createIngredient = async (req, res, next) => {
     return res.status(StatusCodes.CREATED).json({ ingredient });
   } catch (error) {
     if (error.code === '23505') {
+      const existingIngredient = await findVisibleIngredientByName(
+        req.body.name,
+        req.user.userId
+      );
+
+      if (existingIngredient) {
+        return sendIngredientConflict(res, existingIngredient);
+      }
+
       return next(new ConflictError('Ingredient already exists'));
     }
 
@@ -115,18 +149,29 @@ export const updateIngredient = async (req, res, next) => {
     const { name } = req.body;
     const userId = req.user.userId;
 
-    const existingIngredientResult = await query(
+    // Only user-owned active ingredients can be updated
+    const currentIngredientResult = await query(
       `
       SELECT id
       FROM ingredients
-      WHERE name = $1 AND id <> $2 AND (created_by_user_id IS NULL OR created_by_user_id = $3)
-      LIMIT 1
+      WHERE id = $1 AND status = 'active' AND created_by_user_id = $2
       `,
-      [name, id, userId]
+      [id, userId]
     );
 
-    if (existingIngredientResult.rows[0]) {
-      return next(new ConflictError('Ingredient already exists'));
+    if (!currentIngredientResult.rows[0]) {
+      throw new NotFoundError('Ingredient not found');
+    }
+
+    // Prevent renaming into a duplicate global or user-owned ingredient
+    const existingIngredient = await findVisibleIngredientByName(
+      name,
+      userId,
+      id
+    );
+
+    if (existingIngredient) {
+      return sendIngredientConflict(res, existingIngredient);
     }
 
     const result = await query(
@@ -134,7 +179,7 @@ export const updateIngredient = async (req, res, next) => {
       UPDATE ingredients
       SET name = $1
       WHERE id = $2 AND status = 'active' AND created_by_user_id = $3
-      RETURNING id, name, status, created_by_user_id
+      RETURNING ${ingredientFields}
       `,
       [name, id, userId]
     );
@@ -151,6 +196,16 @@ export const updateIngredient = async (req, res, next) => {
     }
 
     if (error.code === '23505') {
+      const existingIngredient = await findVisibleIngredientByName(
+        req.body.name,
+        req.user.userId,
+        req.params.id
+      );
+
+      if (existingIngredient) {
+        return sendIngredientConflict(res, existingIngredient);
+      }
+
       return next(new ConflictError('Ingredient already exists'));
     }
 
@@ -163,6 +218,7 @@ export const hideIngredient = async (req, res, next) => {
     const { id } = req.params;
     const userId = req.user.userId;
 
+    // Soft delete only user-owned active ingredients
     const result = await query(
       `
         UPDATE ingredients
@@ -193,6 +249,7 @@ export const reactivateIngredient = async (req, res, next) => {
     const { id } = req.params;
     const userId = req.user.userId;
 
+    // Only hidden user-owned ingredients can be reactivated
     const hiddenIngredientResult = await query(
       `
       SELECT id, name
@@ -207,9 +264,10 @@ export const reactivateIngredient = async (req, res, next) => {
       throw new NotFoundError('Ingredient not found');
     }
 
+    // Prevent reactivating into a duplicate active ingredient
     const existingIngredientResult = await query(
       `
-      SELECT id
+      SELECT ${ingredientFields}
       FROM ingredients
       WHERE name = $1
         AND id <> $2
@@ -220,8 +278,9 @@ export const reactivateIngredient = async (req, res, next) => {
       [hiddenIngredient.name, id, userId]
     );
 
-    if (existingIngredientResult.rows[0]) {
-      return next(new ConflictError('Ingredient already exists'));
+    const existingIngredient = existingIngredientResult.rows[0];
+    if (existingIngredient) {
+      return sendIngredientConflict(res, existingIngredient);
     }
 
     const result = await query(

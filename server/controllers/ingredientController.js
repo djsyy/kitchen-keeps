@@ -4,19 +4,32 @@ import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import ConflictError from '../errors/ConflictError.js';
 
-// Admin controller
 export const createIngredient = async (req, res, next) => {
   try {
-    const { name, category } = req.body;
-    const normalizedCategory = category ?? null;
+    const { name } = req.body;
+    const userId = req.user.userId;
+
+    const existingIngredientResult = await query(
+      `
+      SELECT id, name, status, created_by_user_id
+      FROM ingredients
+      WHERE name = $1 AND (created_by_user_id IS NULL OR created_by_user_id = $2)
+      LIMIT 1
+      `,
+      [name, userId]
+    );
+
+    if (existingIngredientResult.rows[0]) {
+      return next(new ConflictError('Ingredient already exists'));
+    }
 
     const result = await query(
       `
-      INSERT INTO ingredients (name, category)
+      INSERT INTO ingredients (name, created_by_user_id)
       VALUES ($1, $2)
-      RETURNING id, name, category
+      RETURNING id, name, status, created_by_user_id
       `,
-      [name, normalizedCategory]
+      [name, userId]
     );
 
     const ingredient = result.rows[0];
@@ -34,17 +47,18 @@ export const createIngredient = async (req, res, next) => {
 export const getIngredients = async (req, res, next) => {
   try {
     const search = req.query.search;
+    const userId = req.user.userId;
 
     if (search) {
       // Casts 'name' column into text before using the ILIKE comparison (insensitive word check)
       const result = await query(
         `
-        SELECT id, name category
+        SELECT id, name, status, created_by_user_id
         FROM ingredients
-        WHERE status = 'active' AND name::text ILIKE '%' || $1 || '%'
+        WHERE status = 'active' AND name::text ILIKE '%' || $1 || '%' AND (created_by_user_id IS NULL OR created_by_user_id = $2)
         ORDER BY name
         `,
-        [search]
+        [search, userId]
       );
 
       return res.status(StatusCodes.OK).json({ ingredients: result.rows });
@@ -52,11 +66,12 @@ export const getIngredients = async (req, res, next) => {
 
     const result = await query(
       `
-      SELECT id, name, category 
+      SELECT id, name, status, created_by_user_id
       FROM ingredients
-      WHERE status = 'active'
+      WHERE status = 'active' AND (created_by_user_id IS NULL OR created_by_user_id = $1)
       ORDER BY name
-      `
+      `,
+      [userId]
     );
 
     return res.status(StatusCodes.OK).json({ ingredients: result.rows });
@@ -68,14 +83,15 @@ export const getIngredients = async (req, res, next) => {
 export const getSingleIngredient = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const userId = req.user.userId;
 
     const result = await query(
       `
-      SELECT id, name, category
+      SELECT id, name, status, created_by_user_id
       FROM ingredients
-      WHERE id = $1
+      WHERE id = $1 AND status = 'active' AND (created_by_user_id IS NULL OR created_by_user_id = $2)
       `,
-      [id]
+      [id, userId]
     );
 
     const ingredient = result.rows[0];
@@ -106,9 +122,4 @@ export const hideIngredient = async (req, res, next) => {
 export const reactivateIngredient = async (req, res, next) => {
   // TODO : Admin feature
   return res.json({ message: 'This is the reactivate ingredient controller' });
-};
-
-export const mergeIngredient = async (req, res, next) => {
-  // TODO : Admin feature
-  return res.json({ message: 'This is the merge ingredient controller' });
 };

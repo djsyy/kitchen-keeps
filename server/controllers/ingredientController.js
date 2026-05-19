@@ -109,17 +109,142 @@ export const getSingleIngredient = async (req, res, next) => {
   }
 };
 
-export const updateIngredient = async (req, res) => {
-  // TODO : Admin feature
-  return res.json({ message: 'This is the update ingredient controller' });
+export const updateIngredient = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+    const userId = req.user.userId;
+
+    const existingIngredientResult = await query(
+      `
+      SELECT id
+      FROM ingredients
+      WHERE name = $1 AND id <> $2 AND (created_by_user_id IS NULL OR created_by_user_id = $3)
+      LIMIT 1
+      `,
+      [name, id, userId]
+    );
+
+    if (existingIngredientResult.rows[0]) {
+      return next(new ConflictError('Ingredient already exists'));
+    }
+
+    const result = await query(
+      `
+      UPDATE ingredients
+      SET name = $1
+      WHERE id = $2 AND status = 'active' AND created_by_user_id = $3
+      RETURNING id, name, status, created_by_user_id
+      `,
+      [name, id, userId]
+    );
+
+    const ingredient = result.rows[0];
+    if (!ingredient) {
+      throw new NotFoundError('Ingredient not found');
+    }
+
+    return res.status(StatusCodes.OK).json({ ingredient });
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return next(error);
+    }
+
+    if (error.code === '23505') {
+      return next(new ConflictError('Ingredient already exists'));
+    }
+
+    return next(new InternalServerError('Unable to update ingredient'));
+  }
 };
 
-export const hideIngredient = async (req, res) => {
-  // TODO : Admin feature
-  return res.json({ message: 'This is the hide ingredient controller' });
+export const hideIngredient = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+
+    const result = await query(
+      `
+        UPDATE ingredients
+        SET status = 'hidden'
+        WHERE id = $1 AND status = 'active' AND created_by_user_id = $2
+        RETURNING id, name, status, created_by_user_id
+        `,
+      [id, userId]
+    );
+
+    const ingredient = result.rows[0];
+    if (!ingredient) {
+      throw new NotFoundError('Ingredient not found');
+    }
+
+    return res.status(StatusCodes.OK).json({ ingredient });
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return next(error);
+    }
+
+    return next(new InternalServerError('Unable to delete ingredient'));
+  }
 };
 
-export const reactivateIngredient = async (req, res) => {
-  // TODO : Admin feature
-  return res.json({ message: 'This is the reactivate ingredient controller' });
+export const reactivateIngredient = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+
+    const hiddenIngredientResult = await query(
+      `
+      SELECT id, name
+      FROM ingredients
+      WHERE id = $1 AND status = 'hidden' AND created_by_user_id = $2
+      `,
+      [id, userId]
+    );
+
+    const hiddenIngredient = hiddenIngredientResult.rows[0];
+    if (!hiddenIngredient) {
+      throw new NotFoundError('Ingredient not found');
+    }
+
+    const existingIngredientResult = await query(
+      `
+      SELECT id
+      FROM ingredients
+      WHERE name = $1
+        AND id <> $2
+        AND status = 'active'
+        AND (created_by_user_id IS NULL OR created_by_user_id = $3)
+      LIMIT 1
+      `,
+      [hiddenIngredient.name, id, userId]
+    );
+
+    if (existingIngredientResult.rows[0]) {
+      return next(new ConflictError('Ingredient already exists'));
+    }
+
+    const result = await query(
+      `
+        UPDATE ingredients
+        SET status = 'active'
+        WHERE id = $1 AND status = 'hidden' AND created_by_user_id = $2
+        RETURNING id, name, status, created_by_user_id
+        `,
+      [id, userId]
+    );
+
+    const ingredient = result.rows[0];
+    if (!ingredient) {
+      throw new NotFoundError('Ingredient not found');
+    }
+
+    return res.status(StatusCodes.OK).json({ ingredient });
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return next(error);
+    }
+
+    return next(new InternalServerError('Unable to recover ingredient'));
+  }
 };

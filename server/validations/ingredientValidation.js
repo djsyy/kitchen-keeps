@@ -42,3 +42,52 @@ export const getSingleIngredientValidation = [
     .isInt({ min: 1 })
     .withMessage('Must be a valid positive integer'),
 ];
+
+// Update ingredient validation rules
+export const updateIngredientValidation = [
+  param('id')
+    .trim()
+    .notEmpty()
+    .withMessage('Id is required')
+    .bail()
+    .isInt({ min: 1 })
+    .withMessage('Must be a valid positive integer'),
+
+  body('name')
+    .exists()
+    .withMessage('Name is required')
+    .bail()
+    .isString()
+    .withMessage('Name must be a string')
+    .bail()
+    .trim()
+    .notEmpty()
+    .withMessage('Name is required')
+    .bail()
+    .isLength({ min: 1, max: 100 })
+    .withMessage(
+      'Name must be at least 1 character and less than 100 characters'
+    ),
+];
+
+// Hide ingredient validation rules
+export const hideIngredientValidation = [
+  param('id')
+    .trim()
+    .notEmpty()
+    .withMessage('Id is required')
+    .bail()
+    .isInt({ min: 1 })
+    .withMessage('Must be a valid positive integer'),
+];
+
+// Reactivate ingredient validation rules
+export const reactivateIngredientValidation = [
+  param('id')
+    .trim()
+    .notEmpty()
+    .withMessage('Id is required')
+    .bail()
+    .isInt({ min: 1 })
+    .withMessage('Must be a valid positive integer'),
+];

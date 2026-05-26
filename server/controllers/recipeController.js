@@ -120,48 +120,37 @@ export const updateRecipe = async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.userId;
-    const updatedFields = [];
-    const updatedValues = [];
-
-    if (Object.hasOwn(req.body, 'name')) {
-      updatedValues.push(req.body.name);
-      updatedFields.push(`name = $${updatedValues.length}`);
-    }
-
-    if (Object.hasOwn(req.body, 'description')) {
-      updatedValues.push(req.body.description);
-      updatedFields.push(`description = $${updatedValues.length}`);
-    }
+    const { updatedFields, updatedValues } = buildUpdatedRecipeFields(req);
 
     updatedValues.push(userId);
     updatedValues.push(id);
 
     const result = await query(
       `
-      UPDATE libraries
+      UPDATE recipes
       SET ${updatedFields.join(', ')}
-      WHERE user_id = $${updatedValues.length - 1} AND id = $${updatedValues.length}
-      RETURNING name, description, user_id, id
+      WHERE created_by_user_id = $${updatedValues.length - 1} AND id = $${updatedValues.length}
+      RETURNING id, title, description, image_url, created_by_user_id, prep_time_minutes, cook_time_minutes, servings
       `,
       updatedValues
     );
 
-    const library = result.rows[0];
-    if (!library) {
-      throw new NotFoundError('Library not found');
+    const recipe = result.rows[0];
+    if (!recipe) {
+      throw new NotFoundError('Recipe not found');
     }
 
-    return res.status(StatusCodes.OK).json({ library });
+    return res.status(StatusCodes.OK).json({ recipe: recipe });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);
     }
 
     if (error.code === '23505') {
-      return next(new ConflictError('Library name already exists'));
+      return next(new ConflictError('Recipe name already exists'));
     }
 
-    return next(new InternalServerError('Unable to update library'));
+    return next(new InternalServerError('Unable to update recipe'));
   }
 };
 

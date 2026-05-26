@@ -75,16 +75,16 @@ export const getRecipes = async (req, res, next) => {
 
     const result = await query(
       `
-      SELECT * from libraries
+      SELECT title, description, image_url, created_by_user_id, prep_time_minutes, cook_time_minutes, servings from recipes
       WHERE user_id = $1
       ORDER BY name
       `,
       [userId]
     );
 
-    return res.status(StatusCodes.OK).json({ libraries: result.rows });
+    return res.status(StatusCodes.OK).json({ recipes: result.rows });
   } catch (_error) {
-    return next(new InternalServerError('Unable to fetch libraries'));
+    return next(new InternalServerError('Unable to fetch recipes'));
   }
 };
 

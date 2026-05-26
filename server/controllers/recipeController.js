@@ -172,24 +172,24 @@ export const deleteRecipe = async (req, res, next) => {
 
     const result = await query(
       `
-      DELETE from libraries
-      WHERE user_id = $1 AND id = $2
-      RETURNING id, user_id, name, description
+      DELETE from recipes
+      WHERE created_by_user_id = $1 AND id = $2
+      RETURNING id, title, description, image_url, created_by_user_id, prep_time_minutes, cook_time_minutes, servings
       `,
       [userId, id]
     );
 
-    const library = result.rows[0];
-    if (!library) {
-      throw new NotFoundError('Library not found');
+    const recipe = result.rows[0];
+    if (!recipe) {
+      throw new NotFoundError('Recipe not found');
     }
 
-    return res.status(StatusCodes.OK).json({ library });
+    return res.status(StatusCodes.OK).json({ recipe });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);
     }
 
-    return next(new InternalServerError('Unable to delete library'));
+    return next(new InternalServerError('Unable to delete recipe'));
   }
 };

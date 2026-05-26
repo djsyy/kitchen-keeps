@@ -95,24 +95,24 @@ export const getSingleRecipe = async (req, res, next) => {
 
     const result = await query(
       `
-      SELECT * from libraries
+      SELECT title, description, image_url, created_by_user_id, prep_time_minutes, cook_time_minutes, servings from recipes
       WHERE user_id = $1 AND id = $2
       `,
       [userId, id]
     );
 
-    const library = result.rows[0];
-    if (!library) {
-      throw new NotFoundError('Library not found');
+    const recipe = result.rows[0];
+    if (!recipe) {
+      throw new NotFoundError('Recipe not found');
     }
 
-    return res.status(StatusCodes.OK).json({ library });
+    return res.status(StatusCodes.OK).json({ recipe: recipe });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);
     }
 
-    return next(new InternalServerError('Unable to fetch library'));
+    return next(new InternalServerError('Unable to fetch recipe'));
   }
 };
 

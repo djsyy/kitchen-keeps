@@ -14,12 +14,27 @@ const recipeIngredientDBAttributes = [
   'display_name',
 ];
 
+// Helper function to parse and keep optional values that have been set
+const buildUpdatedRecipeIngredientFields = (req) => {
+  const updatedValues = [];
+  const updatedFields = [];
+
+  recipeIngredientDBAttributes.forEach((attribute) => {
+    if (Object.hasOwn(req.body, attribute)) {
+      updatedValues.push(req.body[attribute]);
+      updatedFields.push(`${attribute} = $${updatedValues.length}`);
+    }
+  });
+
+  return { updatedValues, updatedFields };
+};
+
 // Helper function to make sure recipe owner and the current user matches
 const checkUserOwnership = async (recipeId, userId) => {
   const result = await query(
     `
       SELECT id
-      FROM recipe
+      FROM recipes
       WHERE id = $1 AND created_by_user_id = $2
       `,
     [recipeId, userId]
@@ -81,7 +96,7 @@ export const createRecipeIngredient = async (req, res, next) => {
 
     const result = await query(
       `
-      INSERT INTO recipes_ingredients (recipe_id, ingredient_id, quantity_value, quantity_unit, preparation_note, sort_order, display_name)
+      INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity_value, quantity_unit, preparation_note, sort_order, display_name)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING id, recipe_id, ingredient_id, quantity_value, quantity_unit, preparation_note, sort_order, display_name, created_at, updated_at
       `,
@@ -129,7 +144,7 @@ export const getRecipeIngredient = async (req, res, next) => {
     );
 
     return res.status(StatusCodes.OK).json({
-      data: { recipe_ingredients: result.rows },
+      data: { recipeIngredients: result.rows },
       meta: { count: result.rows.length },
     });
   } catch (_error) {
@@ -139,39 +154,61 @@ export const getRecipeIngredient = async (req, res, next) => {
 
 export const updateRecipeIngredient = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { recipeId, recipeIngredientId } = req.params;
     const userId = req.user.userId;
-    const { updatedFields, updatedValues } = buildUpdatedRecipeFields(req);
+    const userOwnsRecipe = await checkUserOwnership(recipeId, userId);
 
-    updatedValues.push(userId);
-    updatedValues.push(id);
+    if (!userOwnsRecipe) {
+      throw new NotFoundError('Recipe not found');
+    }
+
+    // If ingredient id is provided, ensure it exists and can be accessed by the user
+    if (
+      Object.hasOwn(req.body, 'ingredient_id') &&
+      req.body.ingredient_id !== null
+    ) {
+      const ingredient = await query(
+        `
+        SELECT id, name, status, created_by_user_id
+        FROM ingredients
+        WHERE id = $1 AND status = 'active' AND (created_by_user_id IS NULL OR created_by_user_id = $2)
+        `,
+        [req.body.ingredient_id, userId]
+      );
+
+      if (!ingredient.rows[0]) {
+        throw new NotFoundError('Ingredient not found');
+      }
+    }
+
+    const { updatedFields, updatedValues } =
+      buildUpdatedRecipeIngredientFields(req);
+
+    updatedValues.push(recipeIngredientId);
+    updatedValues.push(recipeId);
 
     const result = await query(
       `
-      UPDATE recipes
+      UPDATE recipe_ingredients
       SET ${updatedFields.join(', ')}
-      WHERE created_by_user_id = $${updatedValues.length - 1} AND id = $${updatedValues.length}
-      RETURNING id, title, description, image_url, created_by_user_id, prep_time_minutes, cook_time_minutes, servings, created_at, updated_at
+      WHERE id = $${updatedValues.length - 1} AND recipe_id = $${updatedValues.length}
+      RETURNING id, recipe_id, ingredient_id, quantity_value, quantity_unit, preparation_note, sort_order, display_name, created_at, updated_at
       `,
       updatedValues
     );
 
-    const recipe = result.rows[0];
-    if (!recipe) {
-      throw new NotFoundError('Recipe not found');
+    const recipeIngredient = result.rows[0];
+    if (!recipeIngredient) {
+      throw new NotFoundError('Recipe ingredient not found');
     }
 
-    return res.status(StatusCodes.OK).json({ data: { recipe } });
+    return res.status(StatusCodes.OK).json({ data: { recipeIngredient } });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);
     }
 
-    if (error.code === '23505') {
-      return next(new ConflictError('Recipe title already exists'));
-    }
-
-    return next(new InternalServerError('Unable to update recipe'));
+    return next(new InternalServerError('Unable to update recipe ingredient'));
   }
 };
 

@@ -2,8 +2,6 @@ import { query } from '../config/db.js';
 import { StatusCodes } from 'http-status-codes';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
-import ConflictError from '../errors/ConflictError.js';
-import UnauthorizedError from '../errors/UnauthorizedError.js';
 
 const recipeIngredientDBAttributes = [
   'ingredient_id',
@@ -214,29 +212,36 @@ export const updateRecipeIngredient = async (req, res, next) => {
 
 export const deleteRecipeIngredient = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { recipeId, recipeIngredientId } = req.params;
     const userId = req.user.userId;
+    const userOwnsRecipe = await checkUserOwnership(recipeId, userId);
 
-    const result = await query(
-      `
-      DELETE from recipes
-      WHERE created_by_user_id = $1 AND id = $2
-      RETURNING id, title, description, image_url, created_by_user_id, prep_time_minutes, cook_time_minutes, servings, created_at, updated_at
-      `,
-      [userId, id]
-    );
-
-    const recipe = result.rows[0];
-    if (!recipe) {
+    if (!userOwnsRecipe) {
       throw new NotFoundError('Recipe not found');
     }
 
-    return res.status(StatusCodes.OK).json({ data: { recipe } });
+    const result = await query(
+      `
+      DELETE from recipe_ingredients
+      WHERE id = $1 AND recipe_id = $2
+      RETURNING id, recipe_id, ingredient_id, quantity_value, quantity_unit, preparation_note, sort_order, display_name, created_at, updated_at
+      `,
+      [recipeIngredientId, recipeId]
+    );
+
+    const recipeIngredient = result.rows[0];
+    if (!recipeIngredient) {
+      throw new NotFoundError('Recipe ingredient not found');
+    }
+
+    return res
+      .status(StatusCodes.OK)
+      .json({ data: { recipeIngredient: recipeIngredient } });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);
     }
 
-    return next(new InternalServerError('Unable to delete recipe'));
+    return next(new InternalServerError('Unable to delete recipe ingredient'));
   }
 };

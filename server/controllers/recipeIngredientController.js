@@ -40,7 +40,6 @@ export const createRecipeIngredient = async (req, res, next) => {
     } = req.body;
     const { recipeId } = req.params;
     const userId = req.user.userId;
-
     const userOwnsRecipe = await checkUserOwnership(recipeId, userId);
 
     if (!userOwnsRecipe) {
@@ -111,24 +110,30 @@ export const createRecipeIngredient = async (req, res, next) => {
 
 export const getRecipeIngredient = async (req, res, next) => {
   try {
+    const { recipeId } = req.params;
     const userId = req.user.userId;
+    const userOwnsRecipe = await checkUserOwnership(recipeId, userId);
+
+    if (!userOwnsRecipe) {
+      throw new NotFoundError('Recipe not found');
+    }
 
     const result = await query(
       `
-      SELECT id, title, description, image_url, created_by_user_id, prep_time_minutes, cook_time_minutes, servings, created_at, updated_at
-      FROM recipes
-      WHERE created_by_user_id = $1
-      ORDER BY title
+      SELECT id, recipe_id, ingredient_id, quantity_value, quantity_unit, preparation_note, sort_order, display_name, created_at, updated_at
+      FROM recipe_ingredients
+      WHERE recipe_id = $1
+      ORDER BY sort_order, id
       `,
-      [userId]
+      [recipeId]
     );
 
     return res.status(StatusCodes.OK).json({
-      data: { recipes: result.rows },
+      data: { recipe_ingredients: result.rows },
       meta: { count: result.rows.length },
     });
   } catch (_error) {
-    return next(new InternalServerError('Unable to fetch recipes'));
+    return next(new InternalServerError('Unable to fetch recipe ingredients'));
   }
 };
 

@@ -4,6 +4,7 @@ import {
   getRecipeIngredient,
   updateRecipeIngredient,
   deleteRecipeIngredient,
+  reorderRecipeIngredients,
 } from '../controllers/recipeIngredientController.js';
 import validateRequest from '../middleware/validateRequest.js';
 import {
@@ -11,6 +12,7 @@ import {
   getRecipeIngredientValidation,
   updateRecipeIngredientValidation,
   deleteRecipeIngredientValidation,
+  reorderRecipeIngredientsValidation,
 } from '../validations/recipeIngredientValidation.js';
 
 // mergeParams lets this router read recipeId from /recipes/:recipeId/ingredients
@@ -24,6 +26,13 @@ router
     createRecipeIngredient
   )
   .get(getRecipeIngredientValidation, validateRequest, getRecipeIngredient);
+
+router.patch(
+  '/reorder',
+  reorderRecipeIngredientsValidation,
+  validateRequest,
+  reorderRecipeIngredients
+);
 
 router
   .route('/:recipeIngredientId')

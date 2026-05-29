@@ -148,6 +148,35 @@ export const updateRecipeIngredientValidation = [
   ...recipeIngredientBodyValidation,
 ];
 
+// Reorder recipe ingredients validation rules
+export const reorderRecipeIngredientsValidation = [
+  recipeIdParam,
+
+  body('recipeIngredientIds')
+    .exists()
+    .withMessage('Recipe ingredient ids are required')
+    .bail()
+    .isArray({ min: 1 })
+    .withMessage('Recipe ingredient ids must be a non-empty array')
+    .bail()
+    .custom((recipeIngredientIds) => {
+      const normalizedIds = recipeIngredientIds.map((id) => Number(id));
+      const recipeIngredientIdSet = new Set(normalizedIds);
+
+      if (recipeIngredientIdSet.size !== recipeIngredientIds.length) {
+        throw new Error('Duplicate recipe ingredient ids are not allowed');
+      }
+
+      return true;
+    }),
+
+  body('recipeIngredientIds.*')
+    .isInt({ min: 1 })
+    .withMessage('Must be a valid positive integer')
+    .bail()
+    .toInt(),
+];
+
 // Delete recipe ingredient validation rules
 export const deleteRecipeIngredientValidation = [
   recipeIdParam,

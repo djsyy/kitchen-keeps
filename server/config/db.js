@@ -11,3 +11,6 @@ const pool = new Pool({
 });
 
 export const query = (text, params = []) => pool.query(text, params);
+
+// Gives a single connection for transactions that need multiple related queries
+export const getClient = () => pool.connect();

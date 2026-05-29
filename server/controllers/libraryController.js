@@ -21,7 +21,7 @@ export const createLibrary = async (req, res, next) => {
 
     const library = result.rows[0];
 
-    return res.status(StatusCodes.CREATED).json({ library });
+    return res.status(StatusCodes.CREATED).json({ data: { library } });
   } catch (error) {
     if (error.code === '23505') {
       return next(new ConflictError('Library name already exists'));
@@ -44,7 +44,10 @@ export const getLibraries = async (req, res, next) => {
       [userId]
     );
 
-    return res.status(StatusCodes.OK).json({ libraries: result.rows });
+    return res.status(StatusCodes.OK).json({
+      data: { libraries: result.rows },
+      meta: { count: result.rows.length },
+    });
   } catch (_error) {
     return next(new InternalServerError('Unable to fetch libraries'));
   }
@@ -68,7 +71,7 @@ export const getSingleLibrary = async (req, res, next) => {
       throw new NotFoundError('Library not found');
     }
 
-    return res.status(StatusCodes.OK).json({ library });
+    return res.status(StatusCodes.OK).json({ data: { library } });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);
@@ -113,7 +116,7 @@ export const updateLibrary = async (req, res, next) => {
       throw new NotFoundError('Library not found');
     }
 
-    return res.status(StatusCodes.OK).json({ library });
+    return res.status(StatusCodes.OK).json({ data: { library } });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);
@@ -146,7 +149,7 @@ export const deleteLibrary = async (req, res, next) => {
       throw new NotFoundError('Library not found');
     }
 
-    return res.status(StatusCodes.OK).json({ library });
+    return res.status(StatusCodes.OK).json({ data: { library } });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);

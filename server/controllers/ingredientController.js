@@ -10,7 +10,8 @@ const ingredientFields = 'id, name, status, created_by_user_id';
 const sendIngredientConflict = (res, ingredient) =>
   res.status(StatusCodes.CONFLICT).json({
     message: 'Ingredient already exists',
-    ingredient,
+    data: { ingredient },
+    errors: [],
   });
 
 // Helper function to check for global or user-owned ingredients
@@ -59,7 +60,7 @@ export const createIngredient = async (req, res, next) => {
 
     const ingredient = result.rows[0];
 
-    return res.status(StatusCodes.CREATED).json({ ingredient });
+    return res.status(StatusCodes.CREATED).json({ data: { ingredient } });
   } catch (error) {
     if (error.code === '23505') {
       const existingIngredient = await findVisibleIngredientByName(
@@ -95,7 +96,10 @@ export const getIngredients = async (req, res, next) => {
         [search, userId]
       );
 
-      return res.status(StatusCodes.OK).json({ ingredients: result.rows });
+      return res.status(StatusCodes.OK).json({
+        data: { ingredients: result.rows },
+        meta: { count: result.rows.length },
+      });
     }
 
     const result = await query(
@@ -108,7 +112,10 @@ export const getIngredients = async (req, res, next) => {
       [userId]
     );
 
-    return res.status(StatusCodes.OK).json({ ingredients: result.rows });
+    return res.status(StatusCodes.OK).json({
+      data: { ingredients: result.rows },
+      meta: { count: result.rows.length },
+    });
   } catch (_error) {
     return next(new InternalServerError('Unable to fetch ingredients'));
   }
@@ -133,7 +140,7 @@ export const getSingleIngredient = async (req, res, next) => {
       throw new NotFoundError('Ingredient not found');
     }
 
-    return res.status(StatusCodes.OK).json({ ingredient });
+    return res.status(StatusCodes.OK).json({ data: { ingredient } });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);
@@ -189,7 +196,7 @@ export const updateIngredient = async (req, res, next) => {
       throw new NotFoundError('Ingredient not found');
     }
 
-    return res.status(StatusCodes.OK).json({ ingredient });
+    return res.status(StatusCodes.OK).json({ data: { ingredient } });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);
@@ -234,7 +241,7 @@ export const hideIngredient = async (req, res, next) => {
       throw new NotFoundError('Ingredient not found');
     }
 
-    return res.status(StatusCodes.OK).json({ ingredient });
+    return res.status(StatusCodes.OK).json({ data: { ingredient } });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);
@@ -298,7 +305,7 @@ export const reactivateIngredient = async (req, res, next) => {
       throw new NotFoundError('Ingredient not found');
     }
 
-    return res.status(StatusCodes.OK).json({ ingredient });
+    return res.status(StatusCodes.OK).json({ data: { ingredient } });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);

@@ -271,9 +271,7 @@ export const deleteRecipeIngredient = async (req, res, next) => {
 
     await client.query('COMMIT');
 
-    return res
-      .status(StatusCodes.OK)
-      .json({ data: { recipeIngredient: recipeIngredient } });
+    return res.status(StatusCodes.OK).json({ data: { recipeIngredient } });
   } catch (error) {
     if (client) {
       await client.query('ROLLBACK');

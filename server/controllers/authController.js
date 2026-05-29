@@ -23,7 +23,7 @@ export const register = async (req, res, next) => {
     const user = result.rows[0];
     const token = createJWT({ userId: user.id, name: user.name });
 
-    return res.status(StatusCodes.CREATED).json({ user, token });
+    return res.status(StatusCodes.CREATED).json({ data: { user, token } });
   } catch (error) {
     if (error.code === '23505') {
       return next(new ConflictError('Email already registered'));
@@ -63,7 +63,9 @@ export const login = async (req, res, next) => {
       email: user.email,
     };
     const token = createJWT({ userId: user.id, name: user.name });
-    return res.status(StatusCodes.OK).json({ user: safeUser, token });
+    return res.status(StatusCodes.OK).json({
+      data: { user: safeUser, token },
+    });
   } catch (error) {
     if (error instanceof UnauthorizedError) {
       return next(error);
@@ -90,7 +92,7 @@ export const getUser = async (req, res, next) => {
       throw new NotFoundError('User not found');
     }
 
-    return res.status(StatusCodes.OK).json({ user });
+    return res.status(StatusCodes.OK).json({ data: { user } });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);

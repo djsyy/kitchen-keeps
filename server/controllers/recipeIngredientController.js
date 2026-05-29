@@ -1,14 +1,14 @@
-import { query } from '../config/db.js';
+import { getClient, query } from '../config/db.js';
 import { StatusCodes } from 'http-status-codes';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
+import BadRequestError from '../errors/BadRequestError.js';
 
 const recipeIngredientDBAttributes = [
   'ingredient_id',
   'quantity_value',
   'quantity_unit',
   'preparation_note',
-  'sort_order',
   'display_name',
 ];
 
@@ -39,6 +39,22 @@ const checkUserOwnership = async (recipeId, userId) => {
   );
 
   return Boolean(result.rows[0]);
+};
+
+// Helper function to make sure the recipe ingredient ids match
+const hasSameIds = (currentIds, submittedIds) => {
+  if (currentIds.length !== submittedIds.length) {
+    return false;
+  }
+
+  const currentIdSet = new Set(currentIds);
+  const submittedIdSet = new Set(submittedIds);
+
+  if (submittedIdSet.size !== submittedIds.length) {
+    return false;
+  }
+
+  return submittedIds.every((id) => currentIdSet.has(id));
 };
 
 export const createRecipeIngredient = async (req, res, next) => {
@@ -215,6 +231,8 @@ export const updateRecipeIngredient = async (req, res, next) => {
 };
 
 export const deleteRecipeIngredient = async (req, res, next) => {
+  let client;
+
   try {
     const { recipeId, recipeIngredientId } = req.params;
     const userId = req.user.userId;
@@ -224,7 +242,10 @@ export const deleteRecipeIngredient = async (req, res, next) => {
       throw new NotFoundError('Recipe not found');
     }
 
-    const result = await query(
+    client = await getClient();
+    await client.query('BEGIN');
+
+    const result = await client.query(
       `
       DELETE from recipe_ingredients
       WHERE id = $1 AND recipe_id = $2
@@ -238,14 +259,114 @@ export const deleteRecipeIngredient = async (req, res, next) => {
       throw new NotFoundError('Recipe ingredient not found');
     }
 
+    // Close the ordering gap left by the deleted ingredient
+    await client.query(
+      `
+      UPDATE recipe_ingredients
+      SET sort_order = sort_order - 1
+      WHERE recipe_id = $1 AND sort_order > $2
+      `,
+      [recipeId, recipeIngredient.sort_order]
+    );
+
+    await client.query('COMMIT');
+
     return res
       .status(StatusCodes.OK)
       .json({ data: { recipeIngredient: recipeIngredient } });
   } catch (error) {
+    if (client) {
+      await client.query('ROLLBACK');
+    }
+
     if (error instanceof NotFoundError) {
       return next(error);
     }
 
     return next(new InternalServerError('Unable to delete recipe ingredient'));
+  } finally {
+    if (client) {
+      client.release();
+    }
+  }
+};
+
+export const reorderRecipeIngredients = async (req, res, next) => {
+  let client;
+
+  try {
+    const { recipeId } = req.params;
+    const { recipeIngredientIds } = req.body;
+    const userId = req.user.userId;
+    const userOwnsRecipe = await checkUserOwnership(recipeId, userId);
+
+    if (!userOwnsRecipe) {
+      throw new NotFoundError('Recipe not found');
+    }
+
+    client = await getClient();
+    await client.query('BEGIN');
+
+    const currentRecipeIngredients = await client.query(
+      `
+      SELECT id
+      FROM recipe_ingredients
+      WHERE recipe_id = $1
+      `,
+      [recipeId]
+    );
+
+    const currentIds = currentRecipeIngredients.rows.map((row) =>
+      Number(row.id)
+    );
+
+    if (!hasSameIds(currentIds, recipeIngredientIds)) {
+      throw new BadRequestError('Recipe ingredient ids must match this recipe');
+    }
+
+    // Assigns the sort order based on their position in the array
+    for (const [index, recipeIngredientId] of recipeIngredientIds.entries()) {
+      await client.query(
+        `
+        UPDATE recipe_ingredients
+        SET sort_order = $1
+        WHERE id = $2 AND recipe_id = $3
+        `,
+        [index + 1, recipeIngredientId, recipeId]
+      );
+    }
+
+    const updatedRecipeIngredients = await client.query(
+      `
+      SELECT id, recipe_id, ingredient_id, quantity_value, quantity_unit, preparation_note, sort_order, display_name, created_at, updated_at
+      FROM recipe_ingredients
+      WHERE recipe_id = $1
+      ORDER BY sort_order, id
+      `,
+      [recipeId]
+    );
+
+    await client.query('COMMIT');
+
+    return res.status(StatusCodes.OK).json({
+      data: { recipeIngredients: updatedRecipeIngredients.rows },
+      meta: { count: updatedRecipeIngredients.rows.length },
+    });
+  } catch (error) {
+    if (client) {
+      await client.query('ROLLBACK');
+    }
+
+    if (error instanceof NotFoundError || error instanceof BadRequestError) {
+      return next(error);
+    }
+
+    return next(
+      new InternalServerError('Unable to reorder recipe ingredients')
+    );
+  } finally {
+    if (client) {
+      client.release();
+    }
   }
 };

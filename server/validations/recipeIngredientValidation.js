@@ -5,7 +5,6 @@ const recipeIngredientFields = [
   'quantity_value',
   'quantity_unit',
   'preparation_note',
-  'sort_order',
   'display_name',
 ];
 
@@ -85,6 +84,10 @@ const recipeIngredientBodyValidation = [
   optionalText('quantity_value', 'Quantity value', 100),
   optionalText('quantity_unit', 'Quantity unit', 50),
   optionalText('preparation_note', 'Preparation note', 255),
+];
+
+const createRecipeIngredientBodyValidation = [
+  ...recipeIngredientBodyValidation,
   optionalPositiveInteger('sort_order', 'Sort order'),
 ];
 
@@ -112,7 +115,7 @@ export const createRecipeIngredientValidation = [
       'Display name must be at least 1 character and less than 255 characters'
     ),
 
-  ...recipeIngredientBodyValidation,
+  ...createRecipeIngredientBodyValidation,
 ];
 
 // Update recipe ingredient validation rules
@@ -122,6 +125,10 @@ export const updateRecipeIngredientValidation = [
 
   // Check to make sure at least one field is being updated
   body().custom((__, { req }) => {
+    if (Object.hasOwn(req.body, 'sort_order')) {
+      throw new Error('Use the reorder endpoint to update sort order');
+    }
+
     const hasRecipeIngredientField = recipeIngredientFields.some((field) =>
       Object.hasOwn(req.body, field)
     );

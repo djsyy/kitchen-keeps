@@ -9,7 +9,6 @@ const recipeIngredientDBAttributes = [
   'quantity_value',
   'quantity_unit',
   'preparation_note',
-  'sort_order',
   'display_name',
 ];
 
@@ -232,6 +231,8 @@ export const updateRecipeIngredient = async (req, res, next) => {
 };
 
 export const deleteRecipeIngredient = async (req, res, next) => {
+  let client;
+
   try {
     const { recipeId, recipeIngredientId } = req.params;
     const userId = req.user.userId;
@@ -241,7 +242,10 @@ export const deleteRecipeIngredient = async (req, res, next) => {
       throw new NotFoundError('Recipe not found');
     }
 
-    const result = await query(
+    client = await getClient();
+    await client.query('BEGIN');
+
+    const result = await client.query(
       `
       DELETE from recipe_ingredients
       WHERE id = $1 AND recipe_id = $2
@@ -255,15 +259,35 @@ export const deleteRecipeIngredient = async (req, res, next) => {
       throw new NotFoundError('Recipe ingredient not found');
     }
 
+    // Close the ordering gap left by the deleted ingredient
+    await client.query(
+      `
+      UPDATE recipe_ingredients
+      SET sort_order = sort_order - 1
+      WHERE recipe_id = $1 AND sort_order > $2
+      `,
+      [recipeId, recipeIngredient.sort_order]
+    );
+
+    await client.query('COMMIT');
+
     return res
       .status(StatusCodes.OK)
       .json({ data: { recipeIngredient: recipeIngredient } });
   } catch (error) {
+    if (client) {
+      await client.query('ROLLBACK');
+    }
+
     if (error instanceof NotFoundError) {
       return next(error);
     }
 
     return next(new InternalServerError('Unable to delete recipe ingredient'));
+  } finally {
+    if (client) {
+      client.release();
+    }
   }
 };
 

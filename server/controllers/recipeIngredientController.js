@@ -79,7 +79,7 @@ export const createRecipeIngredient = async (req, res, next) => {
 
     // If user did not provide a sort order, automatically provide the correct value
     if (normalizedSortOrder === undefined || normalizedSortOrder === null) {
-      // COALESCE checks for the first value thaat isn't null
+      // COALESCE checks for the first value that isn't null
       const sortOrderResult = await query(
         `
         SELECT COALESCE(MAX(sort_order), 0) + 1 AS next_sort_order
@@ -145,7 +145,11 @@ export const getRecipeIngredient = async (req, res, next) => {
       data: { recipeIngredients: result.rows },
       meta: { count: result.rows.length },
     });
-  } catch (_error) {
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return next(error);
+    }
+
     return next(new InternalServerError('Unable to fetch recipe ingredients'));
   }
 };

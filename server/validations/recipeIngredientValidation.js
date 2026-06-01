@@ -1,4 +1,10 @@
-import { body, param } from 'express-validator';
+import { body } from 'express-validator';
+import {
+  optionalPositiveInteger,
+  optionalText,
+  positiveIntegerParam,
+  requireAtLeastOneBodyField,
+} from './validationHelpers.js';
 
 const recipeIngredientFields = [
   'ingredient_id',
@@ -7,71 +13,6 @@ const recipeIngredientFields = [
   'preparation_note',
   'display_name',
 ];
-
-// Normalizes empty strings to null for DB consistency; otherwise returns the value
-const normalizeOptionalText = (value) => {
-  if (value === null) {
-    return null;
-  }
-
-  const trimmedValue = value.trim();
-  return trimmedValue === '' ? null : trimmedValue;
-};
-
-// Reusable validation rules for recipe ingredient ids
-const positiveIntegerParam = (field, label) =>
-  param(field)
-    .trim()
-    .notEmpty()
-    .withMessage(`${label} is required`)
-    .bail()
-    .isInt({ min: 1 })
-    .withMessage('Must be a valid positive integer');
-
-// Reusable validation rules for optional text fields
-const optionalText = (field, label, maxLength) =>
-  body(field)
-    .optional()
-    .custom((value) => value === null || typeof value === 'string')
-    .withMessage(`${label} must be a string or null`)
-    .bail()
-    .customSanitizer((value) => {
-      if (value === null) {
-        return null;
-      }
-
-      if (typeof value !== 'string') {
-        return value;
-      }
-
-      return normalizeOptionalText(value);
-    })
-    .custom((value) => value === null || value.length <= maxLength)
-    .withMessage(`${label} must be less than ${maxLength} characters`);
-
-// Reusable validation rules for optional positive integer fields
-const optionalPositiveInteger = (field, label) =>
-  body(field)
-    .optional()
-    .customSanitizer((value) => {
-      if (value === null || value === '') {
-        return null;
-      }
-
-      return value;
-    })
-    .custom(
-      (value) =>
-        value === null ||
-        ((typeof value === 'string' || typeof value === 'number') &&
-          Number.isInteger(Number(value)))
-    )
-    .withMessage(`${label} must be a whole number or null`)
-    .bail()
-    .custom((value) => value === null || Number(value) > 0)
-    .withMessage(`${label} must be greater than 0`)
-    .bail()
-    .customSanitizer((value) => (value === null ? null : Number(value)));
 
 const recipeIdParam = positiveIntegerParam('recipeId', 'Recipe id');
 const recipeIngredientIdParam = positiveIntegerParam(
@@ -122,22 +63,13 @@ export const createRecipeIngredientValidation = [
 export const updateRecipeIngredientValidation = [
   recipeIdParam,
   recipeIngredientIdParam,
-
-  // Check to make sure at least one field is being updated
-  body().custom((__, { req }) => {
-    if (Object.hasOwn(req.body, 'sort_order')) {
-      throw new Error('Use the reorder endpoint to update sort order');
-    }
-
-    const hasRecipeIngredientField = recipeIngredientFields.some((field) =>
-      Object.hasOwn(req.body, field)
-    );
-
-    if (!hasRecipeIngredientField) {
-      throw new Error('At least one field is required');
-    }
-
-    return true;
+  requireAtLeastOneBodyField(recipeIngredientFields, {
+    forbiddenFields: [
+      {
+        field: 'sort_order',
+        message: 'Use the reorder endpoint to update sort order',
+      },
+    ],
   }),
 
   body('display_name')
@@ -166,6 +98,7 @@ export const reorderRecipeIngredientsValidation = [
     .isArray({ min: 1 })
     .withMessage('Recipe ingredient ids must be a non-empty array')
     .bail()
+    // Ensures the full reorder list does not include duplicate ids
     .custom((recipeIngredientIds) => {
       const normalizedIds = recipeIngredientIds.map((id) => Number(id));
       const recipeIngredientIdSet = new Set(normalizedIds);

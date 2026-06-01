@@ -1,4 +1,7 @@
-import { body, param, query } from 'express-validator';
+import { body, query } from 'express-validator';
+import { positiveIntegerParam } from './validationHelpers.js';
+
+const ingredientIdParam = positiveIntegerParam('id', 'Id');
 
 // Create ingredient validation rules
 export const createIngredientValidation = [
@@ -33,25 +36,11 @@ export const getIngredientsValidation = [
 ];
 
 // Get single ingredient validation rules
-export const getSingleIngredientValidation = [
-  param('id')
-    .trim()
-    .notEmpty()
-    .withMessage('Id is required')
-    .bail()
-    .isInt({ min: 1 })
-    .withMessage('Must be a valid positive integer'),
-];
+export const getSingleIngredientValidation = [ingredientIdParam];
 
 // Update ingredient validation rules
 export const updateIngredientValidation = [
-  param('id')
-    .trim()
-    .notEmpty()
-    .withMessage('Id is required')
-    .bail()
-    .isInt({ min: 1 })
-    .withMessage('Must be a valid positive integer'),
+  ingredientIdParam,
 
   body('name')
     .exists()
@@ -71,23 +60,7 @@ export const updateIngredientValidation = [
 ];
 
 // Hide ingredient validation rules
-export const hideIngredientValidation = [
-  param('id')
-    .trim()
-    .notEmpty()
-    .withMessage('Id is required')
-    .bail()
-    .isInt({ min: 1 })
-    .withMessage('Must be a valid positive integer'),
-];
+export const hideIngredientValidation = [ingredientIdParam];
 
 // Reactivate ingredient validation rules
-export const reactivateIngredientValidation = [
-  param('id')
-    .trim()
-    .notEmpty()
-    .withMessage('Id is required')
-    .bail()
-    .isInt({ min: 1 })
-    .withMessage('Must be a valid positive integer'),
-];
+export const reactivateIngredientValidation = [ingredientIdParam];

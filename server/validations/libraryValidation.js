@@ -1,4 +1,12 @@
-import { body, param } from 'express-validator';
+import { body } from 'express-validator';
+import {
+  optionalText,
+  positiveIntegerParam,
+  requireAtLeastOneBodyField,
+} from './validationHelpers.js';
+
+const libraryFields = ['name', 'description'];
+const libraryIdParam = positiveIntegerParam('id', 'Id');
 
 // Create library validation rules
 export const createLibraryValidation = [
@@ -18,54 +26,16 @@ export const createLibraryValidation = [
       'Name must be at least 1 character and less than 100 characters'
     ),
 
-  body('description')
-    .optional()
-    .custom((value) => value === null || typeof value === 'string')
-    .withMessage('Description must be a string or null')
-    .bail()
-    .customSanitizer((value) => {
-      if (value === null) {
-        return null;
-      }
-
-      const trimmedValue = value.trim();
-      return trimmedValue === '' ? null : trimmedValue;
-    })
-    .custom((value) => value === null || value.length <= 1000)
-    .withMessage('Description must be less than 1000 characters'),
+  optionalText('description', 'Description', 1000),
 ];
 
 // Get single library validation rules
-export const getSingleLibraryValidation = [
-  param('id')
-    .trim()
-    .notEmpty()
-    .withMessage('Id is required')
-    .bail()
-    .isInt({ min: 1 })
-    .withMessage('Must be a valid positive integer'),
-];
+export const getSingleLibraryValidation = [libraryIdParam];
 
 // Update library validation rules
 export const updateLibraryValidation = [
-  param('id')
-    .trim()
-    .notEmpty()
-    .withMessage('Id is required')
-    .bail()
-    .isInt({ min: 1 })
-    .withMessage('Must be a valid positive integer'),
-
-  body().custom((__, { req }) => {
-    const hasName = Object.hasOwn(req.body, 'name');
-    const hasDescription = Object.hasOwn(req.body, 'description');
-
-    if (!hasName && !hasDescription) {
-      throw new Error('At least one field is required');
-    }
-
-    return true;
-  }),
+  libraryIdParam,
+  requireAtLeastOneBodyField(libraryFields),
 
   body('name')
     .optional()
@@ -79,30 +49,8 @@ export const updateLibraryValidation = [
     .isLength({ max: 100 })
     .withMessage('Name must be less than 100 characters'),
 
-  body('description')
-    .optional()
-    .custom((value) => value === null || typeof value === 'string')
-    .withMessage('Description must be a string or null')
-    .bail()
-    .customSanitizer((value) => {
-      if (value === null) {
-        return null;
-      }
-
-      const trimmedValue = value.trim();
-      return trimmedValue === '' ? null : trimmedValue;
-    })
-    .custom((value) => value === null || value.length <= 1000)
-    .withMessage('Description must be less than 1000 characters'),
+  optionalText('description', 'Description', 1000),
 ];
 
 // Delete library validation rules
-export const deleteLibraryValidation = [
-  param('id')
-    .trim()
-    .notEmpty()
-    .withMessage('Id is required')
-    .bail()
-    .isInt({ min: 1 })
-    .withMessage('Must be a valid positive integer'),
-];
+export const deleteLibraryValidation = [libraryIdParam];

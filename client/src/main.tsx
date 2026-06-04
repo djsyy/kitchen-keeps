@@ -11,6 +11,12 @@ import NotFoundPage from './pages/NotFoundPage';
 
 const queryClient = new QueryClient();
 
+const rootElement = document.getElementById('root');
+
+if (!rootElement) {
+  throw new Error('Root element not found');
+}
+
 const router = createBrowserRouter([
   {
     path: '/login',
@@ -33,7 +39,7 @@ const router = createBrowserRouter([
   },
 ]);
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />

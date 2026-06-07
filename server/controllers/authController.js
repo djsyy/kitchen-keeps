@@ -21,9 +21,9 @@ export const register = async (req, res, next) => {
     );
 
     const user = result.rows[0];
-    const token = createJWT({ userId: user.id, name: user.name });
+    req.session.userId = user.id;
 
-    return res.status(StatusCodes.CREATED).json({ data: { user, token } });
+    return res.status(StatusCodes.CREATED).json({ data: user });
   } catch (error) {
     if (error.code === '23505') {
       return next(new ConflictError('Email already registered'));
@@ -62,9 +62,11 @@ export const login = async (req, res, next) => {
       name: user.name,
       email: user.email,
     };
-    const token = createJWT({ userId: user.id, name: user.name });
+
+    req.session.userId = safeUser.id;
+
     return res.status(StatusCodes.OK).json({
-      data: { user: safeUser, token },
+      data: { user: safeUser },
     });
   } catch (error) {
     if (error instanceof UnauthorizedError) {
@@ -73,6 +75,20 @@ export const login = async (req, res, next) => {
 
     return next(new InternalServerError('Unable to log in user'));
   }
+};
+
+export const logout = (req, res, next) => {
+  req.session.destroy((error) => {
+    if (error) {
+      return next(new InternalServerError('Unable to log out user'));
+    }
+
+    res.clearCookie('sid');
+
+    return res.status(StatusCodes.OK).json({
+      message: 'Logged out successfully',
+    });
+  });
 };
 
 // Returns the current user

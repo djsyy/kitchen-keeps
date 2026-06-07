@@ -7,6 +7,7 @@ import ingredientRouter from './routes/ingredientRouter.js';
 import recipeRouter from './routes/recipeRouter.js';
 import { authenticateUser } from './middleware/authentication.js';
 import errorHandler from './middleware/errorHandler.js';
+import { sessionMiddleware } from './middleware/session.js';
 
 const app = express();
 const port = Number(process.env.PORT || 3001);
@@ -27,13 +28,15 @@ app.use(
 
       return callback(new Error('Not allowed by CORS'));
     },
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type'],
     optionsSuccessStatus: 204,
   })
 );
 
 app.use(express.json());
+app.use(sessionMiddleware);
 
 app.use('/api/auth', authRouter);
 app.use('/api/libraries', authenticateUser, libraryRouter);

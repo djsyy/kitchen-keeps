@@ -1,23 +1,12 @@
 type InputProps = React.ComponentProps<'input'>;
 
-export default function Input({
-  id: elementId,
-  ref,
-  value,
-  placeholder,
-  onChange,
-}: InputProps) {
+export default function Input({ className, ...props }: InputProps) {
   return (
-    <div className="">
+    <div>
       <input
-        className="rounded-md border-black border-2"
-        id={elementId}
-        type="text"
-        ref={ref}
-        value={value}
-        placeholder={placeholder}
-        onChange={onChange}
-      ></input>
+        className={`rounded-md border-2 border-text px-2 py-1 ${className ?? ''}`}
+        {...props}
+      />
     </div>
   );
 }

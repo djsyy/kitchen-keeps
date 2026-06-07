@@ -1,7 +1,6 @@
 import { query } from '../config/db.js';
 import { StatusCodes } from 'http-status-codes';
 import { hashPassword, comparePasswords } from '../utils/password.js';
-import { createJWT } from '../utils/token.js';
 import UnauthorizedError from '../errors/UnauthorizedError.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
@@ -21,9 +20,18 @@ export const register = async (req, res, next) => {
     );
 
     const user = result.rows[0];
-    const token = createJWT({ userId: user.id, name: user.name });
 
-    return res.status(StatusCodes.CREATED).json({ data: { user, token } });
+    req.session.regenerate((error) => {
+      if (error) {
+        return next(new InternalServerError('Unable to start session'));
+      }
+
+      req.session.userId = user.id;
+
+      return res.status(StatusCodes.CREATED).json({
+        data: { user },
+      });
+    });
   } catch (error) {
     if (error.code === '23505') {
       return next(new ConflictError('Email already registered'));
@@ -62,9 +70,17 @@ export const login = async (req, res, next) => {
       name: user.name,
       email: user.email,
     };
-    const token = createJWT({ userId: user.id, name: user.name });
-    return res.status(StatusCodes.OK).json({
-      data: { user: safeUser, token },
+
+    req.session.regenerate((error) => {
+      if (error) {
+        return next(new InternalServerError('Unable to start session'));
+      }
+
+      req.session.userId = safeUser.id;
+
+      return res.status(StatusCodes.OK).json({
+        data: { user: safeUser },
+      });
     });
   } catch (error) {
     if (error instanceof UnauthorizedError) {
@@ -73,6 +89,24 @@ export const login = async (req, res, next) => {
 
     return next(new InternalServerError('Unable to log in user'));
   }
+};
+
+export const logout = (req, res, next) => {
+  req.session.destroy((error) => {
+    if (error) {
+      return next(new InternalServerError('Unable to log out user'));
+    }
+
+    res.clearCookie('sid', {
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
+
+    return res.status(StatusCodes.OK).json({
+      message: 'Logged out successfully',
+    });
+  });
 };
 
 // Returns the current user

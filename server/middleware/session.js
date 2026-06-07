@@ -1,6 +1,6 @@
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
-import { pool } from './db.js';
+import { pool } from '../config/db.js';
 
 const PgSession = connectPgSimple(session);
 

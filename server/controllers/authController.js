@@ -1,7 +1,6 @@
 import { query } from '../config/db.js';
 import { StatusCodes } from 'http-status-codes';
 import { hashPassword, comparePasswords } from '../utils/password.js';
-import { createJWT } from '../utils/token.js';
 import UnauthorizedError from '../errors/UnauthorizedError.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
@@ -21,9 +20,18 @@ export const register = async (req, res, next) => {
     );
 
     const user = result.rows[0];
-    req.session.userId = user.id;
 
-    return res.status(StatusCodes.CREATED).json({ data: user });
+    req.session.regenerate((error) => {
+      if (error) {
+        return next(new InternalServerError('Unable to start session'));
+      }
+
+      req.session.userId = user.id;
+
+      return res.status(StatusCodes.CREATED).json({
+        data: { user },
+      });
+    });
   } catch (error) {
     if (error.code === '23505') {
       return next(new ConflictError('Email already registered'));
@@ -63,10 +71,16 @@ export const login = async (req, res, next) => {
       email: user.email,
     };
 
-    req.session.userId = safeUser.id;
+    req.session.regenerate((error) => {
+      if (error) {
+        return next(new InternalServerError('Unable to start session'));
+      }
 
-    return res.status(StatusCodes.OK).json({
-      data: { user: safeUser },
+      req.session.userId = safeUser.id;
+
+      return res.status(StatusCodes.OK).json({
+        data: { user: safeUser },
+      });
     });
   } catch (error) {
     if (error instanceof UnauthorizedError) {
@@ -83,7 +97,11 @@ export const logout = (req, res, next) => {
       return next(new InternalServerError('Unable to log out user'));
     }
 
-    res.clearCookie('sid');
+    res.clearCookie('sid', {
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
 
     return res.status(StatusCodes.OK).json({
       message: 'Logged out successfully',

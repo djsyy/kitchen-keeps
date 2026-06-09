@@ -1,5 +1,5 @@
-import crypto from 'crypto';
-import { query } from '../config/db.js';
+import crypto from 'node:crypto';
+import { query, getClient } from '../config/db.js';
 import { StatusCodes } from 'http-status-codes';
 import { hashPassword, comparePasswords } from '../utils/password.js';
 import { sendPasswordResetEmail } from '../services/emailService.js';
@@ -7,7 +7,7 @@ import UnauthorizedError from '../errors/UnauthorizedError.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import ConflictError from '../errors/ConflictError.js';
-import { url } from 'inspector';
+import BadRequestError from '../errors/BadRequestError.js';
 
 const authDBAttributes = ['name', 'email'];
 
@@ -239,7 +239,8 @@ export const forgotPassword = async (req, res, next) => {
 
     if (!user) {
       return res.status(StatusCodes.OK).json({
-        message: `Email sent! Please check your inbox at ${email} for password reset instructions. If you don't see the email within a few minutes, check your spam folder.`,
+        message:
+          'If an account exists for that email, a password reset link has been sent.',
       });
     }
 
@@ -251,7 +252,6 @@ export const forgotPassword = async (req, res, next) => {
       `
       INSERT INTO password_reset_tokens (user_id, token_hash, expires_at)
       VALUES ($1, $2, $3)
-      RETURNING id, name, email
       `,
       [user.id, hashedResetToken, expiresAt]
     );
@@ -259,17 +259,90 @@ export const forgotPassword = async (req, res, next) => {
     const resetUrl = new URL('/reset-password', process.env.CLIENT_URL);
     resetUrl.searchParams.set('token', resetToken);
 
-    await sendPasswordResetEmail({ to: user.email, resetUrl: resetUrl });
+    await sendPasswordResetEmail({
+      to: user.email,
+      resetUrl: resetUrl.toString(),
+    });
 
     return res.status(StatusCodes.OK).json({
-      message: 'Password updated successfully',
+      message:
+        'If an account exists for that email, a password reset link has been sent.',
+    });
+  } catch (_error) {
+    return next(new InternalServerError('Unable to send password reset email'));
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  let client;
+
+  try {
+    const { token, newPassword } = req.body;
+    const hashedToken = hashResetToken(token);
+    const hashedPassword = await hashPassword(newPassword);
+
+    client = await getClient();
+    await client.query('BEGIN');
+
+    const resetTokenResult = await client.query(
+      `
+      SELECT id, user_id
+      FROM password_reset_tokens
+      WHERE token_hash = $1
+        AND used_at IS NULL
+        AND expires_at > NOW()
+      LIMIT 1
+      FOR UPDATE
+      `,
+      [hashedToken]
+    );
+
+    const resetToken = resetTokenResult.rows[0];
+
+    if (!resetToken) {
+      throw new BadRequestError(
+        'Password reset link is invalid or has expired'
+      );
+    }
+
+    await client.query(
+      `
+      UPDATE users
+      SET password_hash = $1
+      WHERE id = $2
+      `,
+      [hashedPassword, resetToken.user_id]
+    );
+
+    await client.query(
+      `
+      UPDATE password_reset_tokens
+      SET used_at = NOW()
+      WHERE user_id = $1
+        AND used_at IS NULL
+      `,
+      [resetToken.user_id]
+    );
+
+    await client.query('COMMIT');
+
+    return res.status(StatusCodes.OK).json({
+      message: 'Password reset successfully',
     });
   } catch (error) {
-    if (error instanceof NotFoundError || error instanceof UnauthorizedError) {
+    if (client) {
+      await client.query('ROLLBACK');
+    }
+
+    if (error instanceof BadRequestError) {
       return next(error);
     }
 
-    return next(new InternalServerError('Unable to update password'));
+    return next(new InternalServerError('Unable to reset password'));
+  } finally {
+    if (client) {
+      client.release();
+    }
   }
 };
 

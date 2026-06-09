@@ -189,3 +189,69 @@ export const updatePasswordValidation = [
       return true;
     }),
 ];
+
+// Forgot password validation rules
+export const forgotPasswordValidation = [
+  body('email')
+    .exists()
+    .withMessage('Email is required')
+    .bail()
+    .isString()
+    .withMessage('Email must be text')
+    .bail()
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .bail()
+    .isEmail()
+    .withMessage('Enter a valid email address')
+    .bail()
+    .toLowerCase(),
+];
+
+// Reset password validation rules
+export const resetPasswordValidation = [
+  body('token')
+    .exists()
+    .withMessage('Password reset token is required')
+    .bail()
+    .isString()
+    .withMessage('Password reset token must be text')
+    .bail()
+    .trim()
+    .notEmpty()
+    .withMessage('Password reset token is required'),
+
+  body('newPassword')
+    .exists()
+    .withMessage('New password is required')
+    .bail()
+    .isString()
+    .withMessage('New password must be text')
+    .bail()
+    .trim()
+    .notEmpty()
+    .withMessage('New password is required')
+    .bail()
+    .isLength({ min: 4 })
+    .withMessage('New password must be at least 4 characters'),
+
+  body('confirmNewPassword')
+    .exists()
+    .withMessage('Please confirm your new password')
+    .bail()
+    .isString()
+    .withMessage('New password confirmation must be text')
+    .bail()
+    .trim()
+    .notEmpty()
+    .withMessage('Please confirm your new password')
+    .bail()
+    .custom((confirmNewPassword, { req }) => {
+      if (confirmNewPassword !== req.body.newPassword) {
+        throw new Error('New passwords do not match');
+      }
+
+      return true;
+    }),
+];

@@ -5,6 +5,8 @@ import {
   loginValidation,
   updateUserValidation,
   updatePasswordValidation,
+  forgotPasswordValidation,
+  resetPasswordValidation,
 } from '../validations/authValidation.js';
 import validateRequest from '../middleware/validateRequest.js';
 import {
@@ -13,6 +15,8 @@ import {
   logout,
   updateUser,
   updatePassword,
+  forgotPassword,
+  resetPassword,
   getUser,
 } from '../controllers/authController.js';
 
@@ -34,6 +38,19 @@ router.patch(
   updatePasswordValidation,
   validateRequest,
   updatePassword
+);
+router.post(
+  '/forgot-password',
+  forgotPasswordValidation,
+  validateRequest,
+  forgotPassword
+);
+
+router.post(
+  '/reset-password',
+  resetPasswordValidation,
+  validateRequest,
+  resetPassword
 );
 router.get('/me', authenticateUser, getUser);
 

@@ -54,13 +54,13 @@ export default function RegisterForm() {
         />
       </div>
 
-      <button className="container mx-auto mt-2 p-2 bg-primary rounded-md hover:bg-primary-600">
+      <button className="container mx-auto p-2 bg-primary rounded-md text-text-100 hover:bg-primary-700">
         Create account
       </button>
 
       <p>
         Already have an account?{' '}
-        <Link to="/login" className="text-50 hover:text-950">
+        <Link to="/login" className="text-text-950 hover:text-text-500">
           Log in
         </Link>
       </p>

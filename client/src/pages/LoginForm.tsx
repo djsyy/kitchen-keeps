@@ -13,10 +13,11 @@ export default function LoginForm() {
       <div className="h-10">
         <IoIosLogIn className="h-16 w-8 text-primary-400" />
       </div>
-      <div className="text-center">
-        <h2>Sign in to your account</h2>
+      <div className="text-center my-3">
+        <h2 className="text-xl">Sign in to your account</h2>
       </div>
-      <div className="relative">
+
+      <div className="my-3">
         <Label htmlFor="email">Email address</Label>
         <Input
           id="email-input"
@@ -40,13 +41,13 @@ export default function LoginForm() {
         />
       </div>
 
-      <button className="container mx-auto p-2 bg-primary rounded-md hover:bg-primary-600">
+      <button className="container mx-auto p-2 bg-primary rounded-md text-text-100 hover:bg-primary-700">
         Sign In
       </button>
 
       <p>
         Don&apos;t have an account?{' '}
-        <Link to="/register" className="text-50 hover:text-950">
+        <Link to="/register" className="text-text-950 hover:text-text-500">
           Create one
         </Link>
       </p>

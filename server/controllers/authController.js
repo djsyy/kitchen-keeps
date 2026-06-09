@@ -1,10 +1,13 @@
+import crypto from 'crypto';
 import { query } from '../config/db.js';
 import { StatusCodes } from 'http-status-codes';
 import { hashPassword, comparePasswords } from '../utils/password.js';
+import { sendPasswordResetEmail } from '../services/emailService.js';
 import UnauthorizedError from '../errors/UnauthorizedError.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import ConflictError from '../errors/ConflictError.js';
+import { url } from 'inspector';
 
 const authDBAttributes = ['name', 'email'];
 
@@ -23,9 +26,14 @@ const buildUpdatedProfileFields = (req) => {
   return { updatedValues, updatedFields };
 };
 
+const createResetToken = () => crypto.randomBytes(32).toString('hex');
+
+const hashResetToken = (token) =>
+  crypto.createHash('sha256').update(token).digest('hex');
+
 export const register = async (req, res, next) => {
   try {
-    const { name, email, password, _confirmPassword } = req.body;
+    const { name, email, password } = req.body;
     const hashedPassword = await hashPassword(password);
 
     const result = await query(
@@ -166,7 +174,7 @@ export const updateUser = async (req, res, next) => {
 export const updatePassword = async (req, res, next) => {
   try {
     const userId = req.user.userId;
-    const { currentPassword, newPassword, _confirmNewPassword } = req.body;
+    const { currentPassword, newPassword } = req.body;
 
     const result = await query(
       `
@@ -188,7 +196,7 @@ export const updatePassword = async (req, res, next) => {
     );
 
     if (!passwordMatch) {
-      throw new UnauthorizedError('Invalid credentials');
+      throw new UnauthorizedError('Current password is incorrect');
     }
 
     const hashedNewPassword = await hashPassword(newPassword);
@@ -201,6 +209,57 @@ export const updatePassword = async (req, res, next) => {
       `,
       [hashedNewPassword, userId]
     );
+
+    return res.status(StatusCodes.OK).json({
+      message: 'Password updated successfully',
+    });
+  } catch (error) {
+    if (error instanceof NotFoundError || error instanceof UnauthorizedError) {
+      return next(error);
+    }
+
+    return next(new InternalServerError('Unable to update password'));
+  }
+};
+
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    const result = await query(
+      `
+      SELECT id, email
+      FROM users
+      WHERE email = $1
+      `,
+      [email]
+    );
+
+    const user = result.rows[0];
+
+    if (!user) {
+      return res.status(StatusCodes.OK).json({
+        message: `Email sent! Please check your inbox at ${email} for password reset instructions. If you don't see the email within a few minutes, check your spam folder.`,
+      });
+    }
+
+    const resetToken = createResetToken();
+    const hashedResetToken = hashResetToken(resetToken);
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+    await query(
+      `
+      INSERT INTO password_reset_tokens (user_id, token_hash, expires_at)
+      VALUES ($1, $2, $3)
+      RETURNING id, name, email
+      `,
+      [user.id, hashedResetToken, expiresAt]
+    );
+
+    const resetUrl = new URL('/reset-password', process.env.CLIENT_URL);
+    resetUrl.searchParams.set('token', resetToken);
+
+    await sendPasswordResetEmail({ to: user.email, resetUrl: resetUrl });
 
     return res.status(StatusCodes.OK).json({
       message: 'Password updated successfully',

@@ -1,5 +1,154 @@
 import { body, param } from 'express-validator';
 
+// Reusable validation rules for required text fields
+export const requiredText = (
+  field,
+  {
+    label,
+    requiredMessage = `${label} is required`,
+    typeMessage = `${label} must be a string`,
+    lengthMessage,
+    maxLength,
+  }
+) =>
+  body(field)
+    .exists()
+    .withMessage(requiredMessage)
+    .bail()
+    .isString()
+    .withMessage(typeMessage)
+    .bail()
+    .trim()
+    .notEmpty()
+    .withMessage(requiredMessage)
+    .bail()
+    .isLength({ min: 1, max: maxLength })
+    .withMessage(
+      lengthMessage ||
+        `${label} must be at least 1 character and less than ${maxLength} characters`
+    );
+
+// Reusable validation rules for optional text fields that cannot be empty when present
+export const optionalRequiredText = (
+  field,
+  {
+    label,
+    typeMessage = `${label} must be a string`,
+    emptyMessage = `${label} must not be empty`,
+    lengthMessage = `${label} must be less than ${maxLength} characters`,
+    maxLength,
+  }
+) =>
+  body(field)
+    .optional()
+    .isString()
+    .withMessage(typeMessage)
+    .bail()
+    .trim()
+    .notEmpty()
+    .withMessage(emptyMessage)
+    .bail()
+    .isLength({ max: maxLength })
+    .withMessage(lengthMessage);
+
+// Reusable validation rules for required email fields
+export const requiredEmail = (
+  field,
+  {
+    requiredMessage = 'Email is required',
+    typeMessage = 'Email must be a string',
+    invalidMessage = 'Email must be a valid email',
+  } = {}
+) =>
+  body(field)
+    .exists()
+    .withMessage(requiredMessage)
+    .bail()
+    .isString()
+    .withMessage(typeMessage)
+    .bail()
+    .trim()
+    .notEmpty()
+    .withMessage(requiredMessage)
+    .bail()
+    .isEmail()
+    .withMessage(invalidMessage)
+    .bail()
+    .toLowerCase();
+
+// Reusable validation rules for optional email fields
+export const optionalEmail = (
+  field,
+  {
+    requiredMessage = 'Email is required',
+    typeMessage = 'Email must be a string',
+    invalidMessage = 'Email must be a valid email',
+  } = {}
+) =>
+  body(field)
+    .optional()
+    .isString()
+    .withMessage(typeMessage)
+    .bail()
+    .trim()
+    .notEmpty()
+    .withMessage(requiredMessage)
+    .bail()
+    .isEmail()
+    .withMessage(invalidMessage)
+    .bail()
+    .toLowerCase();
+
+// Reusable validation rules for required password fields
+export const requiredPassword = (
+  field,
+  { requiredMessage, typeMessage, minLength, lengthMessage }
+) =>
+  body(field)
+    .exists()
+    .withMessage(requiredMessage)
+    .bail()
+    .isString()
+    .withMessage(typeMessage)
+    .bail()
+    .trim()
+    .notEmpty()
+    .withMessage(requiredMessage)
+    .bail()
+    .isLength({ min: minLength })
+    .withMessage(lengthMessage);
+
+// Reusable validation rules for required text fields without length checks
+export const requiredTextWithoutLength = (
+  field,
+  { requiredMessage, typeMessage }
+) =>
+  body(field)
+    .exists()
+    .withMessage(requiredMessage)
+    .bail()
+    .isString()
+    .withMessage(typeMessage)
+    .bail()
+    .trim()
+    .notEmpty()
+    .withMessage(requiredMessage);
+
+// Reusable validation rules for confirmation fields that must match another body field
+export const confirmMatchesField = (
+  field,
+  { targetField, requiredMessage, typeMessage, mismatchMessage }
+) =>
+  requiredTextWithoutLength(field, { requiredMessage, typeMessage }).custom(
+    (value, { req }) => {
+      if (value !== req.body[targetField]) {
+        throw new Error(mismatchMessage);
+      }
+
+      return true;
+    }
+  );
+
 // Normalizes empty strings to null for DB consistency; otherwise returns the value
 const normalizeOptionalText = (value) => {
   if (value === null) {

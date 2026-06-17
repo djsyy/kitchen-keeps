@@ -1,8 +1,10 @@
 import { body } from 'express-validator';
 import {
+  optionalRequiredText,
   optionalPositiveInteger,
   optionalText,
   positiveIntegerParam,
+  requiredText,
   requireAtLeastOneBodyField,
 } from './validationHelpers.js';
 
@@ -40,21 +42,7 @@ export const createRecipeIngredientValidation = [
   recipeIdParam,
 
   // Display name is required so the recipe line can be shown even without a linked ingredient
-  body('display_name')
-    .exists()
-    .withMessage('Display name is required')
-    .bail()
-    .isString()
-    .withMessage('Display name must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Display name is required')
-    .bail()
-    .isLength({ min: 1, max: 255 })
-    .withMessage(
-      'Display name must be at least 1 character and less than 255 characters'
-    ),
+  requiredText('display_name', { label: 'Display name', maxLength: 255 }),
 
   ...createRecipeIngredientBodyValidation,
 ];
@@ -72,17 +60,10 @@ export const updateRecipeIngredientValidation = [
     ],
   }),
 
-  body('display_name')
-    .optional()
-    .isString()
-    .withMessage('Display name must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Display name must not be empty')
-    .bail()
-    .isLength({ max: 255 })
-    .withMessage('Display name must be less than 255 characters'),
+  optionalRequiredText('display_name', {
+    label: 'Display name',
+    maxLength: 255,
+  }),
 
   ...recipeIngredientBodyValidation,
 ];

@@ -35,8 +35,8 @@ export const optionalRequiredText = (
     label,
     typeMessage = `${label} must be a string`,
     emptyMessage = `${label} must not be empty`,
-    lengthMessage = `${label} must be less than ${maxLength} characters`,
     maxLength,
+    lengthMessage = `${label} must be less than ${maxLength} characters`,
   }
 ) =>
   body(field)

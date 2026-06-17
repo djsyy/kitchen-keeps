@@ -1,8 +1,9 @@
-import { body } from 'express-validator';
 import {
+  optionalRequiredText,
   optionalPositiveInteger,
   optionalText,
   positiveIntegerParam,
+  requiredText,
   requireAtLeastOneBodyField,
 } from './validationHelpers.js';
 
@@ -19,21 +20,7 @@ const recipeIdParam = positiveIntegerParam('id', 'Id');
 
 // Create recipe validation rules
 export const createRecipeValidation = [
-  body('title')
-    .exists()
-    .withMessage('Title is required')
-    .bail()
-    .isString()
-    .withMessage('Title must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Title is required')
-    .bail()
-    .isLength({ min: 1, max: 255 })
-    .withMessage(
-      'Title must be at least 1 character and less than 255 characters'
-    ),
+  requiredText('title', { label: 'Title', maxLength: 255 }),
 
   optionalText('description', 'Description', 1000),
   optionalText('image_url', 'Image URL', 2048)
@@ -56,17 +43,7 @@ export const updateRecipeValidation = [
   recipeIdParam,
   requireAtLeastOneBodyField(recipeFields),
 
-  body('title')
-    .optional()
-    .isString()
-    .withMessage('Title must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Title must not be empty')
-    .bail()
-    .isLength({ max: 255 })
-    .withMessage('Title must be less than 255 characters'),
+  optionalRequiredText('title', { label: 'Title', maxLength: 255 }),
 
   optionalText('description', 'Description', 1000),
   optionalText('image_url', 'Image URL', 2048)

@@ -1,104 +1,41 @@
-import { body } from 'express-validator';
-import { requireAtLeastOneBodyField } from './validationHelpers.js';
+import {
+  confirmMatchesField,
+  optionalEmail,
+  optionalRequiredText,
+  requiredEmail,
+  requiredPassword,
+  requiredText,
+  requiredTextWithoutLength,
+  requireAtLeastOneBodyField,
+} from './validationHelpers.js';
 
 const userProfileFields = ['name', 'email'];
 
 // Register validation rules
 export const registerValidation = [
-  body('name')
-    .exists()
-    .withMessage('Name is required')
-    .bail()
-    .isString()
-    .withMessage('Name must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Name is required')
-    .bail()
-    .isLength({ max: 100 })
-    .withMessage(
-      'Name must be at least 1 character and less than 100 characters'
-    ),
-
-  body('email')
-    .exists()
-    .withMessage('Email is required')
-    .bail()
-    .isString()
-    .withMessage('Email must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Email is required')
-    .bail()
-    .isEmail()
-    .withMessage('Email must be a valid email')
-    .bail()
-    .toLowerCase(),
-
-  body('password')
-    .exists()
-    .withMessage('Password is required')
-    .bail()
-    .isString()
-    .withMessage('Password must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Password is required')
-    .bail()
-    .isLength({ min: 4 })
-    .withMessage('Password must be at least 4 characters'),
-
-  body('confirmPassword')
-    .exists()
-    .withMessage('Password confirmation is required')
-    .bail()
-    .isString()
-    .withMessage('Password confirmation must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Password confirmation is required')
-    .bail()
-    .custom((confirmPassword, { req }) => {
-      if (confirmPassword !== req.body.password) {
-        throw new Error('Passwords do not match');
-      }
-
-      return true;
-    }),
+  requiredText('name', { label: 'Name', maxLength: 100 }),
+  requiredEmail('email'),
+  requiredPassword('password', {
+    requiredMessage: 'Password is required',
+    typeMessage: 'Password must be a string',
+    minLength: 4,
+    lengthMessage: 'Password must be at least 4 characters',
+  }),
+  confirmMatchesField('confirmPassword', {
+    targetField: 'password',
+    requiredMessage: 'Password confirmation is required',
+    typeMessage: 'Password confirmation must be a string',
+    mismatchMessage: 'Passwords do not match',
+  }),
 ];
 
 // Login validation rules
 export const loginValidation = [
-  body('email')
-    .exists()
-    .withMessage('Email is required')
-    .bail()
-    .isString()
-    .withMessage('Email must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Email is required')
-    .bail()
-    .isEmail()
-    .withMessage('Email must be a valid email')
-    .bail()
-    .toLowerCase(),
-
-  body('password')
-    .exists()
-    .withMessage('Password is required')
-    .bail()
-    .isString()
-    .withMessage('Password must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Password is required'),
+  requiredEmail('email'),
+  requiredTextWithoutLength('password', {
+    requiredMessage: 'Password is required',
+    typeMessage: 'Password must be a string',
+  }),
 ];
 
 // Update user validation rules
@@ -116,142 +53,58 @@ export const updateUserValidation = [
     ],
   }),
 
-  body('name')
-    .optional()
-    .isString()
-    .withMessage('Name must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Name is required')
-    .bail()
-    .isLength({ max: 100 })
-    .withMessage('Name must be less than 100 characters'),
-
-  body('email')
-    .optional()
-    .isString()
-    .withMessage('Email must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Email is required')
-    .bail()
-    .isEmail()
-    .withMessage('Email must be a valid email')
-    .bail()
-    .toLowerCase(),
+  optionalRequiredText('name', {
+    label: 'Name',
+    emptyMessage: 'Name is required',
+    maxLength: 100,
+  }),
+  optionalEmail('email'),
 ];
 
 // Update password validation rules
 export const updatePasswordValidation = [
-  body('currentPassword')
-    .exists()
-    .withMessage('Current password is required')
-    .bail()
-    .isString()
-    .withMessage('Current password must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Current password is required'),
-
-  body('newPassword')
-    .exists()
-    .withMessage('New password is required')
-    .bail()
-    .isString()
-    .withMessage('New password must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('New password is required')
-    .bail()
-    .isLength({ min: 4 })
-    .withMessage('New password must be at least 4 characters'),
-
-  body('confirmNewPassword')
-    .exists()
-    .withMessage('New password confirmation is required')
-    .bail()
-    .isString()
-    .withMessage('New password confirmation must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('New password confirmation is required')
-    .bail()
-    .custom((confirmNewPassword, { req }) => {
-      if (confirmNewPassword !== req.body.newPassword) {
-        throw new Error('New passwords do not match');
-      }
-
-      return true;
-    }),
+  requiredTextWithoutLength('currentPassword', {
+    requiredMessage: 'Current password is required',
+    typeMessage: 'Current password must be a string',
+  }),
+  requiredPassword('newPassword', {
+    requiredMessage: 'New password is required',
+    typeMessage: 'New password must be a string',
+    minLength: 4,
+    lengthMessage: 'New password must be at least 4 characters',
+  }),
+  confirmMatchesField('confirmNewPassword', {
+    targetField: 'newPassword',
+    requiredMessage: 'New password confirmation is required',
+    typeMessage: 'New password confirmation must be a string',
+    mismatchMessage: 'New passwords do not match',
+  }),
 ];
 
 // Forgot password validation rules
 export const forgotPasswordValidation = [
-  body('email')
-    .exists()
-    .withMessage('Email is required')
-    .bail()
-    .isString()
-    .withMessage('Email must be text')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Email is required')
-    .bail()
-    .isEmail()
-    .withMessage('Enter a valid email address')
-    .bail()
-    .toLowerCase(),
+  requiredEmail('email', {
+    typeMessage: 'Email must be text',
+    invalidMessage: 'Enter a valid email address',
+  }),
 ];
 
 // Reset password validation rules
 export const resetPasswordValidation = [
-  body('token')
-    .exists()
-    .withMessage('Password reset token is required')
-    .bail()
-    .isString()
-    .withMessage('Password reset token must be text')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Password reset token is required'),
-
-  body('newPassword')
-    .exists()
-    .withMessage('New password is required')
-    .bail()
-    .isString()
-    .withMessage('New password must be text')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('New password is required')
-    .bail()
-    .isLength({ min: 4 })
-    .withMessage('New password must be at least 4 characters'),
-
-  body('confirmNewPassword')
-    .exists()
-    .withMessage('Please confirm your new password')
-    .bail()
-    .isString()
-    .withMessage('New password confirmation must be text')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Please confirm your new password')
-    .bail()
-    .custom((confirmNewPassword, { req }) => {
-      if (confirmNewPassword !== req.body.newPassword) {
-        throw new Error('New passwords do not match');
-      }
-
-      return true;
-    }),
+  requiredTextWithoutLength('token', {
+    requiredMessage: 'Password reset token is required',
+    typeMessage: 'Password reset token must be text',
+  }),
+  requiredPassword('newPassword', {
+    requiredMessage: 'New password is required',
+    typeMessage: 'New password must be text',
+    minLength: 4,
+    lengthMessage: 'New password must be at least 4 characters',
+  }),
+  confirmMatchesField('confirmNewPassword', {
+    targetField: 'newPassword',
+    requiredMessage: 'Please confirm your new password',
+    typeMessage: 'New password confirmation must be text',
+    mismatchMessage: 'New passwords do not match',
+  }),
 ];

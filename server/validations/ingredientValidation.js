@@ -1,25 +1,11 @@
-import { body, query } from 'express-validator';
-import { positiveIntegerParam } from './validationHelpers.js';
+import { query } from 'express-validator';
+import { positiveIntegerParam, requiredText } from './validationHelpers.js';
 
 const ingredientIdParam = positiveIntegerParam('id', 'Id');
 
 // Create ingredient validation rules
 export const createIngredientValidation = [
-  body('name')
-    .exists()
-    .withMessage('Name is required')
-    .bail()
-    .isString()
-    .withMessage('Name must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Name is required')
-    .bail()
-    .isLength({ min: 1, max: 100 })
-    .withMessage(
-      'Name must be at least 1 character and less than 100 characters'
-    ),
+  requiredText('name', { label: 'Name', maxLength: 100 }),
 ];
 
 // Get ingredients validation rules
@@ -42,21 +28,7 @@ export const getSingleIngredientValidation = [ingredientIdParam];
 export const updateIngredientValidation = [
   ingredientIdParam,
 
-  body('name')
-    .exists()
-    .withMessage('Name is required')
-    .bail()
-    .isString()
-    .withMessage('Name must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Name is required')
-    .bail()
-    .isLength({ min: 1, max: 100 })
-    .withMessage(
-      'Name must be at least 1 character and less than 100 characters'
-    ),
+  requiredText('name', { label: 'Name', maxLength: 100 }),
 ];
 
 // Hide ingredient validation rules

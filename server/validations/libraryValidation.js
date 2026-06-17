@@ -1,7 +1,8 @@
-import { body } from 'express-validator';
 import {
+  optionalRequiredText,
   optionalText,
   positiveIntegerParam,
+  requiredText,
   requireAtLeastOneBodyField,
 } from './validationHelpers.js';
 
@@ -10,21 +11,7 @@ const libraryIdParam = positiveIntegerParam('id', 'Id');
 
 // Create library validation rules
 export const createLibraryValidation = [
-  body('name')
-    .exists()
-    .withMessage('Name is required')
-    .bail()
-    .isString()
-    .withMessage('Name must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Name is required')
-    .bail()
-    .isLength({ min: 1, max: 100 })
-    .withMessage(
-      'Name must be at least 1 character and less than 100 characters'
-    ),
+  requiredText('name', { label: 'Name', maxLength: 100 }),
 
   optionalText('description', 'Description', 1000),
 ];
@@ -37,17 +24,7 @@ export const updateLibraryValidation = [
   libraryIdParam,
   requireAtLeastOneBodyField(libraryFields),
 
-  body('name')
-    .optional()
-    .isString()
-    .withMessage('Name must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Name must not be empty')
-    .bail()
-    .isLength({ max: 100 })
-    .withMessage('Name must be less than 100 characters'),
+  optionalRequiredText('name', { label: 'Name', maxLength: 100 }),
 
   optionalText('description', 'Description', 1000),
 ];

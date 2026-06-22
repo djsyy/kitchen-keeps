@@ -11,6 +11,8 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
+import DashboardePage from './pages/DashboardPage';
+import DashboardStyleReferencePage from './pages/DashboardStyleReferencePage';
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,14 @@ const router = createBrowserRouter([
   {
     path: '/register',
     element: <RegisterPage />,
+  },
+  {
+    path: '/dashboard',
+    element: <DashboardePage />,
+  },
+  {
+    path: '/dashboard-style-reference',
+    element: <DashboardStyleReferencePage />,
   },
   {
     path: '/',

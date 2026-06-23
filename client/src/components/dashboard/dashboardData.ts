@@ -20,19 +20,19 @@ export const dashboardMetrics: DashboardMetric[] = [
     label: 'Recipes',
     value: '124',
     detail: '9 opened this week',
-    className: 'border-secondary-200 bg-secondary-50 text-secondary-900',
+    className: 'border-secondary-300 bg-secondary-200 text-secondary-900',
   },
   {
     label: 'Libraries',
     value: '28',
     detail: '4 recently updated',
-    className: 'border-accent-200 bg-accent-50 text-accent-900',
+    className: 'border-2 border-accent-200 bg-accent-50 text-accent-900',
   },
   {
     label: 'Ingredients',
     value: '312',
     detail: 'Across all recipes',
-    className: 'border-primary-100 bg-primary-50 text-primary-900',
+    className: 'border-primary-300 bg-primary-200 text-primary-900',
   },
 ];
 

@@ -43,7 +43,7 @@ function RecipeRow({ recipe }: { recipe: RecipePreview }) {
 function SectionActions() {
   return (
     <div className="flex gap-2">
-      <button className="inline-flex h-10 items-center gap-2 rounded-lg border border-primary-200 bg-primary-50 px-3 text-sm font-bold text-primary-900 shadow-sm transition hover:border-primary-300 hover:bg-primary-100">
+      <button className="inline-flex h-10 items-center gap-2 rounded-lg border border-primary-200 bg-primary-100 px-3 text-sm font-bold text-primary-900 shadow-sm transition hover:border-primary-300 hover:bg-primary-200">
         <LuPlus className="h-4 w-4" />
         New
       </button>

@@ -23,7 +23,7 @@ export default function DashboardHero({ metrics }: DashboardHeroProps) {
   return (
     <section className="mb-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(360px,420px)] xl:items-end">
       <div>
-        <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-secondary-100 px-3 py-1 text-sm font-bold text-secondary-800">
+        <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-secondary-300 px-3 py-1 text-sm font-bold text-secondary-800">
           <LuUtensils className="h-4 w-4" />
           Dashboard
         </p>

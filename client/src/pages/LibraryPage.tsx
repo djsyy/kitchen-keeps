@@ -1,4 +1,4 @@
-import DashboardHeader from '../components/dashboard/DashboardHeader';
+import Navbar from '../components/layout/Navbar';
 import {
   FiChevronLeft,
   FiChevronRight,
@@ -11,7 +11,7 @@ export default function LibraryPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <DashboardHeader />
+      <Navbar />
 
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6">
         <section className="rounded-3xl bg-background-50 px-5 py-6 shadow-sm sm:px-6">

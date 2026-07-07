@@ -1,7 +1,7 @@
 import { PiUserCircleThin } from 'react-icons/pi';
 import { LuChefHat } from 'react-icons/lu';
 
-export default function DashboardHeader() {
+export default function Navbar() {
   return (
     <header className="border-b border-background-200 bg-background-50/90 shadow-sm">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6">

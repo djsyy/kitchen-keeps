@@ -1,4 +1,4 @@
-import DashboardHeader from '../components/dashboard/DashboardHeader';
+import Navbar from '../components/layout/Navbar';
 import DashboardHero from '../components/dashboard/DashboardHero';
 import LibrariesPreviewSection from '../components/dashboard/LibrariesPreviewSection';
 import PrepListPanel from '../components/dashboard/PrepListPanel';
@@ -15,7 +15,7 @@ import {
 export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-background">
-      <DashboardHeader />
+      <Navbar />
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <DashboardHero metrics={dashboardMetrics} />

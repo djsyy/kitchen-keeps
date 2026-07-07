@@ -12,7 +12,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
 import DashboardPage from './pages/DashboardPage';
-import LibraryPage from './pages/LibraryPage';
+import LibraryList from './pages/LibraryList';
 
 const queryClient = new QueryClient();
 
@@ -37,7 +37,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/library',
-    element: <LibraryPage />,
+    element: <LibraryList />,
   },
   {
     path: '/',

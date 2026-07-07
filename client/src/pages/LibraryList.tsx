@@ -6,7 +6,7 @@ import {
   FiSearch,
 } from 'react-icons/fi';
 
-export default function LibraryPage() {
+export default function LibraryList() {
   const libraryCards = Array.from({ length: 8 }, (_, index) => index + 1);
 
   return (

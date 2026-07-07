@@ -11,7 +11,8 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
-import DashboardePage from './pages/DashboardPage';
+import DashboardPage from './pages/DashboardPage';
+import LibraryPage from './pages/LibraryPage';
 
 const queryClient = new QueryClient();
 
@@ -32,7 +33,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/dashboard',
-    element: <DashboardePage />,
+    element: <DashboardPage />,
+  },
+  {
+    path: '/library',
+    element: <LibraryPage />,
   },
   {
     path: '/',

@@ -7,7 +7,8 @@ export default function LibraryPage() {
 
       <div className="flex flex-col mx-auto max-w-7xl px-4 py-8">
         {/*Search bar*/}
-        <div className="flex">
+        <div className="flex flex-col justify-center items-center">
+          <label>What are you looking for?</label>
           <input
             className="bg-white w-full"
             type="search"
@@ -18,7 +19,7 @@ export default function LibraryPage() {
         {/*Filters*/}
         <div className="flex justify-between py-8 items-center">
           <div>
-            <span>Page 1 2 3</span>
+            <span>View</span>
           </div>
           <div>
             <button>Filter</button>
@@ -36,6 +37,13 @@ export default function LibraryPage() {
           </div>
         </div>
       </div>
+
+      {/*Pagination*/}
+      <footer className="flex justify-center py-8 items-center">
+        <div>
+          <span>Page 1 2 .... 4</span>
+        </div>
+      </footer>
     </main>
   );
 }

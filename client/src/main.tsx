@@ -13,6 +13,7 @@ import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
 import DashboardPage from './pages/DashboardPage';
 import LibraryList from './pages/LibraryList';
+import LibraryPage from './pages/LibraryPage';
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,11 @@ const router = createBrowserRouter([
     path: '/library',
     element: <LibraryList />,
   },
+  {
+    path: '/library/:id',
+    element: <LibraryPage />,
+  },
+
   {
     path: '/',
     element: <App />,

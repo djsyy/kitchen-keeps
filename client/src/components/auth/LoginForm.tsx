@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Input from '../components/ui/Input';
-import Label from '../components/ui/Label';
+import Input from '../ui/Input';
+import Label from '../ui/Label';
 import { Link } from 'react-router-dom';
 import { IoIosLogIn } from 'react-icons/io';
 
@@ -18,7 +18,7 @@ export default function LoginForm() {
       </div>
 
       <div className="my-3">
-        <Label htmlFor="email">Email address</Label>
+        <Label htmlFor="email-input">Email address</Label>
         <Input
           id="email-input"
           type="text"
@@ -30,7 +30,7 @@ export default function LoginForm() {
       </div>
 
       <div className="my-3">
-        <Label htmlFor="email">Password</Label>
+        <Label htmlFor="password-input">Password</Label>
         <Input
           id="password-input"
           type="password"

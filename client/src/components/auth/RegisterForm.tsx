@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Input from '../components/ui/Input';
-import Label from '../components/ui/Label';
+import Input from '../ui/Input';
+import Label from '../ui/Label';
 import { Link } from 'react-router-dom';
 import { VscAccount } from 'react-icons/vsc';
 
@@ -19,7 +19,7 @@ export default function RegisterForm() {
       </div>
 
       <div className="my-3">
-        <Label htmlFor="email">Name</Label>
+        <Label htmlFor="name-input">Name</Label>
         <Input
           id="name-input"
           type="text"
@@ -31,7 +31,7 @@ export default function RegisterForm() {
       </div>
 
       <div className="my-3">
-        <Label htmlFor="email">Email address</Label>
+        <Label htmlFor="email-input">Email address</Label>
         <Input
           id="email-input"
           type="text"
@@ -43,7 +43,7 @@ export default function RegisterForm() {
       </div>
 
       <div className="my-3">
-        <Label htmlFor="email">Password</Label>
+        <Label htmlFor="password-input">Password</Label>
         <Input
           id="password-input"
           type="password"

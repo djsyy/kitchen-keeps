@@ -10,7 +10,12 @@ export default function validateRequest(req, res, next) {
       message: err.msg,
     }));
 
-    return next(new BadRequestError('Validation failed', formattedErrors));
+    return next(
+      new BadRequestError(
+        'Please check your information and try again.',
+        formattedErrors
+      )
+    );
   }
 
   next();

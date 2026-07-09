@@ -27,21 +27,27 @@ export default function LoginForm() {
 
   return (
     <form
-      className="flex flex-col justify-center items-center m-4 p-4 gap-2"
+      className="flex w-full flex-col gap-5"
       onSubmit={handleSubmit}
     >
-      <div className="h-10">
-        <IoIosLogIn className="h-16 w-8 text-primary-400" />
-      </div>
-      <div className="text-center my-3">
-        <h2 className="text-xl">Sign in to your account</h2>
+      <div className="flex justify-center">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-50 text-primary">
+          <IoIosLogIn className="h-7 w-7" />
+        </div>
       </div>
 
-      <div className="my-3">
+      <div className="text-center">
+        <h2 className="text-xl font-bold text-text-900">
+          Sign in to your account
+        </h2>
+      </div>
+
+      <div className="flex flex-col gap-2">
         <Label htmlFor="email-input">Email address</Label>
         <Input
           id="email-input"
-          type="text"
+          type="email"
+          autoComplete="email"
           value={email}
           onChange={(e) => {
             setEmail(e.currentTarget.value);
@@ -49,11 +55,12 @@ export default function LoginForm() {
         />
       </div>
 
-      <div className="my-3">
+      <div className="flex flex-col gap-2">
         <Label htmlFor="password-input">Password</Label>
         <Input
           id="password-input"
           type="password"
+          autoComplete="current-password"
           value={password}
           onChange={(e) => {
             setPassword(e.currentTarget.value);
@@ -62,22 +69,25 @@ export default function LoginForm() {
       </div>
 
       {loginMutation.isError && (
-        <p className="text-sm font-bold text-red-700">
+        <p className="rounded-md bg-red-50 px-3 py-2 text-sm font-bold text-red-700">
           {loginMutation.error.message}
         </p>
       )}
 
       <button
         type="submit"
-        className="container mx-auto p-2 bg-primary rounded-md text-text-100 hover:bg-primary-700"
+        className="w-full rounded-md bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={loginMutation.isPending}
       >
         {loginMutation.isPending ? 'Signing in...' : 'Sign In'}
       </button>
 
-      <p>
+      <p className="text-center text-sm text-text-700">
         Don&apos;t have an account?{' '}
-        <Link to="/register" className="text-text-950 hover:text-text-500">
+        <Link
+          to="/register"
+          className="font-bold text-primary hover:text-primary-700"
+        >
           Create one
         </Link>
       </p>

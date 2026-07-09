@@ -2,8 +2,8 @@ import LoginForm from '../components/auth/LoginForm';
 
 export default function LoginPage() {
   return (
-    <main className="flex justify-center items-center min-h-screen bg-background">
-      <section className="w-full max-w-md rounded-3xl border border-white/40 bg-white/40 p-8 shadow-2xl backdrop-blur-xl">
+    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
+      <section className="w-full max-w-md rounded-lg border border-background-200 bg-background-50 p-6 shadow-sm sm:p-8">
         <LoginForm />
       </section>
     </main>

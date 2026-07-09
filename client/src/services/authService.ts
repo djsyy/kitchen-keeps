@@ -30,7 +30,9 @@ export interface LoginUserPayload {
   password: string;
 }
 
-export type UpdateUserPayload = Partial<Pick<User, 'name' | 'email'>>;
+export type UpdateUserPayload =
+  | { name: string; email?: string }
+  | { name?: string; email: string };
 
 export interface UpdatePasswordPayload {
   currentPassword: string;

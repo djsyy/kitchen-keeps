@@ -14,6 +14,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import DashboardPage from './pages/DashboardPage';
 import LibraryList from './pages/LibraryList';
 import LibraryPage from './pages/LibraryPage';
+import { RequireAuth } from './components/auth/RequireAuth';
 
 const queryClient = new QueryClient();
 
@@ -25,27 +26,6 @@ if (!rootElement) {
 
 const router = createBrowserRouter([
   {
-    path: '/login',
-    element: <LoginPage />,
-  },
-  {
-    path: '/register',
-    element: <RegisterPage />,
-  },
-  {
-    path: '/dashboard',
-    element: <DashboardPage />,
-  },
-  {
-    path: '/library',
-    element: <LibraryList />,
-  },
-  {
-    path: '/library/:id',
-    element: <LibraryPage />,
-  },
-
-  {
     path: '/',
     element: <App />,
     errorElement: <NotFoundPage />,
@@ -54,7 +34,34 @@ const router = createBrowserRouter([
         path: '/',
         element: <HomePage />,
       },
+      {
+        element: <RequireAuth />,
+        children: [
+          {
+            path: '/dashboard',
+            element: <DashboardPage />,
+          },
+          {
+            path: '/library',
+            element: <LibraryList />,
+          },
+          {
+            path: '/library/:id',
+            element: <LibraryPage />,
+          },
+        ],
+      },
     ],
+  },
+
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+
+  {
+    path: '/register',
+    element: <RegisterPage />,
   },
 ]);
 

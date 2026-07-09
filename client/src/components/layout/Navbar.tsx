@@ -1,7 +1,18 @@
 import { PiUserCircleThin } from 'react-icons/pi';
 import { LuChefHat } from 'react-icons/lu';
+import { useQuery } from '@tanstack/react-query';
+import { getCurrentUser } from '../../services/authService';
 
 export default function Navbar() {
+  const { data: user, isPending } = useQuery({
+    queryKey: ['auth', 'me'],
+    queryFn: async () => {
+      const response = await getCurrentUser();
+      return response.data.user;
+    },
+    retry: false,
+  });
+
   return (
     <header className="border-b border-background-200 bg-background-50/90 shadow-sm">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6">
@@ -17,9 +28,14 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <span className="hidden text-base font-bold text-text-700 sm:block">
-            Hi User!
-          </span>
+          {user && (
+            <span className="hidden text-base font-bold text-text-700 sm:block">
+              Hi, {user.name}
+            </span>
+          )}
+          {isPending && (
+            <span className="hidden h-5 w-24 rounded-full bg-background-200 sm:block" />
+          )}
           <button
             className="rounded-lg border border-primary-100 bg-white/60 p-2 text-primary shadow-sm transition hover:border-primary-300 hover:bg-primary-50"
             aria-label="Open profile menu"

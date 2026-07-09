@@ -1,17 +1,9 @@
 import { PiUserCircleThin } from 'react-icons/pi';
 import { LuChefHat } from 'react-icons/lu';
-import { useQuery } from '@tanstack/react-query';
-import { getCurrentUser } from '../../services/authService';
+import { useCurrentUser } from '../../hooks/useCurrentUser';
 
 export default function Navbar() {
-  const { data: user, isPending } = useQuery({
-    queryKey: ['auth', 'me'],
-    queryFn: async () => {
-      const response = await getCurrentUser();
-      return response.data.user;
-    },
-    retry: false,
-  });
+  const { data: user, isPending } = useCurrentUser();
 
   return (
     <header className="border-b border-background-200 bg-background-50/90 shadow-sm">
@@ -34,7 +26,7 @@ export default function Navbar() {
             </span>
           )}
           {isPending && (
-            <span className="hidden h-5 w-24 rounded-full bg-background-200 sm:block" />
+            <span className="hidden h-6 w-24 rounded-md bg-background-100 sm:block" />
           )}
           <button
             className="rounded-lg border border-primary-100 bg-white/60 p-2 text-primary shadow-sm transition hover:border-primary-300 hover:bg-primary-50"

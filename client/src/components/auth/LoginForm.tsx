@@ -15,7 +15,7 @@ export default function LoginForm() {
   const loginMutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (response) => {
-      queryClient.setQueryData(['auth', 'me'], response);
+      queryClient.setQueryData(['auth', 'me'], response.data.user);
       navigate('/dashboard', { replace: true });
     },
   });

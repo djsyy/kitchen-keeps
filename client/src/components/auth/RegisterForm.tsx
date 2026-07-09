@@ -17,7 +17,7 @@ export default function RegisterForm() {
   const registerMutation = useMutation({
     mutationFn: registerUser,
     onSuccess: (response) => {
-      queryClient.setQueryData(['auth', 'me'], response);
+      queryClient.setQueryData(['auth', 'me'], response.data.user);
       navigate('/dashboard', { replace: true });
     },
   });

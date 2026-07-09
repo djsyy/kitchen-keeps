@@ -1,6 +1,6 @@
-import { PiUserCircleThin } from 'react-icons/pi';
 import { LuChefHat } from 'react-icons/lu';
 import { useCurrentUser } from '../../hooks/useCurrentUser';
+import ProfileDropdown from './ProfileDropdown';
 
 export default function Navbar() {
   const { data: user, isPending } = useCurrentUser();
@@ -25,15 +25,12 @@ export default function Navbar() {
               Hi, {user.name}
             </span>
           )}
+
           {isPending && (
             <span className="hidden h-6 w-24 rounded-md bg-background-100 sm:block" />
           )}
-          <button
-            className="rounded-lg border border-primary-100 bg-white/60 p-2 text-primary shadow-sm transition hover:border-primary-300 hover:bg-primary-50"
-            aria-label="Open profile menu"
-          >
-            <PiUserCircleThin className="h-8 w-8" />
-          </button>
+
+          <ProfileDropdown />
         </div>
       </div>
     </header>

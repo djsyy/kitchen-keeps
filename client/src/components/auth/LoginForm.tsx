@@ -1,15 +1,35 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import Input from '../ui/Input';
 import Label from '../ui/Label';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { IoIosLogIn } from 'react-icons/io';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { loginUser } from '../../services/authService';
 
 export default function LoginForm() {
+  const queryClient = useQueryClient();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const loginMutation = useMutation({
+    mutationFn: loginUser,
+    onSuccess: (response) => {
+      queryClient.setQueryData(['auth', 'me'], response);
+      navigate('/dashboard', { replace: true });
+    },
+  });
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    loginMutation.mutate({ email, password });
+  };
 
   return (
-    <form className="flex flex-col justify-center items-center m-4 p-4 gap-2">
+    <form
+      className="flex flex-col justify-center items-center m-4 p-4 gap-2"
+      onSubmit={handleSubmit}
+    >
       <div className="h-10">
         <IoIosLogIn className="h-16 w-8 text-primary-400" />
       </div>
@@ -41,8 +61,18 @@ export default function LoginForm() {
         />
       </div>
 
-      <button className="container mx-auto p-2 bg-primary rounded-md text-text-100 hover:bg-primary-700">
-        Sign In
+      {loginMutation.isError && (
+        <p className="text-sm font-bold text-red-700">
+          {loginMutation.error.message}
+        </p>
+      )}
+
+      <button
+        type="submit"
+        className="container mx-auto p-2 bg-primary rounded-md text-text-100 hover:bg-primary-700"
+        disabled={loginMutation.isPending}
+      >
+        {loginMutation.isPending ? 'Signing in...' : 'Sign In'}
       </button>
 
       <p>

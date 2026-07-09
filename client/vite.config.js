@@ -3,9 +3,10 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
+  const env = loadEnv(mode, '..', '');
 
   return {
+    envDir: '..',
     plugins: [react(), tailwindcss()],
     server: {
       port: Number(env.VITE_DEV_PORT || 5173),

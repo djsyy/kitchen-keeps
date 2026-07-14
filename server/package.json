@@ -5,6 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch index.js",
+    "db:migration:create": "node-pg-migrate create --migrations-dir db/migrations --migration-file-language sql",
+    "db:baseline": "node-pg-migrate up --migrations-dir db/migrations --envPath ../.env --fake",
+    "db:migrate": "node-pg-migrate up --migrations-dir db/migrations --envPath ../.env",
+    "db:rollback": "node-pg-migrate down --migrations-dir db/migrations --envPath ../.env",
     "start": "node index.js"
   },
   "dependencies": {
@@ -18,5 +22,8 @@
     "http-status-codes": "^2.3.0",
     "pg": "^8.20.0",
     "resend": "^6.12.4"
+  },
+  "devDependencies": {
+    "node-pg-migrate": "^8.0.4"
   }
 }

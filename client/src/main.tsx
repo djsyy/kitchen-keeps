@@ -12,6 +12,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
 import DashboardPage from './pages/DashboardPage';
+import ProfilePage from './pages/ProfilePage';
 import LibraryList from './pages/LibraryList';
 import LibraryPage from './pages/LibraryPage';
 import { RequireAuth } from './components/auth/RequireAuth';
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
           {
             path: '/dashboard',
             element: <DashboardPage />,
+          },
+          {
+            path: '/profile',
+            element: <ProfilePage />,
           },
           {
             path: '/library',

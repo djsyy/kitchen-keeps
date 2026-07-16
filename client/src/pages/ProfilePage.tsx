@@ -1,4 +1,4 @@
-import { FormEvent, ReactNode, useEffect, useState } from 'react';
+import { FormEvent, ReactNode, useEffect, useRef, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../components/layout/Navbar';
 import Input from '../components/ui/Input';
@@ -75,20 +75,34 @@ export default function ProfilePage() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const initializedUserId = useRef<number | null>(null);
 
   useEffect(() => {
     if (!user) {
+      initializedUserId.current = null;
       return;
     }
 
-    setName(user.name);
-    setEmail(user.email);
+    if (initializedUserId.current !== user.id) {
+      setName(user.name);
+      setEmail(user.email);
+      initializedUserId.current = user.id;
+    }
   }, [user]);
 
-  const updateUserMutation = useMutation({
-    mutationFn: updateUser,
+  const updateNameMutation = useMutation({
+    mutationFn: (updatedName: string) => updateUser({ name: updatedName }),
     onSuccess: (response) => {
       queryClient.setQueryData(['auth', 'me'], response.data.user);
+      setName(response.data.user.name);
+    },
+  });
+
+  const updateEmailMutation = useMutation({
+    mutationFn: (updatedEmail: string) => updateUser({ email: updatedEmail }),
+    onSuccess: (response) => {
+      queryClient.setQueryData(['auth', 'me'], response.data.user);
+      setEmail(response.data.user.email);
       setIsEditingEmail(false);
     },
   });
@@ -109,13 +123,13 @@ export default function ProfilePage() {
 
   const resetNameChanges = () => {
     setName(user?.name ?? '');
-    updateUserMutation.reset();
+    updateNameMutation.reset();
   };
 
   const closeEmailEditor = () => {
     setEmail(user?.email ?? '');
     setIsEditingEmail(false);
-    updateUserMutation.reset();
+    updateEmailMutation.reset();
   };
 
   const closePasswordEditor = () => {
@@ -128,7 +142,7 @@ export default function ProfilePage() {
     event.preventDefault();
 
     if (user && name !== user.name) {
-      updateUserMutation.mutate({ name });
+      updateNameMutation.mutate(name);
     }
   };
 
@@ -136,7 +150,7 @@ export default function ProfilePage() {
     event.preventDefault();
 
     if (user && email !== user.email) {
-      updateUserMutation.mutate({ email });
+      updateEmailMutation.mutate(email);
     }
   };
 
@@ -149,8 +163,8 @@ export default function ProfilePage() {
     });
   };
 
-  const nameError = getApiFieldError(updateUserMutation.error, 'name');
-  const emailError = getApiFieldError(updateUserMutation.error, 'email');
+  const nameError = getApiFieldError(updateNameMutation.error, 'name');
+  const emailError = getApiFieldError(updateEmailMutation.error, 'email');
   const currentPasswordError = getApiFieldError(
     updatePasswordMutation.error,
     'currentPassword'
@@ -198,7 +212,7 @@ export default function ProfilePage() {
                     value={name}
                     onChange={(event) => {
                       setName(event.currentTarget.value);
-                      updateUserMutation.reset();
+                      updateNameMutation.reset();
                     }}
                     disabled={isPending || isEditingAnotherSetting}
                     aria-invalid={Boolean(nameError)}
@@ -209,9 +223,9 @@ export default function ProfilePage() {
                     </p>
                   )}
                 </div>
-                {updateUserMutation.isError && !nameError && (
+                {updateNameMutation.isError && !nameError && (
                   <p className="rounded-md bg-red-50 px-3 py-2 text-sm font-bold text-red-700">
-                    {updateUserMutation.error.message}
+                    {updateNameMutation.error.message}
                   </p>
                 )}
                 {isNameDirty && (
@@ -226,9 +240,9 @@ export default function ProfilePage() {
                     <button
                       type="submit"
                       className="rounded-md bg-primary px-4 py-2 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
-                      disabled={updateUserMutation.isPending}
+                      disabled={updateNameMutation.isPending}
                     >
-                      {updateUserMutation.isPending
+                      {updateNameMutation.isPending
                         ? 'Saving...'
                         : 'Save changes'}
                     </button>
@@ -246,7 +260,7 @@ export default function ProfilePage() {
                 setIsEditingPassword(true);
                 updatePasswordMutation.reset();
               }}
-              actionDisabled={isEditingAnotherSetting}
+              actionDisabled={isNameDirty || isEditingAnotherSetting}
               isEditing={isEditingPassword}
             >
               <form
@@ -351,9 +365,11 @@ export default function ProfilePage() {
               actionLabel={isEditingEmail ? 'Editing' : 'Change'}
               onActionClick={() => {
                 setIsEditingEmail(true);
-                updateUserMutation.reset();
+                updateEmailMutation.reset();
               }}
-              actionDisabled={isPending || isEditingAnotherSetting}
+              actionDisabled={
+                isPending || isNameDirty || isEditingAnotherSetting
+              }
               isEditing={isEditingEmail}
             >
               <form
@@ -368,7 +384,7 @@ export default function ProfilePage() {
                     value={email}
                     onChange={(event) => {
                       setEmail(event.currentTarget.value);
-                      updateUserMutation.reset();
+                      updateEmailMutation.reset();
                     }}
                     autoFocus
                     aria-invalid={Boolean(emailError)}
@@ -379,9 +395,9 @@ export default function ProfilePage() {
                     </p>
                   )}
                 </div>
-                {!emailError && updateUserMutation.isError && (
+                {!emailError && updateEmailMutation.isError && (
                   <p className="rounded-md bg-red-50 px-3 py-2 text-sm font-bold text-red-700">
-                    {updateUserMutation.error.message}
+                    {updateEmailMutation.error.message}
                   </p>
                 )}
                 <div className="flex justify-end gap-3">
@@ -396,10 +412,10 @@ export default function ProfilePage() {
                     type="submit"
                     className="rounded-md bg-primary px-4 py-2 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
                     disabled={
-                      updateUserMutation.isPending || email === user?.email
+                      updateEmailMutation.isPending || email === user?.email
                     }
                   >
-                    {updateUserMutation.isPending
+                    {updateEmailMutation.isPending
                       ? 'Saving...'
                       : 'Save changes'}
                   </button>

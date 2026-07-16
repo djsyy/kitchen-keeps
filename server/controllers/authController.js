@@ -199,6 +199,17 @@ export const updatePassword = async (req, res, next) => {
       throw new UnauthorizedError('Current password is incorrect');
     }
 
+    const newPasswordMatchesCurrent = await comparePasswords(
+      newPassword,
+      user.password_hash
+    );
+
+    if (newPasswordMatchesCurrent) {
+      throw new BadRequestError(
+        'Your new password must be different from your current password'
+      );
+    }
+
     const hashedNewPassword = await hashPassword(newPassword);
 
     await query(
@@ -214,7 +225,11 @@ export const updatePassword = async (req, res, next) => {
       message: 'Password updated successfully',
     });
   } catch (error) {
-    if (error instanceof NotFoundError || error instanceof UnauthorizedError) {
+    if (
+      error instanceof NotFoundError ||
+      error instanceof UnauthorizedError ||
+      error instanceof BadRequestError
+    ) {
       return next(error);
     }
 

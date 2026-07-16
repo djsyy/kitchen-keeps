@@ -1,17 +1,28 @@
 import { LuChefHat } from 'react-icons/lu';
 import { useCurrentUser } from '../../hooks/useCurrentUser';
 import ProfileDropdown from './ProfileDropdown';
+import { useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
   const { data: user, isPending } = useCurrentUser();
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/dashboard');
+  };
 
   return (
     <header className="border-b border-background-200 bg-background-50/90 shadow-sm">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-4">
-          <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-text-100 shadow-sm">
+          <button
+            type="button"
+            className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-text-100 shadow-sm transition hover:cursor-pointer"
+            onClick={handleClick}
+            aria-label="Go to dashboard"
+          >
             <LuChefHat className="h-7 w-7" />
-          </span>
+          </button>
           <div>
             <span className="block text-2xl font-bold text-text-950">
               What&apos;s Cooking?

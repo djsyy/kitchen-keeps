@@ -1,9 +1,23 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PiUserCircleThin } from 'react-icons/pi';
+import { useNavigate } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { logoutUser } from '../../services/authService';
 
 export default function ProfileDropdown() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
+
+  const logoutUserMutation = useMutation({
+    mutationFn: logoutUser,
+    onSuccess: () => {
+      queryClient.clear();
+      setIsOpen(false);
+      navigate('/login', { replace: true });
+    },
+  });
 
   function toggleDropdown() {
     setIsOpen((current) => !current);
@@ -49,8 +63,19 @@ export default function ProfileDropdown() {
 
             <hr className="border-t border-text-400 my-1" />
 
-            <button className="rounded-sm transition hover:bg-accent-100">
-              Log Out
+            {logoutUserMutation.isError && (
+              <p className="rounded-sm bg-primary-50 px-2 py-1 text-center text-sm font-bold text-primary-700">
+                {logoutUserMutation.error.message}
+              </p>
+            )}
+
+            <button
+              type="button"
+              className="rounded-sm transition hover:bg-accent-100 disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={() => logoutUserMutation.mutate()}
+              disabled={logoutUserMutation.isPending}
+            >
+              {logoutUserMutation.isPending ? 'Logging out...' : 'Log Out'}
             </button>
           </div>
         </div>

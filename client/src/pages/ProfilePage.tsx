@@ -1,10 +1,15 @@
 import { FormEvent, ReactNode, useEffect, useRef, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Input from '../components/ui/Input';
 import Label from '../components/ui/Label';
 import { useCurrentUser } from '../hooks/useCurrentUser';
-import { updatePassword, updateUser } from '../services/authService';
+import {
+  deleteUser,
+  updatePassword,
+  updateUser,
+} from '../services/authService';
 import { getApiFieldError } from '../services/apiClient';
 
 type SettingsRowProps = {
@@ -68,6 +73,7 @@ function SettingsRow({
 export default function ProfilePage() {
   const { data: user, isPending } = useCurrentUser();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -75,6 +81,7 @@ export default function ProfilePage() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const initializedUserId = useRef<number | null>(null);
 
   useEffect(() => {
@@ -112,6 +119,14 @@ export default function ProfilePage() {
     onSuccess: () => {
       clearPasswordFields();
       setIsEditingPassword(false);
+    },
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: ['auth', 'me'] });
+      navigate('/', { replace: true });
     },
   });
 
@@ -161,6 +176,21 @@ export default function ProfilePage() {
       newPassword,
       confirmNewPassword,
     });
+  };
+
+  const openDeleteDialog = () => {
+    deleteUserMutation.reset();
+    setIsDeleteDialogOpen(true);
+  };
+
+  const closeDeleteDialog = () => {
+    if (!deleteUserMutation.isPending) {
+      setIsDeleteDialogOpen(false);
+    }
+  };
+
+  const confirmDeleteAccount = () => {
+    deleteUserMutation.mutate();
   };
 
   const nameError = getApiFieldError(updateNameMutation.error, 'name');
@@ -430,14 +460,14 @@ export default function ProfilePage() {
                     Delete Your Account
                   </h2>
                   <p className="text-sm text-text-700">
-                    Permanently remove your account, recipes, and saved
-                    libraries.
+                    Permanently remove your account and saved libraries.
                   </p>
                 </div>
                 <button
                   type="button"
-                  className="w-fit rounded-md bg-primary px-4 py-2 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
-                  disabled
+                  className="w-fit rounded-md bg-primary-700 px-4 py-2 text-sm font-bold text-text-50 transition hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-60"
+                  onClick={openDeleteDialog}
+                  disabled={deleteUserMutation.isPending}
                 >
                   Delete Account
                 </button>
@@ -446,6 +476,68 @@ export default function ProfilePage() {
           </div>
         </section>
       </div>
+
+      {isDeleteDialogOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-text-950/50 p-4"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              closeDeleteDialog();
+            }
+          }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-account-title"
+            aria-describedby="delete-account-description"
+            className="w-full max-w-md rounded-2xl bg-background-50 p-6 shadow-xl"
+          >
+            <div className="space-y-3">
+              <h2
+                id="delete-account-title"
+                className="text-xl font-bold text-text-950"
+              >
+                Delete your account?
+              </h2>
+              <p
+                id="delete-account-description"
+                className="text-sm text-text-700"
+              >
+                This permanently removes your account and saved libraries. This
+                action cannot be undone.
+              </p>
+              {deleteUserMutation.isError && (
+                <p className="rounded-md bg-primary-50 px-3 py-2 text-sm font-bold text-primary-700">
+                  {deleteUserMutation.error.message}
+                </p>
+              )}
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                className="rounded-md border border-background-300 px-4 py-2 text-sm font-bold text-text-700 transition hover:bg-background-100 disabled:cursor-not-allowed disabled:opacity-60"
+                onClick={closeDeleteDialog}
+                disabled={deleteUserMutation.isPending}
+                autoFocus
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="rounded-md bg-primary-700 px-4 py-2 text-sm font-bold text-text-50 transition hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-60"
+                onClick={confirmDeleteAccount}
+                disabled={deleteUserMutation.isPending}
+              >
+                {deleteUserMutation.isPending
+                  ? 'Deleting account...'
+                  : 'Delete account'}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 }

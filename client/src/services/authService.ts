@@ -74,6 +74,9 @@ export const getCurrentUser = () => apiClient.get<AuthUserResponse>('/auth/me');
 export const updateUser = (payload: UpdateUserPayload) =>
   apiClient.patch<AuthUserResponse>('/auth/me', payload);
 
+// Deletes the account associated with the current auth cookie.
+export const deleteUser = () => apiClient.delete<AuthUserResponse>('/auth/me');
+
 // Updates the current user's password.
 export const updatePassword = (payload: UpdatePasswordPayload) =>
   apiClient.patch<UpdatePasswordResponse>('/auth/password', payload);
@@ -92,6 +95,7 @@ export const authService = {
   logoutUser,
   getCurrentUser,
   updateUser,
+  deleteUser,
   updatePassword,
   forgotPassword,
   resetPassword,

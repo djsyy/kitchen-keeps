@@ -8,6 +8,11 @@ const API_BASE_URL = normalizedApiBaseUrl.endsWith('/api')
 // What values can go into the URL query param
 export type QueryValue = string | number | boolean | null | undefined;
 
+export type ApiFieldError = {
+  field: string;
+  message: string;
+};
+
 // The standard types of 'fetch' + specific handling for body and query
 export type ApiClientOptions = Omit<RequestInit, 'body'> & {
   body?: unknown;
@@ -19,14 +24,14 @@ type ApiErrorDetails = {
   status: number;
   statusText: string;
   data: unknown;
-  errors: unknown[];
+  errors: ApiFieldError[];
 };
 
 export class ApiError extends Error {
   status: number;
   statusText: string;
   data: unknown;
-  errors: unknown[];
+  errors: ApiFieldError[];
 
   constructor(message: string, details: ApiErrorDetails) {
     super(message);
@@ -86,16 +91,34 @@ const getErrorMessage = (data: unknown, response: Response): string => {
   return response.statusText || 'Request failed';
 };
 
-const getErrorList = (data: unknown): unknown[] => {
+const getErrorList = (data: unknown): ApiFieldError[] => {
   if (data && typeof data === 'object') {
     const errorData = data as Record<string, unknown>;
 
     if (Array.isArray(errorData.errors)) {
-      return errorData.errors;
+      return errorData.errors.filter((error): error is ApiFieldError =>
+        Boolean(
+          error &&
+          typeof error === 'object' &&
+          typeof (error as ApiFieldError).field === 'string' &&
+          typeof (error as ApiFieldError).message === 'string'
+        )
+      );
     }
   }
 
   return [];
+};
+
+export const getApiFieldError = (
+  error: unknown,
+  field: string
+): string | null => {
+  if (!(error instanceof ApiError)) {
+    return null;
+  }
+
+  return error.errors.find((item) => item.field === field)?.message ?? null;
 };
 
 // T is the expected response type, like apiClient.get<User>('/auth/me').

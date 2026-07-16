@@ -5,6 +5,7 @@ import Input from '../components/ui/Input';
 import Label from '../components/ui/Label';
 import { useCurrentUser } from '../hooks/useCurrentUser';
 import { updatePassword, updateUser } from '../services/authService';
+import { getApiFieldError } from '../services/apiClient';
 
 type SettingsRowProps = {
   title: string;
@@ -148,12 +149,20 @@ export default function ProfilePage() {
     });
   };
 
-  const userMutationError = updateUserMutation.isError
-    ? updateUserMutation.error.message
-    : null;
-  const passwordMutationError = updatePasswordMutation.isError
-    ? updatePasswordMutation.error.message
-    : null;
+  const nameError = getApiFieldError(updateUserMutation.error, 'name');
+  const emailError = getApiFieldError(updateUserMutation.error, 'email');
+  const currentPasswordError = getApiFieldError(
+    updatePasswordMutation.error,
+    'currentPassword'
+  );
+  const newPasswordError = getApiFieldError(
+    updatePasswordMutation.error,
+    'newPassword'
+  );
+  const confirmNewPasswordError = getApiFieldError(
+    updatePasswordMutation.error,
+    'confirmNewPassword'
+  );
   const isEditingAnotherSetting = isEditingEmail || isEditingPassword;
   const isNameDirty = Boolean(user && name !== user.name);
 
@@ -192,11 +201,17 @@ export default function ProfilePage() {
                       updateUserMutation.reset();
                     }}
                     disabled={isPending || isEditingAnotherSetting}
+                    aria-invalid={Boolean(nameError)}
                   />
+                  {nameError && (
+                    <p className="text-sm font-bold text-red-700">
+                      {nameError}
+                    </p>
+                  )}
                 </div>
-                {userMutationError && (
+                {updateUserMutation.isError && !nameError && (
                   <p className="rounded-md bg-red-50 px-3 py-2 text-sm font-bold text-red-700">
-                    {userMutationError}
+                    {updateUserMutation.error.message}
                   </p>
                 )}
                 {isNameDirty && (
@@ -224,7 +239,7 @@ export default function ProfilePage() {
 
             <SettingsRow
               title="Your Password"
-              description="Choose a new password after confirming the one you use today."
+              description="This password is used to verify your identity when signing in."
               value=""
               actionLabel={isEditingPassword ? 'Editing' : 'Change'}
               onActionClick={() => {
@@ -244,11 +259,18 @@ export default function ProfilePage() {
                     id="current-password"
                     type="password"
                     value={currentPassword}
-                    onChange={(event) =>
-                      setCurrentPassword(event.currentTarget.value)
-                    }
+                    onChange={(event) => {
+                      setCurrentPassword(event.currentTarget.value);
+                      updatePasswordMutation.reset();
+                    }}
                     autoFocus
+                    aria-invalid={Boolean(currentPasswordError)}
                   />
+                  {currentPasswordError && (
+                    <p className="text-sm font-bold text-red-700">
+                      {currentPasswordError}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="new-password">New password</Label>
@@ -256,10 +278,17 @@ export default function ProfilePage() {
                     id="new-password"
                     type="password"
                     value={newPassword}
-                    onChange={(event) =>
-                      setNewPassword(event.currentTarget.value)
-                    }
+                    onChange={(event) => {
+                      setNewPassword(event.currentTarget.value);
+                      updatePasswordMutation.reset();
+                    }}
+                    aria-invalid={Boolean(newPasswordError)}
                   />
+                  {newPasswordError && (
+                    <p className="text-sm font-bold text-red-700">
+                      {newPasswordError}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="confirm-new-password">
@@ -269,16 +298,26 @@ export default function ProfilePage() {
                     id="confirm-new-password"
                     type="password"
                     value={confirmNewPassword}
-                    onChange={(event) =>
-                      setConfirmNewPassword(event.currentTarget.value)
-                    }
+                    onChange={(event) => {
+                      setConfirmNewPassword(event.currentTarget.value);
+                      updatePasswordMutation.reset();
+                    }}
+                    aria-invalid={Boolean(confirmNewPasswordError)}
                   />
+                  {confirmNewPasswordError && (
+                    <p className="text-sm font-bold text-red-700">
+                      {confirmNewPasswordError}
+                    </p>
+                  )}
                 </div>
-                {passwordMutationError && (
-                  <p className="rounded-md bg-red-50 px-3 py-2 text-sm font-bold text-red-700">
-                    {passwordMutationError}
-                  </p>
-                )}
+                {updatePasswordMutation.isError &&
+                  !currentPasswordError &&
+                  !newPasswordError &&
+                  !confirmNewPasswordError && (
+                    <p className="rounded-md bg-red-50 px-3 py-2 text-sm font-bold text-red-700">
+                      {updatePasswordMutation.error.message}
+                    </p>
+                  )}
                 <div className="flex justify-end gap-3">
                   <button
                     type="button"
@@ -327,13 +366,22 @@ export default function ProfilePage() {
                     id="edit-email"
                     type="email"
                     value={email}
-                    onChange={(event) => setEmail(event.currentTarget.value)}
+                    onChange={(event) => {
+                      setEmail(event.currentTarget.value);
+                      updateUserMutation.reset();
+                    }}
                     autoFocus
+                    aria-invalid={Boolean(emailError)}
                   />
+                  {emailError && (
+                    <p className="text-sm font-bold text-red-700">
+                      {emailError}
+                    </p>
+                  )}
                 </div>
-                {userMutationError && (
+                {!emailError && updateUserMutation.isError && (
                   <p className="rounded-md bg-red-50 px-3 py-2 text-sm font-bold text-red-700">
-                    {userMutationError}
+                    {updateUserMutation.error.message}
                   </p>
                 )}
                 <div className="flex justify-end gap-3">

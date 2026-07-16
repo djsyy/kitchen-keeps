@@ -18,6 +18,7 @@ import {
   forgotPassword,
   resetPassword,
   getUser,
+  deleteUser,
 } from '../controllers/authController.js';
 
 const router = express.Router();
@@ -53,5 +54,6 @@ router.post(
   resetPassword
 );
 router.get('/me', authenticateUser, getUser);
+router.delete('/me', authenticateUser, deleteUser);
 
 export default router;

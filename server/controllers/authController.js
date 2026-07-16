@@ -171,6 +171,46 @@ export const updateUser = async (req, res, next) => {
   }
 };
 
+export const deleteUser = async (req, res, next) => {
+  try {
+    const userId = req.user.userId;
+
+    const result = await query(
+      `
+      DELETE FROM users
+      WHERE id = $1
+      RETURNING id, name, email
+      `,
+      [userId]
+    );
+
+    const user = result.rows[0];
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    req.session.destroy((sessionError) => {
+      if (sessionError) {
+        return next(new InternalServerError('Unable to delete user session'));
+      }
+
+      res.clearCookie('sid', {
+        path: '/',
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+      });
+
+      return res.status(StatusCodes.OK).json({ data: { user } });
+    });
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return next(error);
+    }
+
+    return next(new InternalServerError('Unable to delete user'));
+  }
+};
+
 export const updatePassword = async (req, res, next) => {
   try {
     const userId = req.user.userId;

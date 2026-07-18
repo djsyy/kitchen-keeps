@@ -3,8 +3,15 @@ import { type FormEvent, useState } from 'react';
 import { LuFolderPlus, LuPlus } from 'react-icons/lu';
 import Navbar from '../components/layout/Navbar';
 import {
+  libraryIconClasses,
+  libraryIconOptions,
+  libraryIcons,
+  type LibraryIconKey,
+} from '../config/libraryIcons';
+import {
   createLibrary,
   getLibraries,
+  type CreateLibraryPayload,
   type Library,
 } from '../services/libraryService';
 
@@ -37,7 +44,7 @@ type LibraryCreateFormProps = {
   isPending: boolean;
   error: Error | null;
   onCancel: () => void;
-  onSubmit: (payload: { name: string; description: string | null }) => void;
+  onSubmit: (payload: CreateLibraryPayload) => void;
 };
 
 function LibraryCreateForm({
@@ -48,10 +55,15 @@ function LibraryCreateForm({
 }: LibraryCreateFormProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [iconKey, setIconKey] = useState<LibraryIconKey>('folder');
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit({ name: name.trim(), description: description.trim() || null });
+    onSubmit({
+      name: name.trim(),
+      description: description.trim() || null,
+      icon_key: iconKey,
+    });
   };
 
   return (
@@ -76,6 +88,32 @@ function LibraryCreateForm({
             onChange={(event) => setName(event.currentTarget.value)}
           />
         </label>
+        <fieldset>
+          <legend className="text-sm font-bold text-text-800">Icon</legend>
+          <div className="mt-2 grid grid-cols-5 gap-2 sm:grid-cols-10">
+            {libraryIconOptions.map((option) => {
+              const Icon = libraryIcons[option.key];
+              const isSelected = option.key === iconKey;
+
+              return (
+                <button
+                  key={option.key}
+                  type="button"
+                  aria-label={option.label}
+                  aria-pressed={isSelected}
+                  className={`flex h-10 items-center justify-center rounded-lg border transition ${libraryIconClasses[option.key]} ${
+                    isSelected
+                      ? 'ring-2 ring-primary ring-offset-2'
+                      : 'hover:brightness-95'
+                  }`}
+                  onClick={() => setIconKey(option.key)}
+                >
+                  <Icon className="h-5 w-5" />
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
         <label className="flex flex-col gap-2 text-sm font-bold text-text-800">
           Description{' '}
           <span className="font-normal text-text-500">(optional)</span>
@@ -151,20 +189,33 @@ function LibraryGrid({
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {libraries.map((library) => (
-          <article
-            key={library.id}
-            className="rounded-3xl border border-background-300 bg-background-50 p-5 shadow-sm"
-          >
-            <h2 className="text-xl font-bold text-text-950">{library.name}</h2>
-            {library.description && (
-              <p className="mt-2 text-sm text-text-600">
-                {library.description}
-              </p>
-            )}
-          </article>
+          <LibraryCard key={library.id} library={library} />
         ))}
       </div>
     </section>
+  );
+}
+
+function LibraryCard({ library }: { library: Library }) {
+  const Icon = libraryIcons[library.icon_key];
+  const iconClass = libraryIconClasses[library.icon_key];
+
+  return (
+    <article
+      className={`flex min-h-52 flex-col justify-between rounded-3xl border bg-background-50 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${iconClass.split(' ')[0]}`}
+    >
+      <span
+        className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${iconClass}`}
+      >
+        <Icon className="h-6 w-6" />
+      </span>
+      <div className="mt-8">
+        <h2 className="text-xl font-bold text-text-950">{library.name}</h2>
+        <p className="mt-2 min-h-10 text-sm text-text-600">
+          {library.description || 'A collection of recipes.'}
+        </p>
+      </div>
+    </article>
   );
 }
 

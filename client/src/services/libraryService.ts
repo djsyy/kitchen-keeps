@@ -1,10 +1,12 @@
 import { apiClient } from './apiClient';
+import type { LibraryIconKey } from '../config/libraryIcons';
 
 export interface Library {
   id: number;
   user_id: number;
   name: string;
   description: string | null;
+  icon_key: LibraryIconKey;
   created_at?: string;
 }
 
@@ -23,6 +25,7 @@ type LibraryData = {
 export interface CreateLibraryPayload {
   name: string;
   description?: string | null;
+  icon_key?: LibraryIconKey;
 }
 
 export type UpdateLibraryPayload = Partial<CreateLibraryPayload>;

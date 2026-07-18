@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type FormEvent, useState } from 'react';
-import { LuFolderPlus, LuPlus } from 'react-icons/lu';
+import { LuFolderPlus, LuPlus, LuSearch } from 'react-icons/lu';
 import Navbar from '../components/layout/Navbar';
 import {
-  libraryIconClasses,
+  libraryColorClasses,
+  libraryColorOptions,
   libraryIconOptions,
   libraryIcons,
+  type LibraryColorKey,
   type LibraryIconKey,
 } from '../config/libraryIcons';
 import {
@@ -56,6 +58,7 @@ function LibraryCreateForm({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [iconKey, setIconKey] = useState<LibraryIconKey>('folder');
+  const [colorKey, setColorKey] = useState<LibraryColorKey>('primary');
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -63,18 +66,39 @@ function LibraryCreateForm({
       name: name.trim(),
       description: description.trim() || null,
       icon_key: iconKey,
+      color_key: colorKey,
     });
   };
 
   return (
-    <section className="mx-auto max-w-7xl px-4 pt-8 sm:px-6">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-text-950/50 p-4"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget && !isPending) {
+          onCancel();
+        }
+      }}
+    >
       <form
-        className="mx-auto flex max-w-2xl flex-col gap-4 rounded-3xl border border-background-300 bg-background-50 p-6 shadow-sm"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="create-library-title"
+        aria-describedby="create-library-description"
+        className="flex max-h-full w-full max-w-2xl flex-col gap-4 overflow-y-auto rounded-3xl border border-background-300 bg-background-50 p-6 shadow-xl"
         onSubmit={handleSubmit}
       >
         <div>
-          <h1 className="text-xl font-bold text-text-950">Create a library</h1>
-          <p className="mt-1 text-sm text-text-600">
+          <h1
+            id="create-library-title"
+            className="text-xl font-bold text-text-950"
+          >
+            Create a library
+          </h1>
+          <p
+            id="create-library-description"
+            className="mt-1 text-sm text-text-600"
+          >
             Group recipes by meal type, occasion, or any collection you use.
           </p>
         </div>
@@ -101,14 +125,40 @@ function LibraryCreateForm({
                   type="button"
                   aria-label={option.label}
                   aria-pressed={isSelected}
-                  className={`flex h-10 items-center justify-center rounded-lg border transition ${libraryIconClasses[option.key]} ${
+                  className={`flex h-10 items-center justify-center rounded-lg border border-background-300 bg-background-50 text-text-700 transition ${
                     isSelected
-                      ? 'ring-2 ring-primary ring-offset-2'
-                      : 'hover:brightness-95'
+                      ? 'border-2 border-primary bg-primary-50 text-primary shadow-sm'
+                      : 'hover:bg-background-100'
                   }`}
                   onClick={() => setIconKey(option.key)}
                 >
                   <Icon className="h-5 w-5" />
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend className="text-sm font-bold text-text-800">
+            Card color
+          </legend>
+          <div className="mt-2 flex gap-2">
+            {libraryColorOptions.map((option) => {
+              const isSelected = option.key === colorKey;
+
+              return (
+                <button
+                  key={option.key}
+                  type="button"
+                  aria-pressed={isSelected}
+                  className={`h-9 rounded-full border px-4 text-sm font-normal transition ${libraryColorClasses[option.key]} ${
+                    isSelected
+                      ? 'font-bold shadow-sm border-2'
+                      : 'hover:brightness-95'
+                  }`}
+                  onClick={() => setColorKey(option.key)}
+                >
+                  {option.label}
                 </button>
               );
             })}
@@ -145,7 +195,7 @@ function LibraryCreateForm({
           </button>
         </div>
       </form>
-    </section>
+    </div>
   );
 }
 
@@ -174,6 +224,14 @@ function LibraryGrid({
   libraries: Library[];
   onCreate: () => void;
 }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+  const visibleLibraries = libraries.filter((library) =>
+    [library.name, library.description]
+      .filter(Boolean)
+      .some((value) => value?.toLowerCase().includes(normalizedSearchTerm))
+  );
+
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-5 flex items-center justify-between gap-4">
@@ -187,25 +245,45 @@ function LibraryGrid({
           Create a library
         </button>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {libraries.map((library) => (
-          <LibraryCard key={library.id} library={library} />
-        ))}
+      <div className="relative mb-6 max-w-md">
+        <label className="sr-only" htmlFor="library-search">
+          Search libraries
+        </label>
+        <LuSearch className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-text-500" />
+        <input
+          id="library-search"
+          type="search"
+          placeholder="Search libraries..."
+          className="w-full rounded-2xl border border-background-300 bg-background-50 py-3 pr-4 pl-11 text-base text-text-900 shadow-sm outline-none transition placeholder:text-text-400 focus:border-primary focus:ring focus:ring-primary-100"
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.currentTarget.value)}
+        />
       </div>
+      {visibleLibraries.length > 0 ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {visibleLibraries.map((library) => (
+            <LibraryCard key={library.id} library={library} />
+          ))}
+        </div>
+      ) : (
+        <p className="rounded-2xl border border-dashed border-background-300 bg-background-50 px-5 py-8 text-center text-sm text-text-600">
+          No libraries match “{searchTerm}”.
+        </p>
+      )}
     </section>
   );
 }
 
 function LibraryCard({ library }: { library: Library }) {
   const Icon = libraryIcons[library.icon_key];
-  const iconClass = libraryIconClasses[library.icon_key];
+  const colorClass = libraryColorClasses[library.color_key];
 
   return (
     <article
-      className={`flex min-h-52 flex-col justify-between rounded-3xl border bg-background-50 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${iconClass.split(' ')[0]}`}
+      className={`flex min-h-52 flex-col justify-between rounded-3xl border bg-background-50 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${colorClass.split(' ')[0]}`}
     >
       <span
-        className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${iconClass}`}
+        className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${colorClass}`}
       >
         <Icon className="h-6 w-6" />
       </span>

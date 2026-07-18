@@ -9,4 +9,8 @@ export const libraryIconKeys = [
   'coffee',
   'calendar',
   'leaf',
+  'bowl',
+  'drink',
 ];
+
+export const libraryColorKeys = ['primary', 'secondary', 'accent'];

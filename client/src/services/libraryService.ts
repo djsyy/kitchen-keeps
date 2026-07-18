@@ -1,5 +1,5 @@
 import { apiClient } from './apiClient';
-import type { LibraryIconKey } from '../config/libraryIcons';
+import type { LibraryColorKey, LibraryIconKey } from '../config/libraryIcons';
 
 export interface Library {
   id: number;
@@ -7,6 +7,7 @@ export interface Library {
   name: string;
   description: string | null;
   icon_key: LibraryIconKey;
+  color_key: LibraryColorKey;
   created_at?: string;
 }
 
@@ -26,6 +27,7 @@ export interface CreateLibraryPayload {
   name: string;
   description?: string | null;
   icon_key?: LibraryIconKey;
+  color_key?: LibraryColorKey;
 }
 
 export type UpdateLibraryPayload = Partial<CreateLibraryPayload>;

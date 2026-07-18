@@ -6,9 +6,12 @@ import {
   requireAtLeastOneBodyField,
 } from './validationHelpers.js';
 import { body } from 'express-validator';
-import { libraryIconKeys } from '../constants/libraryIcons.js';
+import {
+  libraryColorKeys,
+  libraryIconKeys,
+} from '../constants/libraryIcons.js';
 
-const libraryFields = ['name', 'description', 'icon_key'];
+const libraryFields = ['name', 'description', 'icon_key', 'color_key'];
 const libraryIdParam = positiveIntegerParam('id', 'Id');
 
 // Create library validation rules
@@ -18,6 +21,11 @@ export const createLibraryValidation = [
   optionalText('description', 'Description', 1000),
 
   body('icon_key').optional().isIn(libraryIconKeys).withMessage('Invalid icon'),
+
+  body('color_key')
+    .optional()
+    .isIn(libraryColorKeys)
+    .withMessage('Invalid color'),
 ];
 
 // Get single library validation rules
@@ -33,6 +41,11 @@ export const updateLibraryValidation = [
   optionalText('description', 'Description', 1000),
 
   body('icon_key').optional().isIn(libraryIconKeys).withMessage('Invalid icon'),
+
+  body('color_key')
+    .optional()
+    .isIn(libraryColorKeys)
+    .withMessage('Invalid color'),
 ];
 
 // Delete library validation rules

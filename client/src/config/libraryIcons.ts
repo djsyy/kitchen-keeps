@@ -11,6 +11,8 @@ import {
   LuStar,
   LuUtensils,
 } from 'react-icons/lu';
+import { PiBowlFood } from 'react-icons/pi';
+import { RiDrinks2Line } from 'react-icons/ri';
 
 export const libraryIconKeys = [
   'folder',
@@ -23,9 +25,15 @@ export const libraryIconKeys = [
   'coffee',
   'calendar',
   'leaf',
+  'bowl',
+  'drink',
 ] as const;
 
 export type LibraryIconKey = (typeof libraryIconKeys)[number];
+
+export const libraryColorKeys = ['primary', 'secondary', 'accent'] as const;
+
+export type LibraryColorKey = (typeof libraryColorKeys)[number];
 
 export const libraryIconOptions: Array<{
   key: LibraryIconKey;
@@ -41,6 +49,8 @@ export const libraryIconOptions: Array<{
   { key: 'coffee', label: 'Coffee' },
   { key: 'calendar', label: 'Calendar' },
   { key: 'leaf', label: 'Leaf' },
+  { key: 'bowl', label: 'Bowl' },
+  { key: 'drink', label: 'Drink' },
 ];
 
 export const libraryIcons: Record<LibraryIconKey, IconType> = {
@@ -54,17 +64,21 @@ export const libraryIcons: Record<LibraryIconKey, IconType> = {
   coffee: LuCoffee,
   calendar: LuCalendarDays,
   leaf: LuLeaf,
+  bowl: PiBowlFood,
+  drink: RiDrinks2Line,
 };
 
-export const libraryIconClasses: Record<LibraryIconKey, string> = {
-  folder: 'border-primary-200 bg-primary-50 text-primary-800',
-  utensils: 'border-secondary-300 bg-secondary-100 text-secondary-800',
-  soup: 'border-accent-300 bg-accent-100 text-accent-800',
-  archive: 'border-primary-300 bg-primary-100 text-primary-900',
-  book: 'border-secondary-300 bg-secondary-50 text-secondary-900',
-  heart: 'border-accent-300 bg-accent-50 text-accent-900',
-  star: 'border-primary-300 bg-primary-100 text-primary-800',
-  coffee: 'border-secondary-300 bg-secondary-100 text-secondary-900',
-  calendar: 'border-accent-300 bg-accent-100 text-accent-900',
-  leaf: 'border-primary-200 bg-primary-50 text-primary-900',
+export const libraryColorOptions: Array<{
+  key: LibraryColorKey;
+  label: string;
+}> = [
+  { key: 'primary', label: 'Red' },
+  { key: 'secondary', label: 'Green' },
+  { key: 'accent', label: 'Gold' },
+];
+
+export const libraryColorClasses: Record<LibraryColorKey, string> = {
+  primary: 'border-primary-300 bg-primary-50 text-primary-800',
+  secondary: 'border-secondary-300 bg-secondary-100 text-secondary-800',
+  accent: 'border-accent-300 bg-accent-100 text-accent-800',
 };

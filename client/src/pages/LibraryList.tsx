@@ -151,10 +151,10 @@ function LibraryCreateForm({
                   key={option.key}
                   type="button"
                   aria-pressed={isSelected}
-                  className={`h-9 rounded-full border px-4 text-sm font-normal transition ${libraryColorClasses[option.key]} ${
+                  className={`h-9 rounded-full border px-4 text-sm transition ${libraryColorClasses[option.key]} ${
                     isSelected
-                      ? 'font-bold shadow-sm border-2'
-                      : 'hover:brightness-95'
+                      ? 'border-2 font-bold shadow-sm'
+                      : 'font-normal hover:brightness-95'
                   }`}
                   onClick={() => setColorKey(option.key)}
                 >

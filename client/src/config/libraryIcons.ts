@@ -2,17 +2,24 @@ import type { IconType } from 'react-icons';
 import {
   LuArchive,
   LuBookOpen,
+  LuCakeSlice,
   LuCalendarDays,
   LuCoffee,
+  LuCookie,
+  LuCookingPot,
+  LuCroissant,
+  LuCupSoda,
+  LuIceCreamCone,
   LuFolder,
   LuHeart,
   LuLeaf,
+  LuPizza,
+  LuSalad,
+  LuSandwich,
   LuSoup,
   LuStar,
   LuUtensils,
 } from 'react-icons/lu';
-import { PiBowlFood } from 'react-icons/pi';
-import { RiDrinks2Line } from 'react-icons/ri';
 
 export const libraryIconKeys = [
   'folder',
@@ -27,6 +34,13 @@ export const libraryIconKeys = [
   'leaf',
   'bowl',
   'drink',
+  'cookie',
+  'burger',
+  'ice-cream',
+  'pizza',
+  'cake',
+  'croissant',
+  'salad',
 ] as const;
 
 export type LibraryIconKey = (typeof libraryIconKeys)[number];
@@ -49,8 +63,14 @@ export const libraryIconOptions: Array<{
   { key: 'coffee', label: 'Coffee' },
   { key: 'calendar', label: 'Calendar' },
   { key: 'leaf', label: 'Leaf' },
-  { key: 'bowl', label: 'Bowl' },
   { key: 'drink', label: 'Drink' },
+  { key: 'cookie', label: 'Cookie' },
+  { key: 'burger', label: 'Burger' },
+  { key: 'ice-cream', label: 'Ice cream' },
+  { key: 'pizza', label: 'Pizza' },
+  { key: 'cake', label: 'Cake' },
+  { key: 'croissant', label: 'Croissant' },
+  { key: 'salad', label: 'Salad' },
 ];
 
 export const libraryIcons: Record<LibraryIconKey, IconType> = {
@@ -64,8 +84,15 @@ export const libraryIcons: Record<LibraryIconKey, IconType> = {
   coffee: LuCoffee,
   calendar: LuCalendarDays,
   leaf: LuLeaf,
-  bowl: PiBowlFood,
-  drink: RiDrinks2Line,
+  bowl: LuCookingPot,
+  drink: LuCupSoda,
+  cookie: LuCookie,
+  burger: LuSandwich,
+  'ice-cream': LuIceCreamCone,
+  pizza: LuPizza,
+  cake: LuCakeSlice,
+  croissant: LuCroissant,
+  salad: LuSalad,
 };
 
 export const libraryColorOptions: Array<{

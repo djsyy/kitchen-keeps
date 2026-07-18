@@ -11,6 +11,13 @@ export const libraryIconKeys = [
   'leaf',
   'bowl',
   'drink',
+  'cookie',
+  'burger',
+  'ice-cream',
+  'pizza',
+  'cake',
+  'croissant',
+  'salad',
 ];
 
 export const libraryColorKeys = ['primary', 'secondary', 'accent'];

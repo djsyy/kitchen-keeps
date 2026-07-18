@@ -6,17 +6,17 @@ import ConflictError from '../errors/ConflictError.js';
 
 export const createLibrary = async (req, res, next) => {
   try {
-    const { name, description } = req.body;
+    const { name, description, icon_key: iconKey = 'folder' } = req.body;
     const userId = req.user.userId;
     const normalizedDescription = description ?? null;
 
     const result = await query(
       `
-      INSERT INTO libraries (user_id, name, description)
-      VALUES ($1, $2, $3)
-      RETURNING id, user_id, name, description
+      INSERT INTO libraries (user_id, name, description, icon_key)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, user_id, name, description, icon_key, created_at
       `,
-      [userId, name, normalizedDescription]
+      [userId, name, normalizedDescription, iconKey]
     );
 
     const library = result.rows[0];
@@ -98,6 +98,11 @@ export const updateLibrary = async (req, res, next) => {
       updatedFields.push(`description = $${updatedValues.length}`);
     }
 
+    if (Object.hasOwn(req.body, 'icon_key')) {
+      updatedValues.push(req.body.icon_key);
+      updatedFields.push(`icon_key = $${updatedValues.length}`);
+    }
+
     updatedValues.push(userId);
     updatedValues.push(id);
 
@@ -106,7 +111,7 @@ export const updateLibrary = async (req, res, next) => {
       UPDATE libraries
       SET ${updatedFields.join(', ')}
       WHERE user_id = $${updatedValues.length - 1} AND id = $${updatedValues.length}
-      RETURNING name, description, user_id, id
+      RETURNING name, description, icon_key, user_id, id, created_at
       `,
       updatedValues
     );
@@ -139,7 +144,7 @@ export const deleteLibrary = async (req, res, next) => {
       `
       DELETE from libraries
       WHERE user_id = $1 AND id = $2
-      RETURNING id, user_id, name, description
+      RETURNING id, user_id, name, description, icon_key, created_at
       `,
       [userId, id]
     );

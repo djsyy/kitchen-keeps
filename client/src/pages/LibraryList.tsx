@@ -20,6 +20,7 @@ import {
   getLibraries,
   type CreateLibraryPayload,
   type Library,
+  updateLibrary,
 } from '../services/libraryService';
 
 function LibraryEmpty({ onCreate }: { onCreate: () => void }) {
@@ -47,23 +48,30 @@ function LibraryEmpty({ onCreate }: { onCreate: () => void }) {
   );
 }
 
-type LibraryCreateFormProps = {
+type LibraryFormDialogProps = {
+  library?: Library;
   isPending: boolean;
   error: Error | null;
   onCancel: () => void;
   onSubmit: (payload: CreateLibraryPayload) => void;
 };
 
-function LibraryCreateForm({
+function LibraryFormDialog({
+  library,
   isPending,
   error,
   onCancel,
   onSubmit,
-}: LibraryCreateFormProps) {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [iconKey, setIconKey] = useState<LibraryIconKey>('folder');
-  const [colorKey, setColorKey] = useState<LibraryColorKey>('primary');
+}: LibraryFormDialogProps) {
+  const isEditing = Boolean(library);
+  const [name, setName] = useState(library?.name ?? '');
+  const [description, setDescription] = useState(library?.description ?? '');
+  const [iconKey, setIconKey] = useState<LibraryIconKey>(
+    library?.icon_key ?? 'folder'
+  );
+  const [colorKey, setColorKey] = useState<LibraryColorKey>(
+    library?.color_key ?? 'primary'
+  );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -88,23 +96,25 @@ function LibraryCreateForm({
       <form
         role="dialog"
         aria-modal="true"
-        aria-labelledby="create-library-title"
-        aria-describedby="create-library-description"
+        aria-labelledby="library-form-title"
+        aria-describedby="library-form-description"
         className="flex max-h-full w-full max-w-2xl flex-col gap-4 overflow-y-auto rounded-3xl border border-background-300 bg-background-50 p-6 shadow-xl"
         onSubmit={handleSubmit}
       >
         <div>
           <h1
-            id="create-library-title"
+            id="library-form-title"
             className="text-xl font-bold text-text-950"
           >
-            Create a library
+            {isEditing ? 'Edit library' : 'Create a library'}
           </h1>
           <p
-            id="create-library-description"
+            id="library-form-description"
             className="mt-1 text-sm text-text-600"
           >
-            Group recipes by meal type, occasion, or any collection you use.
+            {isEditing
+              ? 'Update this collection’s details and appearance.'
+              : 'Group recipes by meal type, occasion, or any collection you use.'}
           </p>
         </div>
         <label className="flex flex-col gap-2 text-sm font-bold text-text-800">
@@ -196,7 +206,13 @@ function LibraryCreateForm({
             className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isPending || !name.trim()}
           >
-            {isPending ? 'Creating...' : 'Create library'}
+            {isPending
+              ? isEditing
+                ? 'Saving...'
+                : 'Creating...'
+              : isEditing
+                ? 'Save changes'
+                : 'Create library'}
           </button>
         </div>
       </form>
@@ -225,9 +241,11 @@ function LibraryError() {
 function LibraryGrid({
   libraries,
   onCreate,
+  onEdit,
 }: {
   libraries: Library[];
   onCreate: () => void;
+  onEdit: (library: Library) => void;
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
@@ -267,7 +285,7 @@ function LibraryGrid({
       {visibleLibraries.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visibleLibraries.map((library) => (
-            <LibraryCard key={library.id} library={library} />
+            <LibraryCard key={library.id} library={library} onEdit={onEdit} />
           ))}
         </div>
       ) : (
@@ -279,7 +297,13 @@ function LibraryGrid({
   );
 }
 
-function LibraryCard({ library }: { library: Library }) {
+function LibraryCard({
+  library,
+  onEdit,
+}: {
+  library: Library;
+  onEdit: (library: Library) => void;
+}) {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const cardRef = useRef<HTMLElement>(null);
   const Icon = libraryIcons[library.icon_key];
@@ -327,7 +351,10 @@ function LibraryCard({ library }: { library: Library }) {
       </div>
 
       {isOptionsOpen && (
-        <LibraryCardOptions onClose={() => setIsOptionsOpen(false)} />
+        <LibraryCardOptions
+          onClose={() => setIsOptionsOpen(false)}
+          onEdit={() => onEdit(library)}
+        />
       )}
 
       <div className="mt-8">
@@ -340,7 +367,13 @@ function LibraryCard({ library }: { library: Library }) {
   );
 }
 
-function LibraryCardOptions({ onClose }: { onClose: () => void }) {
+function LibraryCardOptions({
+  onClose,
+  onEdit,
+}: {
+  onClose: () => void;
+  onEdit: () => void;
+}) {
   return (
     <div
       role="menu"
@@ -350,7 +383,10 @@ function LibraryCardOptions({ onClose }: { onClose: () => void }) {
         type="button"
         role="menuitem"
         className="w-full rounded-md px-3 py-2 text-left text-sm font-bold text-text-700 transition hover:bg-background-100"
-        onClick={onClose}
+        onClick={() => {
+          onClose();
+          onEdit();
+        }}
       >
         Edit
       </button>
@@ -369,6 +405,7 @@ function LibraryCardOptions({ onClose }: { onClose: () => void }) {
 export default function LibraryList() {
   const queryClient = useQueryClient();
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
+  const [editingLibrary, setEditingLibrary] = useState<Library | null>(null);
   const { data, isError, isPending } = useQuery({
     queryKey: ['libraries'],
     queryFn: getLibraries,
@@ -384,15 +421,44 @@ export default function LibraryList() {
     },
   });
 
+  const updateLibraryMutation = useMutation({
+    mutationFn: ({
+      libraryId,
+      payload,
+    }: {
+      libraryId: number;
+      payload: CreateLibraryPayload;
+    }) => updateLibrary(libraryId, payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['libraries'] });
+      setEditingLibrary(null);
+    },
+  });
+
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
       {isCreateFormOpen && (
-        <LibraryCreateForm
+        <LibraryFormDialog
           error={createLibraryMutation.error}
           isPending={createLibraryMutation.isPending}
           onCancel={() => setIsCreateFormOpen(false)}
           onSubmit={(payload) => createLibraryMutation.mutate(payload)}
+        />
+      )}
+      {editingLibrary && (
+        <LibraryFormDialog
+          key={editingLibrary.id}
+          library={editingLibrary}
+          error={updateLibraryMutation.error}
+          isPending={updateLibraryMutation.isPending}
+          onCancel={() => setEditingLibrary(null)}
+          onSubmit={(payload) =>
+            updateLibraryMutation.mutate({
+              libraryId: editingLibrary.id,
+              payload,
+            })
+          }
         />
       )}
       {isPending ? (
@@ -405,6 +471,7 @@ export default function LibraryList() {
         <LibraryGrid
           libraries={libraries}
           onCreate={() => setIsCreateFormOpen(true)}
+          onEdit={setEditingLibrary}
         />
       )}
     </main>

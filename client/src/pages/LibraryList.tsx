@@ -1,14 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../components/layout/Navbar';
+import LibraryDeleteDialog from '../components/library/LibraryDeleteDialog';
 import LibraryEmpty from '../components/library/LibraryEmpty';
 import LibraryFormDialog from '../components/library/LibraryFormDialog';
 import LibraryGrid from '../components/library/LibraryGrid';
 import {
-  createLibrary,
-  getLibraries,
   type CreateLibraryPayload,
   type Library,
+  createLibrary,
+  getLibraries,
   updateLibrary,
+  deleteLibrary,
 } from '../services/libraryService';
 import { useState } from 'react';
 
@@ -34,6 +36,7 @@ export default function LibraryList() {
   const queryClient = useQueryClient();
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const [editingLibrary, setEditingLibrary] = useState<Library | null>(null);
+  const [deletingLibrary, setDeletingLibrary] = useState<Library | null>(null);
   const { data, isError, isPending } = useQuery({
     queryKey: ['libraries'],
     queryFn: getLibraries,
@@ -63,6 +66,14 @@ export default function LibraryList() {
     },
   });
 
+  const deleteLibraryMutation = useMutation({
+    mutationFn: deleteLibrary,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['libraries'] });
+      setDeletingLibrary(null);
+    },
+  });
+
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
@@ -89,6 +100,15 @@ export default function LibraryList() {
           }
         />
       )}
+      {deletingLibrary && (
+        <LibraryDeleteDialog
+          library={deletingLibrary}
+          error={deleteLibraryMutation.error}
+          isPending={deleteLibraryMutation.isPending}
+          onCancel={() => setDeletingLibrary(null)}
+          onConfirm={() => deleteLibraryMutation.mutate(deletingLibrary.id)}
+        />
+      )}
       {isPending ? (
         <LibraryLoading />
       ) : isError ? (
@@ -100,6 +120,7 @@ export default function LibraryList() {
           libraries={libraries}
           onCreate={() => setIsCreateFormOpen(true)}
           onEdit={setEditingLibrary}
+          onDelete={setDeletingLibrary}
         />
       )}
     </main>

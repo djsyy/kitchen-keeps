@@ -7,12 +7,14 @@ type LibraryGridProps = {
   libraries: Library[];
   onCreate: () => void;
   onEdit: (library: Library) => void;
+  onDelete: (library: Library) => void;
 };
 
 export default function LibraryGrid({
   libraries,
   onCreate,
   onEdit,
+  onDelete,
 }: LibraryGridProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
@@ -52,7 +54,12 @@ export default function LibraryGrid({
       {visibleLibraries.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visibleLibraries.map((library) => (
-            <LibraryCard key={library.id} library={library} onEdit={onEdit} />
+            <LibraryCard
+              key={library.id}
+              library={library}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
           ))}
         </div>
       ) : (
@@ -67,9 +74,11 @@ export default function LibraryGrid({
 function LibraryCard({
   library,
   onEdit,
+  onDelete,
 }: {
   library: Library;
   onEdit: (library: Library) => void;
+  onDelete: (library: Library) => void;
 }) {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const cardRef = useRef<HTMLElement>(null);
@@ -119,6 +128,7 @@ function LibraryCard({
         <LibraryCardOptions
           onClose={() => setIsOptionsOpen(false)}
           onEdit={() => onEdit(library)}
+          onDelete={() => onDelete(library)}
         />
       )}
       <div className="mt-8">
@@ -134,9 +144,11 @@ function LibraryCard({
 function LibraryCardOptions({
   onClose,
   onEdit,
+  onDelete,
 }: {
   onClose: () => void;
   onEdit: () => void;
+  onDelete: () => void;
 }) {
   return (
     <div
@@ -158,7 +170,10 @@ function LibraryCardOptions({
         type="button"
         role="menuitem"
         className="w-full rounded-md px-3 py-2 text-left text-sm font-bold text-primary transition hover:bg-primary-100"
-        onClick={onClose}
+        onClick={() => {
+          onClose();
+          onDelete();
+        }}
       >
         Delete
       </button>

@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { type FormEvent, useState } from 'react';
-import { LuFolderPlus, LuPlus, LuSearch } from 'react-icons/lu';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
+import {
+  LuFolderPlus,
+  LuPlus,
+  LuSearch,
+  LuEllipsisVertical,
+} from 'react-icons/lu';
 import Navbar from '../components/layout/Navbar';
 import {
   libraryColorClasses,
@@ -275,18 +280,56 @@ function LibraryGrid({
 }
 
 function LibraryCard({ library }: { library: Library }) {
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const cardRef = useRef<HTMLElement>(null);
   const Icon = libraryIcons[library.icon_key];
   const colorClass = libraryColorClasses[library.color_key];
 
+  useEffect(() => {
+    if (!isOptionsOpen) {
+      return;
+    }
+
+    const closeOptionsOnOutsideClick = (event: PointerEvent) => {
+      if (!cardRef.current?.contains(event.target as Node)) {
+        setIsOptionsOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', closeOptionsOnOutsideClick);
+    return () => {
+      document.removeEventListener('pointerdown', closeOptionsOnOutsideClick);
+    };
+  }, [isOptionsOpen]);
+
   return (
     <article
-      className={`flex min-h-52 flex-col justify-between rounded-3xl border bg-background-50 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${colorClass.split(' ')[0]}`}
+      ref={cardRef}
+      className={`relative flex min-h-52 flex-col justify-between rounded-3xl border bg-background-50 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${colorClass.split(' ')[0]}`}
     >
-      <span
-        className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${colorClass}`}
-      >
-        <Icon className="h-6 w-6" />
-      </span>
+      <div className="flex justify-between">
+        <span
+          className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${colorClass}`}
+        >
+          <Icon className="h-6 w-6" />
+        </span>
+
+        <button
+          type="button"
+          aria-label={`Show options for ${library.name}`}
+          aria-expanded={isOptionsOpen}
+          aria-haspopup="menu"
+          className="rounded-md p-1 text-text-600 transition hover:bg-background-100 hover:text-text-950"
+          onClick={() => setIsOptionsOpen((isOpen) => !isOpen)}
+        >
+          <LuEllipsisVertical className="h-5 w-5" />
+        </button>
+      </div>
+
+      {isOptionsOpen && (
+        <LibraryCardOptions onClose={() => setIsOptionsOpen(false)} />
+      )}
+
       <div className="mt-8">
         <h2 className="text-xl font-bold text-text-950">{library.name}</h2>
         <p className="mt-2 min-h-10 text-sm text-text-600">
@@ -294,6 +337,32 @@ function LibraryCard({ library }: { library: Library }) {
         </p>
       </div>
     </article>
+  );
+}
+
+function LibraryCardOptions({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      role="menu"
+      className="absolute top-14 right-5 z-10 w-32 rounded-lg border border-background-300 bg-background-50 p-1 my-2 shadow-md"
+    >
+      <button
+        type="button"
+        role="menuitem"
+        className="w-full rounded-md px-3 py-2 text-left text-sm font-bold text-text-700 transition hover:bg-background-100"
+        onClick={onClose}
+      >
+        Edit
+      </button>
+      <button
+        type="button"
+        role="menuitem"
+        className="w-full rounded-md px-3 py-2 text-left text-sm font-bold text-primary transition hover:bg-primary-100"
+        onClick={onClose}
+      >
+        Delete
+      </button>
+    </div>
   );
 }
 

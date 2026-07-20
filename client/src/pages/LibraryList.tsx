@@ -13,6 +13,7 @@ import {
   deleteLibrary,
 } from '../services/libraryService';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function LibraryLoading() {
   return (
@@ -34,6 +35,7 @@ function LibraryError() {
 
 export default function LibraryList() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const [editingLibrary, setEditingLibrary] = useState<Library | null>(null);
   const [deletingLibrary, setDeletingLibrary] = useState<Library | null>(null);
@@ -119,6 +121,7 @@ export default function LibraryList() {
         <LibraryGrid
           libraries={libraries}
           onCreate={() => setIsCreateFormOpen(true)}
+          onOpen={(library) => navigate(`/library/${library.id}`)}
           onEdit={setEditingLibrary}
           onDelete={setDeletingLibrary}
         />

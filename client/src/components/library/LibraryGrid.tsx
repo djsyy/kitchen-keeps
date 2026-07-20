@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { type MouseEvent, useEffect, useRef, useState } from 'react';
 import { LuEllipsisVertical, LuPlus, LuSearch } from 'react-icons/lu';
 import { libraryColorClasses, libraryIcons } from '../../config/libraryIcons';
 import type { Library } from '../../services/libraryService';
@@ -6,6 +6,7 @@ import type { Library } from '../../services/libraryService';
 type LibraryGridProps = {
   libraries: Library[];
   onCreate: () => void;
+  onOpen: (library: Library) => void;
   onEdit: (library: Library) => void;
   onDelete: (library: Library) => void;
 };
@@ -13,6 +14,7 @@ type LibraryGridProps = {
 export default function LibraryGrid({
   libraries,
   onCreate,
+  onOpen,
   onEdit,
   onDelete,
 }: LibraryGridProps) {
@@ -57,6 +59,7 @@ export default function LibraryGrid({
             <LibraryCard
               key={library.id}
               library={library}
+              onOpen={onOpen}
               onEdit={onEdit}
               onDelete={onDelete}
             />
@@ -73,10 +76,12 @@ export default function LibraryGrid({
 
 function LibraryCard({
   library,
+  onOpen,
   onEdit,
   onDelete,
 }: {
   library: Library;
+  onOpen: (library: Library) => void;
   onEdit: (library: Library) => void;
   onDelete: (library: Library) => void;
 }) {
@@ -105,7 +110,8 @@ function LibraryCard({
   return (
     <article
       ref={cardRef}
-      className={`relative flex min-h-52 flex-col justify-between rounded-3xl border bg-background-50 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${colorClass.split(' ')[0]}`}
+      className={`relative flex min-h-52 cursor-pointer flex-col justify-between rounded-3xl border bg-background-50 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${colorClass.split(' ')[0]}`}
+      onClick={() => onOpen(library)}
     >
       <div className="flex justify-between">
         <span
@@ -119,13 +125,17 @@ function LibraryCard({
           aria-expanded={isOptionsOpen}
           aria-haspopup="menu"
           className="rounded-md p-1 text-text-600 transition hover:bg-background-100 hover:text-text-950"
-          onClick={() => setIsOptionsOpen((isOpen) => !isOpen)}
+          onClick={(event) => {
+            event.stopPropagation();
+            setIsOptionsOpen((isOpen) => !isOpen);
+          }}
         >
           <LuEllipsisVertical className="h-5 w-5" />
         </button>
       </div>
       {isOptionsOpen && (
         <LibraryCardOptions
+          onClick={(event) => event.stopPropagation()}
           onClose={() => setIsOptionsOpen(false)}
           onEdit={() => onEdit(library)}
           onDelete={() => onDelete(library)}
@@ -142,10 +152,12 @@ function LibraryCard({
 }
 
 function LibraryCardOptions({
+  onClick,
   onClose,
   onEdit,
   onDelete,
 }: {
+  onClick: (event: MouseEvent<HTMLDivElement>) => void;
   onClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -154,6 +166,7 @@ function LibraryCardOptions({
     <div
       role="menu"
       className="absolute top-14 right-5 z-10 my-2 w-32 rounded-lg border border-background-300 bg-background-50 p-1 shadow-md"
+      onClick={onClick}
     >
       <button
         type="button"

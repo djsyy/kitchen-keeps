@@ -11,6 +11,7 @@ import type {
   CreateLibraryPayload,
   Library,
 } from '../../services/libraryService';
+import ErrorMessage from '../ui/ErrorMessage';
 
 type LibraryFormDialogProps = {
   library?: Library;
@@ -153,9 +154,7 @@ export default function LibraryFormDialog({
             onChange={(event) => setDescription(event.currentTarget.value)}
           />
         </label>
-        {error && (
-          <p className="text-sm font-bold text-red-700">{error.message}</p>
-        )}
+        {error && <ErrorMessage message={error.message} />}
         <div className="flex justify-end gap-3">
           <button
             type="button"

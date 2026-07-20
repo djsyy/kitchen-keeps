@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import Input from '../ui/Input';
 import Label from '../ui/Label';
+import ErrorMessage from '../ui/ErrorMessage';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoIosLogIn } from 'react-icons/io';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -69,9 +70,7 @@ export default function LoginForm() {
       </div>
 
       {loginMutation.isError && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm font-bold text-red-700">
-          {loginMutation.error.message}
-        </p>
+        <ErrorMessage message={loginMutation.error.message} />
       )}
 
       <button

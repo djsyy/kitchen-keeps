@@ -4,6 +4,7 @@ import { PiUserCircleThin } from 'react-icons/pi';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { logoutUser } from '../../services/authService';
+import ErrorMessage from '../ui/ErrorMessage';
 
 export default function ProfileDropdown() {
   const navigate = useNavigate();
@@ -64,9 +65,10 @@ export default function ProfileDropdown() {
             <hr className="border-t border-text-400 my-1" />
 
             {logoutUserMutation.isError && (
-              <p className="rounded-sm bg-primary-50 px-2 py-1 text-center text-sm font-bold text-primary-700">
-                {logoutUserMutation.error.message}
-              </p>
+              <ErrorMessage
+                className="text-center"
+                message={logoutUserMutation.error.message}
+              />
             )}
 
             <button

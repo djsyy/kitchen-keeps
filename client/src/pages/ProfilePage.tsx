@@ -2,6 +2,7 @@ import { FormEvent, ReactNode, useEffect, useRef, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
+import ErrorMessage from '../components/ui/ErrorMessage';
 import Input from '../components/ui/Input';
 import Label from '../components/ui/Label';
 import { useCurrentUser } from '../hooks/useCurrentUser';
@@ -254,9 +255,7 @@ export default function ProfilePage() {
                   )}
                 </div>
                 {updateNameMutation.isError && !nameError && (
-                  <p className="rounded-md bg-red-50 px-3 py-2 text-sm font-bold text-red-700">
-                    {updateNameMutation.error.message}
-                  </p>
+                  <ErrorMessage message={updateNameMutation.error.message} />
                 )}
                 {isNameDirty && (
                   <div className="flex justify-end gap-3">
@@ -358,9 +357,9 @@ export default function ProfilePage() {
                   !currentPasswordError &&
                   !newPasswordError &&
                   !confirmNewPasswordError && (
-                    <p className="rounded-md bg-red-50 px-3 py-2 text-sm font-bold text-red-700">
-                      {updatePasswordMutation.error.message}
-                    </p>
+                    <ErrorMessage
+                      message={updatePasswordMutation.error.message}
+                    />
                   )}
                 <div className="flex justify-end gap-3">
                   <button
@@ -426,9 +425,7 @@ export default function ProfilePage() {
                   )}
                 </div>
                 {!emailError && updateEmailMutation.isError && (
-                  <p className="rounded-md bg-red-50 px-3 py-2 text-sm font-bold text-red-700">
-                    {updateEmailMutation.error.message}
-                  </p>
+                  <ErrorMessage message={updateEmailMutation.error.message} />
                 )}
                 <div className="flex justify-end gap-3">
                   <button
@@ -509,9 +506,9 @@ export default function ProfilePage() {
                 action cannot be undone.
               </p>
               {deleteUserMutation.isError && (
-                <p className="rounded-md bg-primary-50 px-3 py-2 text-sm font-bold text-primary-700">
-                  {deleteUserMutation.error.message}
-                </p>
+                <ErrorMessage
+                  message={deleteUserMutation.error.message}
+                />
               )}
             </div>
             <div className="mt-6 flex justify-end gap-3">

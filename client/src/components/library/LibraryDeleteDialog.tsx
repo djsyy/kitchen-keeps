@@ -1,4 +1,5 @@
 import type { Library } from '../../services/libraryService';
+import ErrorMessage from '../ui/ErrorMessage';
 
 type LibraryDeleteDialogProps = {
   library: Library;
@@ -11,7 +12,6 @@ type LibraryDeleteDialogProps = {
 export default function LibraryDeleteDialog({
   library,
   isPending,
-  error,
   onCancel,
   onConfirm,
 }: LibraryDeleteDialogProps) {
@@ -42,11 +42,8 @@ export default function LibraryDeleteDialog({
           <p id="delete-library-description" className="text-sm text-text-700">
             This permanently deletes the library. Its recipes are not deleted.
           </p>
-          {error && (
-            <p className="rounded-md bg-primary-50 px-3 py-2 text-sm font-bold text-primary-700">
-              {error.message}
-            </p>
-          )}
+          {/* {error && <ErrorMessage message={error.message} />} */}
+          {true && <ErrorMessage message="hello" />}
         </div>
         <div className="mt-6 flex justify-end gap-3">
           <button

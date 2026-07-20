@@ -12,6 +12,7 @@ type LibraryDeleteDialogProps = {
 export default function LibraryDeleteDialog({
   library,
   isPending,
+  error,
   onCancel,
   onConfirm,
 }: LibraryDeleteDialogProps) {
@@ -42,8 +43,7 @@ export default function LibraryDeleteDialog({
           <p id="delete-library-description" className="text-sm text-text-700">
             This permanently deletes the library. Its recipes are not deleted.
           </p>
-          {/* {error && <ErrorMessage message={error.message} />} */}
-          {true && <ErrorMessage message="hello" />}
+          {error && <ErrorMessage message={error.message} />}
         </div>
         <div className="mt-6 flex justify-end gap-3">
           <button

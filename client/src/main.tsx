@@ -15,6 +15,7 @@ import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import LibraryList from './pages/LibraryList';
 import LibraryPage from './pages/LibraryPage';
+import RecipeListPage from './pages/RecipeListPage';
 import { RequireAuth } from './components/auth/RequireAuth';
 
 const queryClient = new QueryClient();
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
           {
             path: '/profile',
             element: <ProfilePage />,
+          },
+          {
+            path: '/recipes',
+            element: <RecipeListPage />,
           },
           {
             path: '/library',

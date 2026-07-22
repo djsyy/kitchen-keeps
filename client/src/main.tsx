@@ -15,6 +15,7 @@ import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import LibraryList from './pages/LibraryList';
 import LibraryPage from './pages/LibraryPage';
+import RecipePage from './pages/RecipePage';
 import RecipeListPage from './pages/RecipeListPage';
 import { RequireAuth } from './components/auth/RequireAuth';
 
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
           {
             path: '/recipes',
             element: <RecipeListPage />,
+          },
+          {
+            path: '/recipes/:id',
+            element: <RecipePage />,
           },
           {
             path: '/library',

@@ -75,9 +75,11 @@ export default function LibraryPage() {
               <h1 className="mt-5 text-3xl font-bold text-text-950">
                 {library.name}
               </h1>
-              <p className="mt-3 text-sm leading-6 text-text-600">
-                {library.description || 'A collection of recipes.'}
-              </p>
+              {library.description && (
+                <p className="mt-3 text-sm leading-6 text-text-600">
+                  {library.description}
+                </p>
+              )}
 
               <div className="mt-6 border-t border-background-200 pt-5 text-sm text-text-500">
                 <p className="flex items-center gap-2">

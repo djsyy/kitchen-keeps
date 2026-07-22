@@ -143,9 +143,9 @@ function LibraryCard({
       )}
       <div className="mt-8">
         <h2 className="text-xl font-bold text-text-950">{library.name}</h2>
-        <p className="mt-2 min-h-10 text-sm text-text-600">
-          {library.description || 'A collection of recipes.'}
-        </p>
+        {library.description && (
+          <p className="mt-2 text-sm text-text-600">{library.description}</p>
+        )}
       </div>
     </article>
   );

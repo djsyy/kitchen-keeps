@@ -12,6 +12,7 @@ import type { Recipe } from '../../services/recipeService';
 type RecipeGridProps = {
   recipes: Recipe[];
   onCreate: () => void;
+  onOpen: (recipe: Recipe) => void;
   onEdit: (recipe: Recipe) => void;
   onDelete: (recipe: Recipe) => void;
 };
@@ -19,6 +20,7 @@ type RecipeGridProps = {
 export default function RecipeGrid({
   recipes,
   onCreate,
+  onOpen,
   onEdit,
   onDelete,
 }: RecipeGridProps) {
@@ -65,6 +67,7 @@ export default function RecipeGrid({
             <RecipeCard
               key={recipe.id}
               recipe={recipe}
+              onOpen={onOpen}
               onEdit={onEdit}
               onDelete={onDelete}
             />
@@ -81,10 +84,12 @@ export default function RecipeGrid({
 
 function RecipeCard({
   recipe,
+  onOpen,
   onEdit,
   onDelete,
 }: {
   recipe: Recipe;
+  onOpen: (recipe: Recipe) => void;
   onEdit: (recipe: Recipe) => void;
   onDelete: (recipe: Recipe) => void;
 }) {
@@ -110,7 +115,8 @@ function RecipeCard({
   return (
     <article
       ref={cardRef}
-      className="relative overflow-hidden rounded-2xl border border-background-300 bg-background-50 shadow-sm"
+      className="relative cursor-pointer overflow-hidden rounded-2xl border border-background-300 bg-background-50 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+      onClick={() => onOpen(recipe)}
     >
       {recipe.image_url ? (
         <img
@@ -130,7 +136,10 @@ function RecipeCard({
           aria-expanded={isOptionsOpen}
           aria-haspopup="menu"
           className="absolute top-3 right-3 rounded-md bg-background-50/90 p-1 text-text-600 transition hover:bg-background-100 hover:text-text-950"
-          onClick={() => setIsOptionsOpen((isOpen) => !isOpen)}
+          onClick={(event) => {
+            event.stopPropagation();
+            setIsOptionsOpen((isOpen) => !isOpen);
+          }}
         >
           <LuEllipsisVertical className="h-5 w-5" />
         </button>
@@ -141,9 +150,11 @@ function RecipeCard({
           />
         )}
         <h2 className="text-xl font-bold text-text-950">{recipe.title}</h2>
-        <p className="mt-2 min-h-10 text-sm leading-5 text-text-600">
-          {recipe.description || 'No description yet.'}
-        </p>
+        {recipe.description && (
+          <p className="mt-2 text-sm leading-5 text-text-600">
+            {recipe.description}
+          </p>
+        )}
         {(totalTime > 0 || recipe.servings) && (
           <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm text-text-600">
             {totalTime > 0 && (

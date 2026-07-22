@@ -1,6 +1,7 @@
 import { LuNotebookPen } from 'react-icons/lu';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   type CreateRecipePayload,
   type Recipe,
@@ -17,6 +18,7 @@ import RecipeDeleteDialog from '../components/recipes/RecipeDeleteDialog';
 
 export default function RecipeListPage() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const [deletingRecipe, setDeletingRecipe] = useState<Recipe | null>(null);
@@ -112,6 +114,7 @@ export default function RecipeListPage() {
         <RecipeGridPage
           recipes={recipes}
           onCreate={() => setIsCreateFormOpen(true)}
+          onOpen={(recipe) => navigate(`/recipes/${recipe.id}`)}
           onEdit={setEditingRecipe}
           onDelete={setDeletingRecipe}
         />

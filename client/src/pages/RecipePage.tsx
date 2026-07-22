@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import {
   LuArrowLeft,
-  LuChefHat,
   LuClock3,
   LuListChecks,
   LuNotebookPen,

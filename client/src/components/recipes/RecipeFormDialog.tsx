@@ -1,8 +1,9 @@
 import { type FormEvent, useState } from 'react';
-import type { CreateRecipePayload } from '../../services/recipeService';
+import type { CreateRecipePayload, Recipe } from '../../services/recipeService';
 import ErrorMessage from '../ui/ErrorMessage';
 
 type RecipeFormDialogProps = {
+  recipe?: Recipe;
   isPending: boolean;
   error: Error | null;
   onCancel: () => void;
@@ -13,17 +14,23 @@ const toOptionalPositiveInteger = (value: string): number | null =>
   value === '' ? null : Number(value);
 
 export default function RecipeFormDialog({
+  recipe,
   isPending,
   error,
   onCancel,
   onSubmit,
 }: RecipeFormDialogProps) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
-  const [prepTimeMinutes, setPrepTimeMinutes] = useState('');
-  const [cookTimeMinutes, setCookTimeMinutes] = useState('');
-  const [servings, setServings] = useState('');
+  const isEditing = Boolean(recipe);
+  const [title, setTitle] = useState(recipe?.title ?? '');
+  const [description, setDescription] = useState(recipe?.description ?? '');
+  const [imageUrl, setImageUrl] = useState(recipe?.image_url ?? '');
+  const [prepTimeMinutes, setPrepTimeMinutes] = useState(
+    recipe?.prep_time_minutes?.toString() ?? ''
+  );
+  const [cookTimeMinutes, setCookTimeMinutes] = useState(
+    recipe?.cook_time_minutes?.toString() ?? ''
+  );
+  const [servings, setServings] = useState(recipe?.servings?.toString() ?? '');
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -58,10 +65,12 @@ export default function RecipeFormDialog({
       >
         <div>
           <h1 id="recipe-form-title" className="text-xl font-bold text-text-950">
-            Create a recipe
+            {isEditing ? 'Edit recipe' : 'Create a recipe'}
           </h1>
           <p id="recipe-form-description" className="mt-1 text-sm text-text-600">
-            Add the basics now. You can add ingredients and steps afterwards.
+            {isEditing
+              ? 'Update this recipe’s details.'
+              : 'Add the basics now. You can add ingredients and steps afterwards.'}
           </p>
         </div>
 
@@ -129,7 +138,13 @@ export default function RecipeFormDialog({
             className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isPending || !title.trim()}
           >
-            {isPending ? 'Creating...' : 'Create recipe'}
+            {isPending
+              ? isEditing
+                ? 'Saving...'
+                : 'Creating...'
+              : isEditing
+                ? 'Save changes'
+                : 'Create recipe'}
           </button>
         </div>
       </form>

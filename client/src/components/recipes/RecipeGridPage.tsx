@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { type MouseEvent, useEffect, useRef, useState } from 'react';
 import {
   LuClock3,
+  LuEllipsisVertical,
   LuNotebookPen,
   LuPlus,
   LuSearch,
@@ -11,9 +12,16 @@ import type { Recipe } from '../../services/recipeService';
 type RecipeGridProps = {
   recipes: Recipe[];
   onCreate: () => void;
+  onEdit: (recipe: Recipe) => void;
+  onDelete: (recipe: Recipe) => void;
 };
 
-export default function RecipeGrid({ recipes, onCreate }: RecipeGridProps) {
+export default function RecipeGrid({
+  recipes,
+  onCreate,
+  onEdit,
+  onDelete,
+}: RecipeGridProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
   const visibleRecipes = recipes.filter((recipe) =>
@@ -54,7 +62,12 @@ export default function RecipeGrid({ recipes, onCreate }: RecipeGridProps) {
       {visibleRecipes.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visibleRecipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
+            <RecipeCard
+              key={recipe.id}
+              recipe={recipe}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
           ))}
         </div>
       ) : (
@@ -66,11 +79,39 @@ export default function RecipeGrid({ recipes, onCreate }: RecipeGridProps) {
   );
 }
 
-function RecipeCard({ recipe }: { recipe: Recipe }) {
+function RecipeCard({
+  recipe,
+  onEdit,
+  onDelete,
+}: {
+  recipe: Recipe;
+  onEdit: (recipe: Recipe) => void;
+  onDelete: (recipe: Recipe) => void;
+}) {
   const totalTime = (recipe.prep_time_minutes ?? 0) + (recipe.cook_time_minutes ?? 0);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const cardRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!isOptionsOpen) {
+      return;
+    }
+
+    const closeOptionsOnOutsideClick = (event: PointerEvent) => {
+      if (!cardRef.current?.contains(event.target as Node)) {
+        setIsOptionsOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', closeOptionsOnOutsideClick);
+    return () => document.removeEventListener('pointerdown', closeOptionsOnOutsideClick);
+  }, [isOptionsOpen]);
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-background-300 bg-background-50 shadow-sm">
+    <article
+      ref={cardRef}
+      className="relative overflow-hidden rounded-2xl border border-background-300 bg-background-50 shadow-sm"
+    >
       {recipe.image_url ? (
         <img
           src={recipe.image_url}
@@ -83,6 +124,22 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
         </div>
       )}
       <div className="p-5">
+        <button
+          type="button"
+          aria-label={`Show options for ${recipe.title}`}
+          aria-expanded={isOptionsOpen}
+          aria-haspopup="menu"
+          className="absolute top-3 right-3 rounded-md bg-background-50/90 p-1 text-text-600 transition hover:bg-background-100 hover:text-text-950"
+          onClick={() => setIsOptionsOpen((isOpen) => !isOpen)}
+        >
+          <LuEllipsisVertical className="h-5 w-5" />
+        </button>
+        {isOptionsOpen && (
+          <RecipeCardOptions
+            onEdit={() => onEdit(recipe)}
+            onDelete={() => onDelete(recipe)}
+          />
+        )}
         <h2 className="text-xl font-bold text-text-950">{recipe.title}</h2>
         <p className="mt-2 min-h-10 text-sm leading-5 text-text-600">
           {recipe.description || 'No description yet.'}
@@ -105,5 +162,45 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
         )}
       </div>
     </article>
+  );
+}
+
+function RecipeCardOptions({
+  onEdit,
+  onDelete,
+}: {
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const handleAction = (
+    event: MouseEvent<HTMLButtonElement>,
+    action: () => void
+  ) => {
+    event.stopPropagation();
+    action();
+  };
+
+  return (
+    <div
+      role="menu"
+      className="absolute top-12 right-3 z-10 w-32 rounded-lg border border-background-300 bg-background-50 p-1 shadow-md"
+    >
+      <button
+        type="button"
+        role="menuitem"
+        className="w-full rounded-md px-3 py-2 text-left text-sm font-bold text-text-700 transition hover:bg-background-100"
+        onClick={(event) => handleAction(event, onEdit)}
+      >
+        Edit
+      </button>
+      <button
+        type="button"
+        role="menuitem"
+        className="w-full rounded-md px-3 py-2 text-left text-sm font-bold text-primary transition hover:bg-primary-100"
+        onClick={(event) => handleAction(event, onDelete)}
+      >
+        Delete
+      </button>
+    </div>
   );
 }

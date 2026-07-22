@@ -55,7 +55,10 @@ export default function RecipeListPage() {
           }}
         />
       ) : (
-        <RecipeGridPage onCreate={() => setIsCreateFormOpen(true)} />
+        <RecipeGridPage
+          recipes={recipes}
+          onCreate={() => setIsCreateFormOpen(true)}
+        />
       )}
     </main>
   );

@@ -1,6 +1,6 @@
 import { LuPlus, LuSearch } from 'react-icons/lu';
 
-export default function RecipeGrid() {
+export default function RecipeGrid({ onCreate }: { onCreate: () => void }) {
   return (
     <>
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -11,6 +11,7 @@ export default function RecipeGrid() {
           <button
             type="button"
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700"
+            onClick={onCreate}
           >
             <LuPlus className="h-4 w-4" />
             Create a recipe

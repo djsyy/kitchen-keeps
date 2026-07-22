@@ -1,7 +1,17 @@
 import { LuBookOpen, LuPlus, LuSearch } from 'react-icons/lu';
+import { useQuery } from '@tanstack/react-query';
+import { getRecipes } from '../services/recipeService';
 import Navbar from '../components/layout/Navbar';
+import EmptyPage from '../components/ui/EmptyPage';
 
 export default function RecipeListPage() {
+  const { data, error, isPending } = useQuery({
+    queryKey: ['recipes'],
+    queryFn: getRecipes,
+  });
+
+  const recipes = data?.data.recipes ?? [];
+
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
@@ -33,18 +43,19 @@ export default function RecipeListPage() {
           />
         </div>
 
-        <article className="mt-6 flex min-h-80 flex-col items-center justify-center rounded-3xl border border-dashed border-background-300 bg-background-50 px-6 py-12 text-center shadow-sm">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary-100 text-secondary-800">
-            <LuBookOpen className="h-7 w-7" />
-          </span>
-          <h2 className="mt-5 text-xl font-bold text-text-950">
-            No recipes yet
-          </h2>
-          <p className="mt-2 max-w-md text-sm leading-6 text-text-600">
-            Recipes you create will appear here. You’ll be able to search them
-            and add them to libraries.
+        {isPending ? (
+          <p className="mt-6 text-text-600">Loading recipes…</p>
+        ) : error ? (
+          <p className="mt-6 text-text-600">
+            We couldn’t load your recipes. Please try again.
           </p>
-        </article>
+        ) : recipes.length === 0 ? (
+          <EmptyPage
+            icon={LuBookOpen}
+            title="No recipes yet"
+            description="Recipes you create will appear here. You’ll be able to search them and add them to libraries."
+          />
+        ) : null}
       </section>
     </main>
   );

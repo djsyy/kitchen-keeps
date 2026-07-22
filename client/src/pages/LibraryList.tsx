@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../components/layout/Navbar';
 import LibraryDeleteDialog from '../components/library/LibraryDeleteDialog';
-import LibraryEmpty from '../components/library/LibraryEmpty';
 import LibraryFormDialog from '../components/library/LibraryFormDialog';
 import LibraryGrid from '../components/library/LibraryGrid';
+import EmptyPage from '../components/ui/EmptyPage';
+import { LuFolderPlus } from 'react-icons/lu';
 import {
   type CreateLibraryPayload,
   type Library,
@@ -116,7 +117,15 @@ export default function LibraryList() {
       ) : isError ? (
         <LibraryError />
       ) : libraries.length === 0 ? (
-        <LibraryEmpty onCreate={() => setIsCreateFormOpen(true)} />
+        <EmptyPage
+          icon={LuFolderPlus}
+          title="No libraries yet"
+          description="Create a library to group recipes by meal type, occasion, or anything else that helps you find them later."
+          action={{
+            label: 'Create a library',
+            onClick: () => setIsCreateFormOpen(true),
+          }}
+        />
       ) : (
         <LibraryGrid
           libraries={libraries}

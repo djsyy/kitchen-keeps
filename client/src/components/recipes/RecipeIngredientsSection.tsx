@@ -1,9 +1,25 @@
-import { useQuery } from '@tanstack/react-query';
-import { LuListChecks } from 'react-icons/lu';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import {
+  LuArrowDown,
+  LuArrowUp,
+  LuListChecks,
+  LuPencil,
+  LuPlus,
+  LuTrash2,
+} from 'react-icons/lu';
+import {
+  createRecipeIngredient,
+  deleteRecipeIngredient,
   getRecipeIngredients,
+  reorderRecipeIngredients,
   type RecipeIngredient,
+  type UpdateRecipeIngredientPayload,
+  updateRecipeIngredient,
 } from '../../services/recipeIngredientService';
+import ErrorMessage from '../ui/ErrorMessage';
+import RecipeIngredientDeleteDialog from './RecipeIngredientDeleteDialog';
+import RecipeIngredientFormDialog from './RecipeIngredientFormDialog';
 
 function formatQuantity({
   quantity_value: quantityValue,
@@ -17,12 +33,77 @@ export default function RecipeIngredientsSection({
 }: {
   recipeId: number;
 }) {
+  const queryClient = useQueryClient();
+  const [isAdding, setIsAdding] = useState(false);
+  const [editingIngredient, setEditingIngredient] =
+    useState<RecipeIngredient | null>(null);
+  const [deletingIngredient, setDeletingIngredient] =
+    useState<RecipeIngredient | null>(null);
+  const ingredientQueryKey = ['recipes', recipeId, 'ingredients'] as const;
   const { data, isError, isPending } = useQuery({
-    queryKey: ['recipes', recipeId, 'ingredients'],
+    queryKey: ingredientQueryKey,
     queryFn: () => getRecipeIngredients(recipeId),
   });
 
   const recipeIngredients = data?.data.recipeIngredients ?? [];
+  const invalidateIngredients = () =>
+    queryClient.invalidateQueries({ queryKey: ingredientQueryKey });
+  const createMutation = useMutation({
+    mutationFn: createRecipeIngredient.bind(null, recipeId),
+    onSuccess: () => {
+      setIsAdding(false);
+      invalidateIngredients();
+    },
+  });
+  const updateMutation = useMutation({
+    mutationFn: ({
+      recipeIngredientId,
+      payload,
+    }: {
+      recipeIngredientId: number;
+      payload: UpdateRecipeIngredientPayload;
+    }) => updateRecipeIngredient(recipeId, recipeIngredientId, payload),
+    onSuccess: () => {
+      setEditingIngredient(null);
+      invalidateIngredients();
+    },
+  });
+  const deleteMutation = useMutation({
+    mutationFn: (recipeIngredientId: number) =>
+      deleteRecipeIngredient(recipeId, recipeIngredientId),
+    onSuccess: () => {
+      setDeletingIngredient(null);
+      invalidateIngredients();
+    },
+  });
+  const reorderMutation = useMutation({
+    mutationFn: (recipeIngredientIds: number[]) =>
+      reorderRecipeIngredients(recipeId, recipeIngredientIds),
+    onSuccess: invalidateIngredients,
+  });
+
+  const moveIngredient = (ingredientId: number, direction: -1 | 1) => {
+    const currentIndex = recipeIngredients.findIndex(
+      (ingredient) => ingredient.id === ingredientId
+    );
+    const nextIndex = currentIndex + direction;
+
+    if (
+      reorderMutation.isPending ||
+      currentIndex < 0 ||
+      nextIndex < 0 ||
+      nextIndex >= recipeIngredients.length
+    ) {
+      return;
+    }
+
+    const reorderedIngredients = [...recipeIngredients];
+    [reorderedIngredients[currentIndex], reorderedIngredients[nextIndex]] = [
+      reorderedIngredients[nextIndex],
+      reorderedIngredients[currentIndex],
+    ];
+    reorderMutation.mutate(reorderedIngredients.map((ingredient) => ingredient.id));
+  };
 
   return (
     <section className="relative overflow-hidden rounded-2xl border border-background-300 bg-background-50 p-6 shadow-lg sm:p-8">
@@ -40,13 +121,23 @@ export default function RecipeIngredientsSection({
             Everything you’ll need before you start cooking.
           </p>
         </div>
-        <button
-          type="button"
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700"
-        >
-          <LuListChecks className="h-4 w-4" />
-          Create checklist
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-background-300 bg-background-50 px-4 py-2.5 text-sm font-bold text-text-700 transition hover:bg-background-100"
+            onClick={() => setIsAdding(true)}
+          >
+            <LuPlus className="h-4 w-4" />
+            Add ingredient
+          </button>
+          <button
+            type="button"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700"
+          >
+            <LuListChecks className="h-4 w-4" />
+            Create checklist
+          </button>
+        </div>
       </div>
 
       <ul className="mt-8 divide-y divide-background-200 rounded-xl border border-background-200 bg-background-100/70 px-5">
@@ -65,14 +156,11 @@ export default function RecipeIngredientsSection({
             No ingredients have been added yet.
           </li>
         ) : (
-          recipeIngredients.map((ingredient) => {
+          recipeIngredients.map((ingredient, index) => {
             const quantity = formatQuantity(ingredient);
 
             return (
-              <li
-                key={ingredient.id}
-                className="flex items-start justify-between gap-4 py-4 text-sm first:pt-5 last:pb-5"
-              >
+              <li key={ingredient.id} className="flex gap-4 py-4 text-sm first:pt-5 last:pb-5">
                 <span>
                   <span className="block font-bold text-text-800">
                     {ingredient.display_name}
@@ -83,20 +171,92 @@ export default function RecipeIngredientsSection({
                     </span>
                   )}
                 </span>
-                {quantity && (
-                  <span className="shrink-0 pt-0.5 text-text-600">
-                    {quantity}
-                  </span>
-                )}
+                <div className="ml-auto flex shrink-0 items-start gap-2">
+                  {quantity && <span className="pt-2 text-text-600">{quantity}</span>}
+                  <div className="flex rounded-md border border-background-200 bg-background-50">
+                    <button
+                      type="button"
+                      aria-label={`Move ${ingredient.display_name} up`}
+                      className="p-2 text-text-600 transition hover:bg-background-100 disabled:cursor-not-allowed disabled:opacity-40"
+                      disabled={index === 0 || reorderMutation.isPending}
+                      onClick={() => moveIngredient(ingredient.id, -1)}
+                    >
+                      <LuArrowUp className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`Move ${ingredient.display_name} down`}
+                      className="border-l border-background-200 p-2 text-text-600 transition hover:bg-background-100 disabled:cursor-not-allowed disabled:opacity-40"
+                      disabled={
+                        index === recipeIngredients.length - 1 ||
+                        reorderMutation.isPending
+                      }
+                      onClick={() => moveIngredient(ingredient.id, 1)}
+                    >
+                      <LuArrowDown className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label={`Edit ${ingredient.display_name}`}
+                    className="rounded-md p-2 text-text-600 transition hover:bg-background-100 hover:text-primary"
+                    onClick={() => setEditingIngredient(ingredient)}
+                  >
+                    <LuPencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`Delete ${ingredient.display_name}`}
+                    className="rounded-md p-2 text-text-600 transition hover:bg-primary-50 hover:text-primary"
+                    onClick={() => setDeletingIngredient(ingredient)}
+                  >
+                    <LuTrash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </li>
             );
           })
         )}
       </ul>
 
+      {reorderMutation.error && (
+        <ErrorMessage className="mt-4" message={reorderMutation.error.message} />
+      )}
       <p className="mt-4 text-sm leading-6 text-text-500">
-        Ingredient editing and checklist creation will connect here next.
+        Add ingredients, adjust their details, and arrange them for your cooking flow.
       </p>
+
+      {isAdding && (
+        <RecipeIngredientFormDialog
+          isPending={createMutation.isPending}
+          error={createMutation.error}
+          onCancel={() => setIsAdding(false)}
+          onSubmit={(payload) => createMutation.mutate(payload)}
+        />
+      )}
+      {editingIngredient && (
+        <RecipeIngredientFormDialog
+          recipeIngredient={editingIngredient}
+          isPending={updateMutation.isPending}
+          error={updateMutation.error}
+          onCancel={() => setEditingIngredient(null)}
+          onSubmit={(payload) =>
+            updateMutation.mutate({
+              recipeIngredientId: editingIngredient.id,
+              payload,
+            })
+          }
+        />
+      )}
+      {deletingIngredient && (
+        <RecipeIngredientDeleteDialog
+          recipeIngredient={deletingIngredient}
+          isPending={deleteMutation.isPending}
+          error={deleteMutation.error}
+          onCancel={() => setDeletingIngredient(null)}
+          onConfirm={() => deleteMutation.mutate(deletingIngredient.id)}
+        />
+      )}
     </section>
   );
 }

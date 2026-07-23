@@ -45,7 +45,7 @@ export default function RecipePage() {
         ) : (
           <div className="mt-6 space-y-10">
             <RecipeOverviewCard recipe={recipe} />
-            <RecipeIngredientsSection />
+            <RecipeIngredientsSection recipeId={recipeId} />
             <RecipeStepsSection />
           </div>
         )}

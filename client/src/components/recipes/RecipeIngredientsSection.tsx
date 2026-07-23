@@ -9,7 +9,8 @@ const ingredientPreview = [
 
 export default function RecipeIngredientsSection() {
   return (
-    <section className="rounded-3xl border border-background-300 bg-background-50 p-6 shadow-sm sm:p-8">
+    <section className="relative overflow-hidden rounded-2xl border border-background-300 bg-background-50 p-6 shadow-lg sm:p-8">
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1.5 bg-primary" />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-sm font-bold uppercase tracking-wide text-text-500">
@@ -29,11 +30,11 @@ export default function RecipeIngredientsSection() {
         </button>
       </div>
 
-      <ul className="mt-8 divide-y divide-background-200 rounded-2xl border border-background-200 bg-white px-5">
+      <ul className="mt-8 divide-y divide-background-200 rounded-xl border border-background-200 bg-background-100/70 px-5">
         {ingredientPreview.map((ingredient) => (
           <li
             key={ingredient.name}
-            className="flex items-center justify-between gap-4 py-4 text-sm"
+            className="flex items-center justify-between gap-4 py-4 text-sm first:pt-5 last:pb-5"
           >
             <span className="font-bold text-text-800">{ingredient.name}</span>
             <span className="shrink-0 text-text-600">{ingredient.amount}</span>

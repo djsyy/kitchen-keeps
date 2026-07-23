@@ -6,7 +6,7 @@ const stepPreview = [
 
 export default function RecipeStepsSection() {
   return (
-    <section className="rounded-3xl border border-background-300 bg-background-50 p-6 shadow-sm sm:p-8">
+    <section className="rounded-2xl border border-background-300 bg-background-50 p-6 shadow-lg sm:p-8">
       <div>
         <p className="text-sm font-bold uppercase tracking-wide text-text-500">
           Recipe steps
@@ -17,13 +17,24 @@ export default function RecipeStepsSection() {
         </p>
       </div>
 
-      <ol className="mt-8 space-y-4">
+      <ol className="mt-6 space-y-1">
         {stepPreview.map((step, index) => (
-          <li key={step} className="flex gap-4 text-sm leading-6 text-text-700">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary-100 font-bold text-secondary-800">
+          <li
+            key={step}
+            className="relative flex items-start gap-4 py-3 text-sm leading-6 text-text-700"
+          >
+            {index < stepPreview.length - 1 && (
+              <span
+                aria-hidden="true"
+                className="absolute left-3.5 top-9 h-[calc(100%-0.5rem)] w-px bg-background-300"
+              />
+            )}
+            <span className="relative z-10 mt-2.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary-100 font-bold text-secondary-800">
               {index + 1}
             </span>
-            <span className="pt-0.5">{step}</span>
+            <span className="rounded-lg bg-background-100/60 px-3 py-2.5 text-text-700">
+              {step}
+            </span>
           </li>
         ))}
       </ol>

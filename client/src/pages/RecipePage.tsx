@@ -43,12 +43,10 @@ export default function RecipePage() {
             <ErrorMessage message="We couldn’t load this recipe. Please try again." />
           </div>
         ) : (
-          <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.4fr)]">
+          <div className="mt-6 space-y-10">
             <RecipeOverviewCard recipe={recipe} />
-            <div className="space-y-6">
-              <RecipeIngredientsSection />
-              <RecipeStepsSection />
-            </div>
+            <RecipeIngredientsSection />
+            <RecipeStepsSection />
           </div>
         )}
       </div>

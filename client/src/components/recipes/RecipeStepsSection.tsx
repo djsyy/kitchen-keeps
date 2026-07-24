@@ -6,7 +6,11 @@ const stepPreview = [
 
 export default function RecipeStepsSection() {
   return (
-    <section className="rounded-2xl border border-background-300 bg-background-50 p-6 shadow-lg sm:p-8">
+    <section className="relative overflow-hidden rounded-2xl border-2 border-t-0 border-background-300 bg-background-50 p-6 shadow-lg sm:p-8">
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 h-1.5 bg-secondary"
+      />
       <div>
         <p className="text-sm font-bold uppercase tracking-wide text-text-500">
           Recipe steps

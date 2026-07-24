@@ -102,11 +102,13 @@ export default function RecipeIngredientsSection({
       reorderedIngredients[nextIndex],
       reorderedIngredients[currentIndex],
     ];
-    reorderMutation.mutate(reorderedIngredients.map((ingredient) => ingredient.id));
+    reorderMutation.mutate(
+      reorderedIngredients.map((ingredient) => ingredient.id)
+    );
   };
 
   return (
-    <section className="relative overflow-hidden rounded-2xl border border-background-300 bg-background-50 p-6 shadow-lg sm:p-8">
+    <section className="relative overflow-hidden rounded-2xl border-2 border-t-0 border-background-300 bg-background-50 p-6 shadow-lg sm:p-8">
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-0 h-1.5 bg-primary"
@@ -142,11 +144,7 @@ export default function RecipeIngredientsSection({
 
       <ul className="mt-8 divide-y divide-background-200 rounded-xl border border-background-200 bg-background-100/70 px-5">
         {isPending ? (
-          <li
-            className="py-5 text-sm text-text-600"
-          >
-            Loading ingredients…
-          </li>
+          <li className="py-5 text-sm text-text-600">Loading ingredients…</li>
         ) : isError ? (
           <li className="py-5 text-sm text-text-600">
             We couldn’t load the ingredients. Please try again.
@@ -160,7 +158,10 @@ export default function RecipeIngredientsSection({
             const quantity = formatQuantity(ingredient);
 
             return (
-              <li key={ingredient.id} className="flex gap-4 py-4 text-sm first:pt-5 last:pb-5">
+              <li
+                key={ingredient.id}
+                className="flex gap-4 py-4 text-sm first:pt-5 last:pb-5"
+              >
                 <span>
                   <span className="block font-bold text-text-800">
                     {ingredient.display_name}
@@ -172,7 +173,9 @@ export default function RecipeIngredientsSection({
                   )}
                 </span>
                 <div className="ml-auto flex shrink-0 items-start gap-2">
-                  {quantity && <span className="pt-2 text-text-600">{quantity}</span>}
+                  {quantity && (
+                    <span className="pt-2 text-text-600">{quantity}</span>
+                  )}
                   <div className="flex rounded-md border border-background-200 bg-background-50">
                     <button
                       type="button"
@@ -220,11 +223,11 @@ export default function RecipeIngredientsSection({
       </ul>
 
       {reorderMutation.error && (
-        <ErrorMessage className="mt-4" message={reorderMutation.error.message} />
+        <ErrorMessage
+          className="mt-4"
+          message={reorderMutation.error.message}
+        />
       )}
-      <p className="mt-4 text-sm leading-6 text-text-500">
-        Add ingredients, adjust their details, and arrange them for your cooking flow.
-      </p>
 
       {isAdding && (
         <RecipeIngredientFormDialog

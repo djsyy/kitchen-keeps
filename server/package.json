@@ -9,6 +9,8 @@
     "db:baseline": "node-pg-migrate up --migrations-dir db/migrations --envPath ../.env --fake",
     "db:migrate": "node-pg-migrate up --migrations-dir db/migrations --envPath ../.env",
     "db:rollback": "node-pg-migrate down --migrations-dir db/migrations --envPath ../.env",
+    "db:seed:ingredients": "node scripts/seedGlobalIngredients.js",
+    "ingredients:review": "node scripts/generateFoundationIngredientReview.js",
     "start": "node index.js"
   },
   "dependencies": {

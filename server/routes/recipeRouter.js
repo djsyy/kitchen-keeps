@@ -15,6 +15,7 @@ import {
   deleteRecipeValidation,
 } from '../validations/recipeValidation.js';
 import recipeIngredientRouter from './recipeIngredientRouter.js';
+import recipeStepRouter from './recipeStepRouter.js';
 
 const router = express.Router();
 
@@ -24,6 +25,7 @@ router
   .get(getRecipesValidation, validateRequest, getRecipes);
 
 router.use('/:recipeId/ingredients', recipeIngredientRouter);
+router.use('/:recipeId/steps', recipeStepRouter);
 
 router
   .route('/:id')

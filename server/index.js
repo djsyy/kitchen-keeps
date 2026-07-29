@@ -5,6 +5,7 @@ import authRouter from './routes/authRouter.js';
 import libraryRouter from './routes/libraryRouter.js';
 import ingredientRouter from './routes/ingredientRouter.js';
 import recipeRouter from './routes/recipeRouter.js';
+import cookSessionRouter from './routes/cookSessionRouter.js';
 import { authenticateUser } from './middleware/authentication.js';
 import errorHandler from './middleware/errorHandler.js';
 import { sessionMiddleware } from './middleware/session.js';
@@ -42,6 +43,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/libraries', authenticateUser, libraryRouter);
 app.use('/api/ingredients', authenticateUser, ingredientRouter);
 app.use('/api/recipes', authenticateUser, recipeRouter);
+app.use('/api/cook-sessions', authenticateUser, cookSessionRouter);
 app.use(errorHandler);
 
 app.listen(port, () => {

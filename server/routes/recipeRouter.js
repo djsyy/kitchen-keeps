@@ -16,6 +16,7 @@ import {
 } from '../validations/recipeValidation.js';
 import recipeIngredientRouter from './recipeIngredientRouter.js';
 import recipeStepRouter from './recipeStepRouter.js';
+import { recipeCookSessionRouter } from './cookSessionRouter.js';
 
 const router = express.Router();
 
@@ -26,6 +27,7 @@ router
 
 router.use('/:recipeId/ingredients', recipeIngredientRouter);
 router.use('/:recipeId/steps', recipeStepRouter);
+router.use('/:recipeId/cook-sessions', recipeCookSessionRouter);
 
 router
   .route('/:id')

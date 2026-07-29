@@ -44,8 +44,9 @@ export default function RecipeStepDeleteDialog({
             id="delete-recipe-step-description"
             className="text-sm text-text-700"
           >
-            This permanently removes step {recipeStep.sort_order} from the
-            recipe.
+            This permanently removes{' '}
+            <span className="font-bold">step {recipeStep.sort_order}</span> from
+            the recipe.
           </p>
           {error && <ErrorMessage message={error.message} />}
         </div>

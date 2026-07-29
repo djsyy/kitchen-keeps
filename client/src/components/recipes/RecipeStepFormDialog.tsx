@@ -57,7 +57,7 @@ export default function RecipeStepFormDialog({
             id="recipe-step-form-description"
             className="mt-1 text-sm text-text-600"
           >
-            Write one clear instruction for this part of the recipe.
+            Write one clear instruction for this step of the recipe.
           </p>
         </div>
 

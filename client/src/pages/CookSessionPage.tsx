@@ -8,6 +8,7 @@ import {
   cancelCookSession,
   completeCookSession,
   getCookSession,
+  type CookSessionDetailResponse,
   type CookSessionItem,
   type CookSessionItemStatus,
   updateCookSessionItem,
@@ -214,7 +215,25 @@ export default function CookSessionPage() {
       cookSessionItemId: number;
       status: CookSessionItemStatus;
     }) => updateCookSessionItem(cookSessionId, cookSessionItemId, { status }),
-    onSuccess: () => {
+    onSuccess: ({ data: { cookSessionItem } }) => {
+      queryClient.setQueryData<CookSessionDetailResponse>(
+        cookSessionQueryKey,
+        (currentCookSession) => {
+          if (!currentCookSession) {
+            return currentCookSession;
+          }
+
+          return {
+            ...currentCookSession,
+            data: {
+              ...currentCookSession.data,
+              items: currentCookSession.data.items.map((item) =>
+                item.id === cookSessionItem.id ? cookSessionItem : item
+              ),
+            },
+          };
+        }
+      );
       queryClient.invalidateQueries({ queryKey: cookSessionQueryKey });
       queryClient.invalidateQueries({ queryKey: ['cook-sessions'] });
     },
@@ -235,6 +254,7 @@ export default function CookSessionPage() {
     },
   });
   const isClosing = completeMutation.isPending || cancelMutation.isPending;
+  const areActionsPending = isClosing || updateItemMutation.isPending;
 
   return (
     <main className="min-h-screen bg-background">
@@ -357,7 +377,7 @@ export default function CookSessionPage() {
                     <button
                       type="button"
                       className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
-                      disabled={isClosing}
+                      disabled={areActionsPending}
                       onClick={() => completeMutation.mutate()}
                     >
                       <LuCheck className="h-4 w-4" />
@@ -368,7 +388,7 @@ export default function CookSessionPage() {
                     <button
                       type="button"
                       className="inline-flex items-center gap-2 rounded-lg border border-background-300 bg-background-50 px-4 py-2.5 text-sm font-bold text-text-700 transition hover:bg-background-100 disabled:cursor-not-allowed disabled:opacity-60"
-                      disabled={isClosing}
+                      disabled={areActionsPending}
                       onClick={() => cancelMutation.mutate()}
                     >
                       <LuX className="h-4 w-4" />

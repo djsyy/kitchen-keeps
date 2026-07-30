@@ -1,7 +1,12 @@
+import { Navigate } from 'react-router-dom';
+import { useCurrentUser } from '../hooks/useCurrentUser';
+
 export default function HomePage() {
-  return (
-    <>
-      <h1 className="flex justify-center text-xl">Home page</h1>
-    </>
-  );
+  const { data: user, isPending } = useCurrentUser();
+
+  if (isPending) {
+    return <p className="p-6 text-text-600">Loading…</p>;
+  }
+
+  return <Navigate to={user ? '/dashboard' : '/login'} replace />;
 }

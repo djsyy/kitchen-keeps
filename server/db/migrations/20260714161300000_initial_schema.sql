@@ -157,7 +157,7 @@ CREATE TABLE cook_session_items (
   quantity_unit varchar(50),
   sort_order integer DEFAULT 1 NOT NULL
     CONSTRAINT cook_session_items_sort_order_positive CHECK (sort_order > 0),
-  status varchar(20) DEFAULT 'unknown' NOT NULL
+  status varchar(20)
     CONSTRAINT cook_session_items_status_check CHECK (status IN ('unknown', 'have', 'need')),
   created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL

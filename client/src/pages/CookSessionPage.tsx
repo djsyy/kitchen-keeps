@@ -290,6 +290,21 @@ export default function CookSessionPage() {
               </p>
             </section>
 
+            {cookSession.status === 'cancelled' && (
+              <section
+                className="rounded-2xl border border-background-300 bg-background-100 p-5"
+                role="status"
+              >
+                <h2 className="text-lg font-bold text-text-950">
+                  This prep list is no longer active
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-text-700">
+                  It was cancelled and can no longer be changed. Return to the
+                  recipe to start a fresh prep list.
+                </p>
+              </section>
+            )}
+
             <section className="rounded-2xl border border-background-300 bg-background-50 p-6 shadow-lg sm:p-8">
               <h2 className="text-2xl font-bold text-text-950">Ingredients</h2>
               {items.length === 0 ? (
@@ -382,8 +397,8 @@ export default function CookSessionPage() {
                     >
                       <LuCheck className="h-4 w-4" />
                       {completeMutation.isPending
-                        ? 'Preparing...'
-                        : 'View summary'}
+                        ? 'Finishing...'
+                        : 'Finish & view summary'}
                     </button>
                     <button
                       type="button"

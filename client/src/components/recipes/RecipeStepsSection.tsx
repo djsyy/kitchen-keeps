@@ -98,11 +98,11 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-sm font-bold uppercase tracking-wide text-text-500">
-            Recipe method
+            Recipe instructions
           </p>
           <h2 className="mt-1 text-2xl font-bold text-text-950">Steps</h2>
           <p className="mt-1 text-sm text-text-600">
-            Keep your instructions in the order you cook them.
+            Follow each step from start to finish.
           </p>
         </div>
         <button

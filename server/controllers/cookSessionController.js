@@ -27,6 +27,37 @@ const lockOwnedRecipe = async (client, recipeId, userId) => {
   }
 };
 
+const expireStaleCookSessions = async (
+  database,
+  userId,
+  { recipeId, cookSessionId } = {}
+) => {
+  const values = [userId];
+  let sessionFilter = '';
+
+  if (recipeId !== undefined) {
+    values.push(recipeId);
+    sessionFilter = 'AND recipe_id = $2';
+  }
+
+  if (cookSessionId !== undefined) {
+    values.push(cookSessionId);
+    sessionFilter = 'AND id = $2';
+  }
+
+  await database.query(
+    `
+      UPDATE cook_sessions
+      SET status = 'cancelled'
+      WHERE user_id = $1
+        ${sessionFilter}
+        AND status = 'active'
+        AND updated_at < NOW() - INTERVAL '7 days'
+    `,
+    values
+  );
+};
+
 const findOwnedCookSession = async (cookSessionId, userId) => {
   const result = await query(
     `
@@ -58,6 +89,7 @@ export const createCookSession = async (req, res, next) => {
     client = await getClient();
     await client.query('BEGIN');
     await lockOwnedRecipe(client, recipeId, userId);
+    await expireStaleCookSessions(client, userId, { recipeId });
 
     const activeSessionResult = await client.query(
       `
@@ -133,6 +165,7 @@ export const getCookSessions = async (req, res, next) => {
   try {
     const status = req.query.status ?? 'active';
     const userId = req.user.userId;
+    await expireStaleCookSessions({ query }, userId);
 
     const result = await query(
       `
@@ -176,6 +209,7 @@ export const getCookSession = async (req, res, next) => {
   try {
     const { cookSessionId } = req.params;
     const userId = req.user.userId;
+    await expireStaleCookSessions({ query }, userId, { cookSessionId });
     const cookSession = await findOwnedCookSession(cookSessionId, userId);
 
     const itemsResult = await query(
@@ -205,6 +239,7 @@ export const updateCookSessionItem = async (req, res, next) => {
   try {
     const { cookSessionId, cookSessionItemId } = req.params;
     const userId = req.user.userId;
+    await expireStaleCookSessions({ query }, userId, { cookSessionId });
 
     // Only active sessions owned by the user can update their ingredient status
     const result = await query(
@@ -243,6 +278,7 @@ export const completeCookSession = async (req, res, next) => {
   try {
     const { cookSessionId } = req.params;
     const userId = req.user.userId;
+    await expireStaleCookSessions({ query }, userId, { cookSessionId });
 
     const result = await query(
       `
@@ -273,6 +309,7 @@ export const cancelCookSession = async (req, res, next) => {
   try {
     const { cookSessionId } = req.params;
     const userId = req.user.userId;
+    await expireStaleCookSessions({ query }, userId, { cookSessionId });
 
     const result = await query(
       `

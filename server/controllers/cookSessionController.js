@@ -141,6 +141,9 @@ export const getCookSessions = async (req, res, next) => {
           cook_sessions.completed_at, recipes.title AS recipe_title,
           COUNT(cook_session_items.id)::integer AS item_count,
           COUNT(cook_session_items.id) FILTER (
+            WHERE cook_session_items.status IS NULL
+          )::integer AS unchecked_count,
+          COUNT(cook_session_items.id) FILTER (
             WHERE cook_session_items.status = 'unknown'
           )::integer AS unknown_count,
           COUNT(cook_session_items.id) FILTER (

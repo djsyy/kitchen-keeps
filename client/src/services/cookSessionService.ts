@@ -16,6 +16,7 @@ export interface CookSession {
 export interface CookSessionSummary extends CookSession {
   recipe_title: string;
   item_count: number;
+  unchecked_count: number;
   unknown_count: number;
   have_count: number;
   need_count: number;

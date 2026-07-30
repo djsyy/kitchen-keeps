@@ -33,7 +33,7 @@ export interface CookSessionItem {
   quantity_value: string | null;
   quantity_unit: string | null;
   sort_order: number;
-  status: CookSessionItemStatus;
+  status: CookSessionItemStatus | null;
   created_at: string;
   updated_at: string;
 }

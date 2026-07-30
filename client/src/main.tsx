@@ -17,6 +17,7 @@ import LibraryList from './pages/LibraryList';
 import LibraryPage from './pages/LibraryPage';
 import RecipePage from './pages/RecipePage';
 import RecipeListPage from './pages/RecipeListPage';
+import CookSessionPage from './pages/CookSessionPage';
 import { RequireAuth } from './components/auth/RequireAuth';
 
 const queryClient = new QueryClient();
@@ -55,6 +56,10 @@ const router = createBrowserRouter([
           {
             path: '/recipes/:id',
             element: <RecipePage />,
+          },
+          {
+            path: '/cook-sessions/:id',
+            element: <CookSessionPage />,
           },
           {
             path: '/library',

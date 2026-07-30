@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   LuArrowDown,
   LuArrowUp,
@@ -17,6 +18,7 @@ import {
   type UpdateRecipeIngredientPayload,
   updateRecipeIngredient,
 } from '../../services/recipeIngredientService';
+import { createCookSession } from '../../services/cookSessionService';
 import ErrorMessage from '../ui/ErrorMessage';
 import RecipeIngredientDeleteDialog from './RecipeIngredientDeleteDialog';
 import RecipeIngredientFormDialog from './RecipeIngredientFormDialog';
@@ -34,6 +36,7 @@ export default function RecipeIngredientsSection({
   recipeId: number;
 }) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [isAdding, setIsAdding] = useState(false);
   const [editingIngredient, setEditingIngredient] =
     useState<RecipeIngredient | null>(null);
@@ -80,6 +83,13 @@ export default function RecipeIngredientsSection({
     mutationFn: (recipeIngredientIds: number[]) =>
       reorderRecipeIngredients(recipeId, recipeIngredientIds),
     onSuccess: invalidateIngredients,
+  });
+  const createCookSessionMutation = useMutation({
+    mutationFn: () => createCookSession(recipeId),
+    onSuccess: ({ data }) => {
+      queryClient.invalidateQueries({ queryKey: ['cook-sessions'] });
+      navigate(`/cook-sessions/${data.cookSession.id}`);
+    },
   });
 
   const moveIngredient = (ingredientId: number, direction: -1 | 1) => {
@@ -134,13 +144,24 @@ export default function RecipeIngredientsSection({
           </button>
           <button
             type="button"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={createCookSessionMutation.isPending}
+            onClick={() => createCookSessionMutation.mutate()}
           >
             <LuListChecks className="h-4 w-4" />
-            Create checklist
+            {createCookSessionMutation.isPending
+              ? 'Opening list...'
+              : 'What Do I Need?'}
           </button>
         </div>
       </div>
+
+      {createCookSessionMutation.error && (
+        <ErrorMessage
+          className="mt-4"
+          message={createCookSessionMutation.error.message}
+        />
+      )}
 
       <ul className="mt-8 divide-y divide-background-200 rounded-xl border border-background-200 bg-background-100/70 px-5">
         {isPending ? (

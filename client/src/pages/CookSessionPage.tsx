@@ -82,7 +82,7 @@ function CompletionSummaryModal({
           id="completion-summary-title"
           className="mt-1 text-2xl font-bold text-text-950"
         >
-          Ingredient Check-In
+          Ingredient Summary
         </h1>
         <p className="mt-1 text-sm font-bold text-text-800">{recipeTitle}</p>
         <p

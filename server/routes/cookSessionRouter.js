@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  acknowledgeCookSessionExpiry,
   cancelCookSession,
   completeCookSession,
   createCookSession,
@@ -9,6 +10,7 @@ import {
 } from '../controllers/cookSessionController.js';
 import validateRequest from '../middleware/validateRequest.js';
 import {
+  acknowledgeCookSessionExpiryValidation,
   cancelCookSessionValidation,
   completeCookSessionValidation,
   createCookSessionValidation,
@@ -44,6 +46,13 @@ router.patch(
   completeCookSessionValidation,
   validateRequest,
   completeCookSession
+);
+
+router.patch(
+  '/:cookSessionId/acknowledge-expiry',
+  acknowledgeCookSessionExpiryValidation,
+  validateRequest,
+  acknowledgeCookSessionExpiry
 );
 
 router.patch(

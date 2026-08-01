@@ -13,6 +13,7 @@ export interface CookSession {
   completed_at: string | null;
   cancelled_at: string | null;
   cancellation_reason: 'manual' | 'expired' | null;
+  expired_prompt_seen_at: string | null;
 }
 
 export interface CookSessionSummary extends CookSession {
@@ -112,6 +113,11 @@ export const completeCookSession = (cookSessionId: number) =>
     `${cookSessionsPath}/${cookSessionId}/complete`
   );
 
+export const acknowledgeCookSessionExpiry = (cookSessionId: number) =>
+  apiClient.patch<CookSessionResponse>(
+    `${cookSessionsPath}/${cookSessionId}/acknowledge-expiry`
+  );
+
 export const cancelCookSession = (cookSessionId: number) =>
   apiClient.patch<CookSessionResponse>(
     `${cookSessionsPath}/${cookSessionId}/cancel`
@@ -123,5 +129,6 @@ export const cookSessionService = {
   getCookSession,
   updateCookSessionItem,
   completeCookSession,
+  acknowledgeCookSessionExpiry,
   cancelCookSession,
 };

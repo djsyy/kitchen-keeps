@@ -40,4 +40,6 @@ export const updateCookSessionItemValidation = [
 
 export const completeCookSessionValidation = [cookSessionIdParam];
 
+export const acknowledgeCookSessionExpiryValidation = [cookSessionIdParam];
+
 export const cancelCookSessionValidation = [cookSessionIdParam];

@@ -4,7 +4,7 @@ import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 
 const cookSessionFields =
-  'id, user_id, recipe_id, status, created_at, updated_at, completed_at, cancelled_at, cancellation_reason';
+  'id, user_id, recipe_id, status, created_at, updated_at, completed_at, cancelled_at, cancellation_reason, expired_prompt_seen_at';
 const cookSessionItemFields =
   'id, cook_session_id, recipe_ingredient_id, display_name, quantity_value, quantity_unit, sort_order, status, created_at, updated_at';
 const cookSessionItemReturnFields =
@@ -50,7 +50,8 @@ const expireStaleCookSessions = async (
       UPDATE cook_sessions
       SET status = 'cancelled',
         cancelled_at = NOW(),
-        cancellation_reason = 'expired'
+        cancellation_reason = 'expired',
+        expired_prompt_seen_at = NULL
       WHERE user_id = $1
         ${sessionFilter}
         AND status = 'active'
@@ -66,7 +67,8 @@ const findOwnedCookSession = async (cookSessionId, userId) => {
       SELECT cook_sessions.id, cook_sessions.user_id, cook_sessions.recipe_id,
         cook_sessions.status, cook_sessions.created_at, cook_sessions.updated_at,
         cook_sessions.completed_at, cook_sessions.cancelled_at,
-        cook_sessions.cancellation_reason, recipes.title AS recipe_title
+        cook_sessions.cancellation_reason, cook_sessions.expired_prompt_seen_at,
+        recipes.title AS recipe_title
       FROM cook_sessions
       INNER JOIN recipes ON recipes.id = cook_sessions.recipe_id
       WHERE cook_sessions.id = $1 AND cook_sessions.user_id = $2
@@ -175,7 +177,8 @@ export const getCookSessions = async (req, res, next) => {
         SELECT cook_sessions.id, cook_sessions.user_id, cook_sessions.recipe_id,
           cook_sessions.status, cook_sessions.created_at, cook_sessions.updated_at,
           cook_sessions.completed_at, cook_sessions.cancelled_at,
-          cook_sessions.cancellation_reason, recipes.title AS recipe_title,
+          cook_sessions.cancellation_reason, cook_sessions.expired_prompt_seen_at,
+          recipes.title AS recipe_title,
           COUNT(cook_session_items.id)::integer AS item_count,
           COUNT(cook_session_items.id) FILTER (
             WHERE cook_session_items.status IS NULL
@@ -306,6 +309,41 @@ export const completeCookSession = async (req, res, next) => {
     }
 
     return next(new InternalServerError('Unable to complete cook session'));
+  }
+};
+
+export const acknowledgeCookSessionExpiry = async (req, res, next) => {
+  try {
+    const { cookSessionId } = req.params;
+    const userId = req.user.userId;
+
+    const result = await query(
+      `
+        UPDATE cook_sessions
+        SET expired_prompt_seen_at = NOW()
+        WHERE id = $1
+          AND user_id = $2
+          AND status = 'cancelled'
+          AND cancellation_reason = 'expired'
+        RETURNING ${cookSessionFields}
+      `,
+      [cookSessionId, userId]
+    );
+
+    const cookSession = result.rows[0];
+    if (!cookSession) {
+      throw new NotFoundError('Expired cook session not found');
+    }
+
+    return res.status(StatusCodes.OK).json({ data: { cookSession } });
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return next(error);
+    }
+
+    return next(
+      new InternalServerError('Unable to acknowledge expired cook session')
+    );
   }
 };
 

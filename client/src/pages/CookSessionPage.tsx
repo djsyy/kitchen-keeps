@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { LuArrowLeft, LuCheck, LuX } from 'react-icons/lu';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import ErrorMessage from '../components/ui/ErrorMessage';
 import {
+  acknowledgeCookSessionExpiry,
   cancelCookSession,
   completeCookSession,
   createCookSession,
@@ -274,8 +275,25 @@ export default function CookSessionPage() {
   const neededItems = items.filter((item) => item.status === 'need');
   const unsureItems = items.filter((item) => item.status === 'unknown');
   const availableItems = items.filter((item) => item.status === 'have');
+  const shouldShowExpiryPrompt =
+    cookSession?.cancellation_reason === 'expired' &&
+    !cookSession.expired_prompt_seen_at;
+  const shouldRedirectToRecipe =
+    cookSession !== undefined &&
+    cookSession.status !== 'active' &&
+    !shouldShowExpiryPrompt &&
+    !isCompletionSummaryOpen;
+  const acknowledgeExpiryMutation = useMutation({
+    mutationFn: () => acknowledgeCookSessionExpiry(cookSessionId),
+    onSuccess: () => {
+      navigate(`/recipes/${cookSession?.recipe_id}`, { replace: true });
+    },
+  });
   const createReplacementMutation = useMutation({
-    mutationFn: createCookSession,
+    mutationFn: async (recipeId: number) => {
+      await acknowledgeCookSessionExpiry(cookSessionId);
+      return createCookSession(recipeId);
+    },
     onSuccess: ({ data }) => {
       queryClient.invalidateQueries({ queryKey: ['cook-sessions'] });
       navigate(`/cook-sessions/${data.cookSession.id}`, { replace: true });
@@ -341,6 +359,8 @@ export default function CookSessionPage() {
           <p className="text-text-600">Loading your prep list…</p>
         ) : error || !cookSession ? (
           <ErrorMessage message="We couldn’t load this prep list. Please try again." />
+        ) : shouldRedirectToRecipe ? (
+          <Navigate to={`/recipes/${cookSession.recipe_id}`} replace />
         ) : (
           <div className="space-y-8">
             <Link
@@ -503,17 +523,19 @@ export default function CookSessionPage() {
           }
         />
       )}
-      {cookSession?.cancellation_reason === 'expired' && (
+      {shouldShowExpiryPrompt && cookSession && (
         <ExpiredCookSessionDialog
           recipeTitle={cookSession.recipe_title}
-          isPending={createReplacementMutation.isPending}
-          error={createReplacementMutation.error}
+          isPending={
+            acknowledgeExpiryMutation.isPending || createReplacementMutation.isPending
+          }
+          error={
+            createReplacementMutation.error ?? acknowledgeExpiryMutation.error
+          }
           onCreateNew={() =>
             createReplacementMutation.mutate(cookSession.recipe_id)
           }
-          onBack={() =>
-            navigate(`/recipes/${cookSession.recipe_id}`, { replace: true })
-          }
+          onBack={() => acknowledgeExpiryMutation.mutate()}
         />
       )}
     </main>

@@ -7,6 +7,7 @@ import ErrorMessage from '../components/ui/ErrorMessage';
 import {
   cancelCookSession,
   completeCookSession,
+  createCookSession,
   getCookSession,
   type CookSessionDetailResponse,
   type CookSessionItem,
@@ -187,6 +188,72 @@ function CompletionSummaryModal({
   );
 }
 
+type ExpiredCookSessionDialogProps = {
+  recipeTitle: string;
+  isPending: boolean;
+  error: Error | null;
+  onCreateNew: () => void;
+  onBack: () => void;
+};
+
+function ExpiredCookSessionDialog({
+  recipeTitle,
+  isPending,
+  error,
+  onCreateNew,
+  onBack,
+}: ExpiredCookSessionDialogProps) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-text-950/50 p-4">
+      <section
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="expired-cook-session-title"
+        aria-describedby="expired-cook-session-description"
+        className="w-full max-w-md rounded-2xl bg-background-50 p-6 shadow-xl"
+      >
+        <p className="text-sm font-bold uppercase tracking-wide text-primary-700">
+          Prep list expired
+        </p>
+        <h1
+          id="expired-cook-session-title"
+          className="mt-1 text-2xl font-bold text-text-950"
+        >
+          Start a fresh prep list?
+        </h1>
+        <p
+          id="expired-cook-session-description"
+          className="mt-3 text-sm leading-6 text-text-700"
+        >
+          Your {recipeTitle} prep list was inactive for more than seven days,
+          so it has expired. A new list will use the recipe&apos;s current
+          ingredients.
+        </p>
+        {error && <ErrorMessage className="mt-4" message={error.message} />}
+        <div className="mt-6 flex flex-wrap justify-end gap-3">
+          <button
+            type="button"
+            className="rounded-lg border border-background-300 bg-background-50 px-4 py-2.5 text-sm font-bold text-text-700 transition hover:bg-background-100 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isPending}
+            onClick={onBack}
+          >
+            Back to recipe
+          </button>
+          <button
+            type="button"
+            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isPending}
+            onClick={onCreateNew}
+            autoFocus
+          >
+            {isPending ? 'Creating...' : 'Create new prep list'}
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export default function CookSessionPage() {
   const { id } = useParams();
   const cookSessionId = Number(id);
@@ -207,6 +274,13 @@ export default function CookSessionPage() {
   const neededItems = items.filter((item) => item.status === 'need');
   const unsureItems = items.filter((item) => item.status === 'unknown');
   const availableItems = items.filter((item) => item.status === 'have');
+  const createReplacementMutation = useMutation({
+    mutationFn: createCookSession,
+    onSuccess: ({ data }) => {
+      queryClient.invalidateQueries({ queryKey: ['cook-sessions'] });
+      navigate(`/cook-sessions/${data.cookSession.id}`, { replace: true });
+    },
+  });
   const updateItemMutation = useMutation({
     mutationFn: ({
       cookSessionItemId,
@@ -305,7 +379,8 @@ export default function CookSessionPage() {
               </section>
             )}
 
-            <section className="rounded-2xl border border-background-300 bg-background-50 p-6 shadow-lg sm:p-8">
+            {cookSession.status === 'active' && (
+              <section className="rounded-2xl border border-background-300 bg-background-50 p-6 shadow-lg sm:p-8">
               <h2 className="text-2xl font-bold text-text-950">Ingredients</h2>
               {items.length === 0 ? (
                 <p className="mt-5 text-sm text-text-600">
@@ -412,7 +487,8 @@ export default function CookSessionPage() {
                   </div>
                 </div>
               )}
-            </section>
+              </section>
+            )}
           </div>
         )}
       </div>
@@ -423,6 +499,19 @@ export default function CookSessionPage() {
           unsureItems={unsureItems}
           availableItems={availableItems}
           onClose={() =>
+            navigate(`/recipes/${cookSession.recipe_id}`, { replace: true })
+          }
+        />
+      )}
+      {cookSession?.cancellation_reason === 'expired' && (
+        <ExpiredCookSessionDialog
+          recipeTitle={cookSession.recipe_title}
+          isPending={createReplacementMutation.isPending}
+          error={createReplacementMutation.error}
+          onCreateNew={() =>
+            createReplacementMutation.mutate(cookSession.recipe_id)
+          }
+          onBack={() =>
             navigate(`/recipes/${cookSession.recipe_id}`, { replace: true })
           }
         />

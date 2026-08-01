@@ -11,6 +11,8 @@ export interface CookSession {
   created_at: string;
   updated_at: string;
   completed_at: string | null;
+  cancelled_at: string | null;
+  cancellation_reason: 'manual' | 'expired' | null;
 }
 
 export interface CookSessionSummary extends CookSession {

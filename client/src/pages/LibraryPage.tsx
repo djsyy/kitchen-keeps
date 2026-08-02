@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   LuArrowLeft,
   LuBookOpen,
   LuClock3,
+  LuEllipsisVertical,
   LuNotebookPen,
   LuPencil,
   LuPlus,
@@ -24,6 +25,7 @@ import {
   type CreateLibraryPayload,
   updateLibrary,
 } from '../services/libraryService';
+import type { Recipe } from '../services/recipeService';
 
 function formatCreatedDate(createdAt?: string) {
   if (!createdAt) {
@@ -188,62 +190,18 @@ export default function LibraryPage() {
               {recipes.length > 0 ? (
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
                   {recipes.map((recipe) => {
-                    const totalTime =
-                      (recipe.prep_time_minutes ?? 0) +
-                      (recipe.cook_time_minutes ?? 0);
                     const isRemoving =
                       removeRecipeMutation.isPending &&
                       removeRecipeMutation.variables === recipe.id;
 
                     return (
-                      <article
+                      <LibraryRecipeCard
                         key={recipe.id}
-                        className="overflow-hidden rounded-2xl border border-background-300 bg-background-50 shadow-sm"
-                      >
-                        <Link
-                          to={`/recipes/${recipe.id}`}
-                          className="block transition hover:bg-background-100"
-                        >
-                          {recipe.image_url ? (
-                            <img
-                              src={recipe.image_url}
-                              alt={recipe.title}
-                              className="h-32 w-full object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-32 items-center justify-center bg-secondary-100 text-secondary-800">
-                              <LuNotebookPen className="h-8 w-8" />
-                            </div>
-                          )}
-                          <div className="p-4">
-                            <h3 className="text-lg font-bold text-text-950">
-                              {recipe.title}
-                            </h3>
-                            {recipe.description && (
-                              <p className="mt-1 line-clamp-2 text-sm leading-5 text-text-600">
-                                {recipe.description}
-                              </p>
-                            )}
-                            {totalTime > 0 && (
-                              <p className="mt-3 text-sm text-text-600">
-                                {totalTime} min
-                              </p>
-                            )}
-                          </div>
-                        </Link>
-                        <div className="border-t border-background-200 px-4 py-3">
-                          <button
-                            type="button"
-                            className="text-sm font-bold text-primary transition hover:text-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
-                            disabled={removeRecipeMutation.isPending}
-                            onClick={() =>
-                              removeRecipeMutation.mutate(recipe.id)
-                            }
-                          >
-                            {isRemoving ? 'Removing...' : 'Remove'}
-                          </button>
-                        </div>
-                      </article>
+                        recipe={recipe}
+                        isRemoving={isRemoving}
+                        isRemovalPending={removeRecipeMutation.isPending}
+                        onRemove={() => removeRecipeMutation.mutate(recipe.id)}
+                      />
                     );
                   })}
                 </div>
@@ -294,5 +252,108 @@ export default function LibraryPage() {
         />
       )}
     </main>
+  );
+}
+
+type LibraryRecipeCardProps = {
+  recipe: Recipe;
+  isRemoving: boolean;
+  isRemovalPending: boolean;
+  onRemove: () => void;
+};
+
+function LibraryRecipeCard({
+  recipe,
+  isRemoving,
+  isRemovalPending,
+  onRemove,
+}: LibraryRecipeCardProps) {
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const cardRef = useRef<HTMLElement>(null);
+  const totalTime =
+    (recipe.prep_time_minutes ?? 0) + (recipe.cook_time_minutes ?? 0);
+
+  useEffect(() => {
+    if (!isOptionsOpen) {
+      return;
+    }
+
+    const closeOptionsOnOutsideClick = (event: PointerEvent) => {
+      if (!cardRef.current?.contains(event.target as Node)) {
+        setIsOptionsOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', closeOptionsOnOutsideClick);
+    return () =>
+      document.removeEventListener('pointerdown', closeOptionsOnOutsideClick);
+  }, [isOptionsOpen]);
+
+  return (
+    <article
+      ref={cardRef}
+      className="relative overflow-hidden rounded-2xl border border-background-300 bg-background-50 shadow-sm"
+    >
+      <button
+        type="button"
+        aria-label={`Show options for ${recipe.title}`}
+        aria-expanded={isOptionsOpen}
+        aria-haspopup="menu"
+        className="absolute top-3 right-3 z-10 rounded-md bg-background-50/90 p-1 text-text-600 transition hover:bg-background-100 hover:text-text-950"
+        onClick={() => setIsOptionsOpen((isOpen) => !isOpen)}
+      >
+        <LuEllipsisVertical className="h-5 w-5" />
+      </button>
+      {isOptionsOpen && (
+        <div
+          role="menu"
+          className="absolute top-12 right-3 z-10 w-44 rounded-lg border border-background-300 bg-background-50 p-1 shadow-md"
+        >
+          <Link
+            to={`/recipes/${recipe.id}`}
+            role="menuitem"
+            className="block w-full rounded-md px-3 py-2 text-left text-sm font-bold text-text-700 transition hover:bg-background-100"
+          >
+            Edit recipe
+          </Link>
+          <button
+            type="button"
+            role="menuitem"
+            className="w-full rounded-md px-3 py-2 text-left text-sm font-bold text-primary transition hover:bg-primary-100 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isRemovalPending}
+            onClick={onRemove}
+          >
+            {isRemoving ? 'Removing...' : 'Remove from library'}
+          </button>
+        </div>
+      )}
+      <Link
+        to={`/recipes/${recipe.id}`}
+        className="block transition hover:bg-background-100"
+      >
+        {recipe.image_url ? (
+          <img
+            src={recipe.image_url}
+            alt={recipe.title}
+            className="h-32 w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-32 items-center justify-center bg-secondary-100 text-secondary-800">
+            <LuNotebookPen className="h-8 w-8" />
+          </div>
+        )}
+        <div className="p-4">
+          <h3 className="text-lg font-bold text-text-950">{recipe.title}</h3>
+          {recipe.description && (
+            <p className="mt-1 line-clamp-2 text-sm leading-5 text-text-600">
+              {recipe.description}
+            </p>
+          )}
+          {totalTime > 0 && (
+            <p className="mt-3 text-sm text-text-600">{totalTime} min</p>
+          )}
+        </div>
+      </Link>
+    </article>
   );
 }

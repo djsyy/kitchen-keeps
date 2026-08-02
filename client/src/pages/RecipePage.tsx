@@ -6,6 +6,7 @@ import RecipeIngredientsSection from '../components/recipes/RecipeIngredientsSec
 import RecipeOverviewCard from '../components/recipes/RecipeOverviewCard';
 import RecipeStepsSection from '../components/recipes/RecipeStepsSection';
 import ErrorMessage from '../components/ui/ErrorMessage';
+import { RecipeDetailSkeleton } from '../components/ui/LoadingSkeletons';
 import { getRecipe } from '../services/recipeService';
 import { queryKeys } from '../utils/queryKeys';
 
@@ -19,6 +20,10 @@ export default function RecipePage() {
     enabled: isValidRecipeId,
   });
   const recipe = data?.data.recipe;
+
+  if (isValidRecipeId && isPending) {
+    return <RecipeDetailSkeleton />;
+  }
 
   return (
     <main className="bg-background min-h-screen">
@@ -37,8 +42,6 @@ export default function RecipePage() {
           <div className="mt-6">
             <ErrorMessage message="This recipe link is invalid." />
           </div>
-        ) : isPending ? (
-          <p className="text-text-600 mt-6">Loading recipe…</p>
         ) : error || !recipe ? (
           <div className="mt-6">
             <ErrorMessage message="We couldn’t load this recipe. Please try again." />

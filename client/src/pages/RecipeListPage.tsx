@@ -15,6 +15,7 @@ import EmptyPage from '../components/ui/EmptyPage';
 import RecipeGridPage from '../components/recipes/RecipeGridPage';
 import RecipeFormDialog from '../components/recipes/RecipeFormDialog';
 import RecipeDeleteDialog from '../components/recipes/RecipeDeleteDialog';
+import { RecipeListSkeleton } from '../components/ui/LoadingSkeletons';
 import { queryKeys } from '../utils/queryKeys';
 
 export default function RecipeListPage() {
@@ -70,6 +71,10 @@ export default function RecipeListPage() {
     },
   });
 
+  if (isPending) {
+    return <RecipeListSkeleton />;
+  }
+
   return (
     <main className="bg-background min-h-screen">
       <Navbar />
@@ -107,9 +112,7 @@ export default function RecipeListPage() {
         />
       )}
 
-      {isPending ? (
-        <p className="text-text-600 mt-6">Loading recipes…</p>
-      ) : error ? (
+      {error ? (
         <p className="text-text-600 mt-6">
           We couldn’t load your recipes. Please try again.
         </p>

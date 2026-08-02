@@ -16,6 +16,7 @@ import LibraryRecipePickerDialog from '../components/library/LibraryRecipePicker
 import RecipeImagePlaceholder from '../components/recipes/RecipeImagePlaceholder';
 import Navbar from '../components/layout/Navbar';
 import ErrorMessage from '../components/ui/ErrorMessage';
+import { LibraryDetailSkeleton } from '../components/ui/LoadingSkeletons';
 import { libraryColorClasses, libraryIcons } from '../config/libraryIcons';
 import useCardOptionsMenu from '../hooks/useCardOptionsMenu';
 import {
@@ -99,6 +100,10 @@ export default function LibraryPage() {
     ? libraryColorClasses[library.color_key]
     : libraryColorClasses.primary;
 
+  if (isValidLibraryId && isPending) {
+    return <LibraryDetailSkeleton />;
+  }
+
   return (
     <main className="bg-background min-h-screen">
       <Navbar />
@@ -116,8 +121,6 @@ export default function LibraryPage() {
           <div className="mt-6">
             <ErrorMessage message="This library link is invalid." />
           </div>
-        ) : isPending ? (
-          <p className="text-text-600 mt-6">Loading library…</p>
         ) : error || !library ? (
           <div className="mt-6">
             <ErrorMessage message="We couldn’t load this library. Please try again." />

@@ -7,6 +7,7 @@ import LibrariesPreviewSection from '../components/dashboard/LibrariesPreviewSec
 import PrepListPanel from '../components/dashboard/PrepListPanel';
 import QuickActions from '../components/dashboard/QuickActions';
 import RecipesPreviewSection from '../components/dashboard/RecipesPreviewSection';
+import { DashboardSkeleton } from '../components/ui/LoadingSkeletons';
 import type {
   DashboardMetric,
   LibraryPreview,
@@ -56,6 +57,10 @@ export default function DashboardPage() {
     queryKey: queryKeys.dashboard.summary,
     queryFn: getDashboard,
   });
+
+  if (isPending) {
+    return <DashboardSkeleton />;
+  }
 
   const dashboard = data?.data;
   const metrics: DashboardMetric[] = dashboard
@@ -137,9 +142,7 @@ export default function DashboardPage() {
       <Navbar />
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-        {isPending ? (
-          <p className="text-text-600">Loading your dashboard…</p>
-        ) : isError || !dashboard ? (
+        {isError || !dashboard ? (
           <p className="text-text-600">
             We couldn&apos;t load your dashboard. Please try again.
           </p>

@@ -7,6 +7,7 @@ import CookSessionIngredientsSection from '../components/cook-sessions/CookSessi
 import ExpiredCookSessionDialog from '../components/cook-sessions/ExpiredCookSessionDialog';
 import Navbar from '../components/layout/Navbar';
 import ErrorMessage from '../components/ui/ErrorMessage';
+import { CookSessionSkeleton } from '../components/ui/LoadingSkeletons';
 import {
   acknowledgeCookSessionExpiry,
   cancelCookSession,
@@ -110,6 +111,10 @@ export default function CookSessionPage() {
     },
   });
 
+  if (isValidCookSessionId && isPending) {
+    return <CookSessionSkeleton />;
+  }
+
   return (
     <main className="bg-background min-h-screen">
       <Navbar />
@@ -117,8 +122,6 @@ export default function CookSessionPage() {
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
         {!isValidCookSessionId ? (
           <ErrorMessage message="This prep list link is invalid." />
-        ) : isPending ? (
-          <p className="text-text-600">Loading your prep list…</p>
         ) : error || !cookSession ? (
           <ErrorMessage message="We couldn’t load this prep list. Please try again." />
         ) : shouldRedirectToRecipe ? (

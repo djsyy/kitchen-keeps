@@ -5,6 +5,7 @@ import Navbar from '../components/layout/Navbar';
 import ErrorMessage from '../components/ui/ErrorMessage';
 import Input from '../components/ui/Input';
 import Label from '../components/ui/Label';
+import { ProfileSkeleton } from '../components/ui/LoadingSkeletons';
 import { useCurrentUser } from '../hooks/useCurrentUser';
 import {
   deleteUser,
@@ -212,6 +213,10 @@ export default function ProfilePage() {
   const isEditingAnotherSetting = isEditingEmail || isEditingPassword;
   const isNameDirty = Boolean(user && name !== user.name);
 
+  if (isPending) {
+    return <ProfileSkeleton />;
+  }
+
   return (
     <main className="bg-background min-h-screen">
       <Navbar />
@@ -391,7 +396,7 @@ export default function ProfilePage() {
             <SettingsRow
               title="Your Email"
               description="This address is used to sign in and receive account recovery emails."
-              value={isPending ? 'Loading...' : (user?.email ?? '')}
+              value={user?.email ?? ''}
               actionLabel={isEditingEmail ? 'Editing' : 'Change'}
               onActionClick={() => {
                 setIsEditingEmail(true);

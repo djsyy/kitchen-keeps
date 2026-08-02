@@ -4,6 +4,7 @@ import LibraryDeleteDialog from '../components/library/LibraryDeleteDialog';
 import LibraryFormDialog from '../components/library/LibraryFormDialog';
 import LibraryGrid from '../components/library/LibraryGrid';
 import EmptyPage from '../components/ui/EmptyPage';
+import { LibraryListSkeleton } from '../components/ui/LoadingSkeletons';
 import { LuFolderPlus } from 'react-icons/lu';
 import {
   type CreateLibraryPayload,
@@ -16,14 +17,6 @@ import {
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { queryKeys } from '../utils/queryKeys';
-
-function LibraryLoading() {
-  return (
-    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <p className="text-text-600">Loading libraries…</p>
-    </section>
-  );
-}
 
 function LibraryError() {
   return (
@@ -96,6 +89,10 @@ export default function LibraryList() {
     },
   });
 
+  if (isPending) {
+    return <LibraryListSkeleton />;
+  }
+
   return (
     <main className="bg-background min-h-screen">
       <Navbar />
@@ -131,9 +128,7 @@ export default function LibraryList() {
           onConfirm={() => deleteLibraryMutation.mutate(deletingLibrary.id)}
         />
       )}
-      {isPending ? (
-        <LibraryLoading />
-      ) : isError ? (
+      {isError ? (
         <LibraryError />
       ) : libraries.length === 0 ? (
         <EmptyPage

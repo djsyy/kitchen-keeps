@@ -13,7 +13,9 @@ export default function QuickActions({ actions }: QuickActionsProps) {
         return (
           <button
             key={action.label}
+            type="button"
             className={`inline-flex h-12 items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${action.className}`}
+            onClick={action.onClick}
           >
             <ActionIcon className="h-4 w-4" />
             {action.label}

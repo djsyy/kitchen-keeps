@@ -6,6 +6,7 @@ type EmptyStateProps = {
   description: string;
   actionLabel: string;
   icon: IconType;
+  onAction: () => void;
 };
 
 export default function EmptyState({
@@ -13,6 +14,7 @@ export default function EmptyState({
   description,
   actionLabel,
   icon: EmptyIcon,
+  onAction,
 }: EmptyStateProps) {
   return (
     <article className="border-background-300 bg-background-50 rounded-lg border border-dashed p-6 shadow-sm">
@@ -21,7 +23,11 @@ export default function EmptyState({
       </span>
       <h3 className="text-text-950 text-xl font-bold">{title}</h3>
       <p className="text-text-600 mt-2 max-w-xl text-sm">{description}</p>
-      <button className="bg-primary text-text-100 hover:bg-primary-700 mt-5 inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-bold shadow-sm transition">
+      <button
+        type="button"
+        className="bg-primary text-text-100 hover:bg-primary-700 mt-5 inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-bold shadow-sm transition"
+        onClick={onAction}
+      >
         <LuPlus className="h-4 w-4" />
         {actionLabel}
       </button>

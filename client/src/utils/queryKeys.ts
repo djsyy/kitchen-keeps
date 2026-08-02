@@ -1,4 +1,7 @@
 export const queryKeys = {
+  dashboard: {
+    summary: ['dashboard'] as const,
+  },
   auth: {
     me: ['auth', 'me'] as const,
   },

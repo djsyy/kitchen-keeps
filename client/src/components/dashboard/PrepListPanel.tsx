@@ -3,9 +3,15 @@ import type { ActiveCookList } from './types';
 
 type PrepListPanelProps = {
   activeCookList: ActiveCookList | null;
+  onContinue: (cookSessionId: number) => void;
+  onBrowseRecipes: () => void;
 };
 
-export default function PrepListPanel({ activeCookList }: PrepListPanelProps) {
+export default function PrepListPanel({
+  activeCookList,
+  onContinue,
+  onBrowseRecipes,
+}: PrepListPanelProps) {
   return (
     <aside className="space-y-4">
       <section>
@@ -31,7 +37,11 @@ export default function PrepListPanel({ activeCookList }: PrepListPanelProps) {
               {activeCookList.checkedCount} of {activeCookList.totalCount}{' '}
               checked
             </p>
-            <button className="bg-secondary text-background-50 hover:bg-secondary-700 mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold shadow-sm transition">
+            <button
+              type="button"
+              className="bg-secondary text-background-50 hover:bg-secondary-700 mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold shadow-sm transition"
+              onClick={() => onContinue(activeCookList.id)}
+            >
               Continue
               <LuArrowRight className="h-4 w-4" />
             </button>
@@ -47,7 +57,11 @@ export default function PrepListPanel({ activeCookList }: PrepListPanelProps) {
             <p className="text-text-600 mt-2 text-sm">
               No recipe checklist in progress.
             </p>
-            <button className="border-text-200 bg-background-50 text-text-700 hover:border-text-300 hover:bg-background-100 mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border px-4 text-sm font-bold shadow-sm transition">
+            <button
+              type="button"
+              className="border-text-200 bg-background-50 text-text-700 hover:border-text-300 hover:bg-background-100 mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border px-4 text-sm font-bold shadow-sm transition"
+              onClick={onBrowseRecipes}
+            >
               Browse recipes
               <LuArrowRight className="h-4 w-4" />
             </button>

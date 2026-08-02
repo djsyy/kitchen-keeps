@@ -1,7 +1,7 @@
 import { LuNotebookPen } from 'react-icons/lu';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   type CreateRecipePayload,
   type Recipe,
@@ -20,6 +20,7 @@ import { queryKeys } from '../utils/queryKeys';
 export default function RecipeListPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const [deletingRecipe, setDeletingRecipe] = useState<Recipe | null>(null);
@@ -29,6 +30,17 @@ export default function RecipeListPage() {
   });
 
   const recipes = data?.data.recipes ?? [];
+
+  useEffect(() => {
+    if (searchParams.get('create') !== '1') {
+      return;
+    }
+
+    setIsCreateFormOpen(true);
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.delete('create');
+    setSearchParams(nextSearchParams, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const createRecipeMutation = useMutation({
     mutationFn: createRecipe,

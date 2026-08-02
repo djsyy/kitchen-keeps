@@ -13,8 +13,8 @@ import {
   updateLibrary,
   deleteLibrary,
 } from '../services/libraryService';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { queryKeys } from '../utils/queryKeys';
 
 function LibraryLoading() {
@@ -38,6 +38,7 @@ function LibraryError() {
 export default function LibraryList() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const [editingLibrary, setEditingLibrary] = useState<Library | null>(null);
   const [deletingLibrary, setDeletingLibrary] = useState<Library | null>(null);
@@ -47,6 +48,17 @@ export default function LibraryList() {
   });
 
   const libraries = data?.data.libraries ?? [];
+
+  useEffect(() => {
+    if (searchParams.get('create') !== '1') {
+      return;
+    }
+
+    setIsCreateFormOpen(true);
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.delete('create');
+    setSearchParams(nextSearchParams, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const createLibraryMutation = useMutation({
     mutationFn: createLibrary,

@@ -1,4 +1,4 @@
-import { type MouseEvent, useEffect, useRef, useState } from 'react';
+import { type MouseEvent, useState } from 'react';
 import {
   LuClock3,
   LuEllipsisVertical,
@@ -7,6 +7,7 @@ import {
   LuUsersRound,
 } from 'react-icons/lu';
 import type { Recipe } from '../../services/recipeService';
+import useCardOptionsMenu from '../../hooks/useCardOptionsMenu';
 import RecipeImagePlaceholder from './RecipeImagePlaceholder';
 
 type RecipeGridProps = {
@@ -94,27 +95,12 @@ function RecipeCard({
   onDelete: (recipe: Recipe) => void;
 }) {
   const totalTime = (recipe.prep_time_minutes ?? 0) + (recipe.cook_time_minutes ?? 0);
-  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-  const cardRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    if (!isOptionsOpen) {
-      return;
-    }
-
-    const closeOptionsOnOutsideClick = (event: PointerEvent) => {
-      if (!cardRef.current?.contains(event.target as Node)) {
-        setIsOptionsOpen(false);
-      }
-    };
-
-    document.addEventListener('pointerdown', closeOptionsOnOutsideClick);
-    return () => document.removeEventListener('pointerdown', closeOptionsOnOutsideClick);
-  }, [isOptionsOpen]);
+  const { containerRef, isOptionsOpen, toggleOptions } =
+    useCardOptionsMenu<HTMLElement>();
 
   return (
     <article
-      ref={cardRef}
+      ref={containerRef}
       className="relative cursor-pointer overflow-hidden rounded-2xl border border-background-300 bg-background-50 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
       onClick={() => onOpen(recipe)}
     >
@@ -139,7 +125,7 @@ function RecipeCard({
           className="absolute top-3 right-3 rounded-md bg-background-50/90 p-1 text-text-600 transition hover:bg-background-100 hover:text-text-950"
           onClick={(event) => {
             event.stopPropagation();
-            setIsOptionsOpen((isOpen) => !isOpen);
+            toggleOptions();
           }}
         >
           <LuEllipsisVertical className="h-5 w-5" />

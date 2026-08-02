@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import {
   LuArrowLeft,
   LuBookOpen,
@@ -17,6 +17,7 @@ import RecipeImagePlaceholder from '../components/recipes/RecipeImagePlaceholder
 import Navbar from '../components/layout/Navbar';
 import ErrorMessage from '../components/ui/ErrorMessage';
 import { libraryColorClasses, libraryIcons } from '../config/libraryIcons';
+import useCardOptionsMenu from '../hooks/useCardOptionsMenu';
 import {
   addRecipeToLibrary,
   deleteLibrary,
@@ -268,30 +269,14 @@ function LibraryRecipeCard({
   isRemovalPending,
   onRemove,
 }: LibraryRecipeCardProps) {
-  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-  const cardRef = useRef<HTMLElement>(null);
+  const { containerRef, isOptionsOpen, toggleOptions } =
+    useCardOptionsMenu<HTMLElement>();
   const totalTime =
     (recipe.prep_time_minutes ?? 0) + (recipe.cook_time_minutes ?? 0);
 
-  useEffect(() => {
-    if (!isOptionsOpen) {
-      return;
-    }
-
-    const closeOptionsOnOutsideClick = (event: PointerEvent) => {
-      if (!cardRef.current?.contains(event.target as Node)) {
-        setIsOptionsOpen(false);
-      }
-    };
-
-    document.addEventListener('pointerdown', closeOptionsOnOutsideClick);
-    return () =>
-      document.removeEventListener('pointerdown', closeOptionsOnOutsideClick);
-  }, [isOptionsOpen]);
-
   return (
     <article
-      ref={cardRef}
+      ref={containerRef}
       className="relative overflow-hidden rounded-2xl border border-background-300 bg-background-50 shadow-sm"
     >
       <button
@@ -300,7 +285,7 @@ function LibraryRecipeCard({
         aria-expanded={isOptionsOpen}
         aria-haspopup="menu"
         className="absolute top-3 right-3 z-10 rounded-md bg-background-50/90 p-1 text-text-600 transition hover:bg-background-100 hover:text-text-950"
-        onClick={() => setIsOptionsOpen((isOpen) => !isOpen)}
+        onClick={toggleOptions}
       >
         <LuEllipsisVertical className="h-5 w-5" />
       </button>

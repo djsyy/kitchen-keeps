@@ -1,6 +1,7 @@
-import { type MouseEvent, useEffect, useRef, useState } from 'react';
+import { type MouseEvent, useState } from 'react';
 import { LuEllipsisVertical, LuPlus, LuSearch } from 'react-icons/lu';
 import { libraryColorClasses, libraryIcons } from '../../config/libraryIcons';
+import useCardOptionsMenu from '../../hooks/useCardOptionsMenu';
 import type { Library } from '../../services/libraryService';
 
 type LibraryGridProps = {
@@ -85,31 +86,14 @@ function LibraryCard({
   onEdit: (library: Library) => void;
   onDelete: (library: Library) => void;
 }) {
-  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-  const cardRef = useRef<HTMLElement>(null);
+  const { containerRef, isOptionsOpen, setIsOptionsOpen, toggleOptions } =
+    useCardOptionsMenu<HTMLElement>();
   const Icon = libraryIcons[library.icon_key];
   const colorClass = libraryColorClasses[library.color_key];
 
-  useEffect(() => {
-    if (!isOptionsOpen) {
-      return;
-    }
-
-    const closeOptionsOnOutsideClick = (event: PointerEvent) => {
-      if (!cardRef.current?.contains(event.target as Node)) {
-        setIsOptionsOpen(false);
-      }
-    };
-
-    document.addEventListener('pointerdown', closeOptionsOnOutsideClick);
-    return () => {
-      document.removeEventListener('pointerdown', closeOptionsOnOutsideClick);
-    };
-  }, [isOptionsOpen]);
-
   return (
     <article
-      ref={cardRef}
+      ref={containerRef}
       className={`relative flex min-h-52 cursor-pointer flex-col justify-between rounded-3xl border bg-background-50 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${colorClass.split(' ')[0]}`}
       onClick={() => onOpen(library)}
     >
@@ -127,7 +111,7 @@ function LibraryCard({
           className="rounded-md p-1 text-text-600 transition hover:bg-background-100 hover:text-text-950"
           onClick={(event) => {
             event.stopPropagation();
-            setIsOptionsOpen((isOpen) => !isOpen);
+            toggleOptions();
           }}
         >
           <LuEllipsisVertical className="h-5 w-5" />

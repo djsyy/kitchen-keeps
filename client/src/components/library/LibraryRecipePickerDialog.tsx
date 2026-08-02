@@ -42,7 +42,7 @@ export default function LibraryRecipePickerDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-text-950/50 p-4"
+      className="bg-text-950/50 fixed inset-0 z-50 flex items-center justify-center p-4"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget && !isPending) {
@@ -54,16 +54,16 @@ export default function LibraryRecipePickerDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="library-recipe-picker-title"
-        className="max-h-[calc(100vh-2rem)] w-full max-w-xl overflow-y-auto rounded-2xl bg-background-50 p-6 shadow-xl"
+        className="bg-background-50 max-h-[calc(100vh-2rem)] w-full max-w-xl overflow-y-auto rounded-2xl p-6 shadow-xl"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-text-500">
+            <p className="text-text-500 text-sm font-bold tracking-wide uppercase">
               Collection
             </p>
             <h1
               id="library-recipe-picker-title"
-              className="mt-1 text-2xl font-bold text-text-950"
+              className="text-text-950 mt-1 text-2xl font-bold"
             >
               Add a recipe
             </h1>
@@ -71,7 +71,7 @@ export default function LibraryRecipePickerDialog({
           <button
             type="button"
             aria-label="Close"
-            className="rounded-lg p-2 text-text-600 transition hover:bg-background-100 hover:text-text-950 disabled:cursor-not-allowed disabled:opacity-60"
+            className="text-text-600 hover:bg-background-100 hover:text-text-950 rounded-lg p-2 transition disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isPending}
             onClick={onClose}
           >
@@ -83,12 +83,12 @@ export default function LibraryRecipePickerDialog({
           <label className="sr-only" htmlFor="library-recipe-search">
             Search recipes
           </label>
-          <LuSearch className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-text-500" />
+          <LuSearch className="text-text-500 pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />
           <input
             id="library-recipe-search"
             type="search"
             placeholder="Search your recipes..."
-            className="w-full rounded-xl border border-background-300 bg-background-50 py-3 pr-4 pl-11 text-sm text-text-900 shadow-sm outline-none transition placeholder:text-text-400 focus:border-primary focus:ring focus:ring-primary-100"
+            className="border-background-300 bg-background-50 text-text-900 placeholder:text-text-400 focus:border-primary focus:ring-primary-100 w-full rounded-xl border py-3 pr-4 pl-11 text-sm shadow-sm transition outline-none focus:ring"
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.currentTarget.value)}
             autoFocus
@@ -107,27 +107,27 @@ export default function LibraryRecipePickerDialog({
         )}
 
         {areRecipesPending ? (
-          <p className="mt-6 text-sm text-text-600">Loading recipes…</p>
+          <p className="text-text-600 mt-6 text-sm">Loading recipes…</p>
         ) : availableRecipes.length > 0 ? (
-          <ul className="mt-5 divide-y divide-background-200 rounded-xl border border-background-200">
+          <ul className="divide-background-200 border-background-200 mt-5 divide-y rounded-xl border">
             {availableRecipes.map((recipe) => (
               <li
                 key={recipe.id}
                 className="flex items-center justify-between gap-4 px-4 py-3"
               >
                 <div className="min-w-0">
-                  <p className="truncate font-bold text-text-950">
+                  <p className="text-text-950 truncate font-bold">
                     {recipe.title}
                   </p>
                   {recipe.description && (
-                    <p className="mt-1 line-clamp-2 text-sm text-text-600">
+                    <p className="text-text-600 mt-1 line-clamp-2 text-sm">
                       {recipe.description}
                     </p>
                   )}
                 </div>
                 <button
                   type="button"
-                  className="shrink-0 rounded-lg bg-primary px-3 py-2 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="bg-primary text-text-50 hover:bg-primary-700 shrink-0 rounded-lg px-3 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
                   disabled={isPending}
                   onClick={() => onAdd(recipe.id)}
                 >
@@ -137,7 +137,7 @@ export default function LibraryRecipePickerDialog({
             ))}
           </ul>
         ) : (
-          <p className="mt-6 rounded-xl border border-dashed border-background-300 px-4 py-8 text-center text-sm text-text-600">
+          <p className="border-background-300 text-text-600 mt-6 rounded-xl border border-dashed px-4 py-8 text-center text-sm">
             {searchTerm
               ? `No recipes match “${searchTerm}”.`
               : recipes.length === 0

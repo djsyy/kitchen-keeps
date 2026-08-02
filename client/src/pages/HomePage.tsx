@@ -5,7 +5,7 @@ export default function HomePage() {
   const { data: user, isPending } = useCurrentUser();
 
   if (isPending) {
-    return <p className="p-6 text-text-600">Loading…</p>;
+    return <p className="text-text-600 p-6">Loading…</p>;
   }
 
   return <Navigate to={user ? '/dashboard' : '/login'} replace />;

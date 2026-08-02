@@ -47,7 +47,7 @@ export default function RecipeFormDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-text-950/50 p-4"
+      className="bg-text-950/50 fixed inset-0 z-50 flex items-center justify-center p-4"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget && !isPending) {
@@ -60,19 +60,19 @@ export default function RecipeFormDialog({
         aria-modal="true"
         aria-labelledby="recipe-form-title"
         aria-describedby="recipe-form-description"
-        className="flex max-h-full w-full max-w-2xl flex-col gap-4 overflow-y-auto rounded-3xl border border-background-300 bg-background-50 p-6 shadow-xl"
+        className="border-background-300 bg-background-50 flex max-h-full w-full max-w-2xl flex-col gap-4 overflow-y-auto rounded-3xl border p-6 shadow-xl"
         onSubmit={handleSubmit}
       >
         <div>
           <h1
             id="recipe-form-title"
-            className="text-xl font-bold text-text-950"
+            className="text-text-950 text-xl font-bold"
           >
             {isEditing ? 'Edit recipe' : 'Create a recipe'}
           </h1>
           <p
             id="recipe-form-description"
-            className="mt-1 text-sm text-text-600"
+            className="text-text-600 mt-1 text-sm"
           >
             {isEditing
               ? 'Update this recipe’s details.'
@@ -80,10 +80,10 @@ export default function RecipeFormDialog({
           </p>
         </div>
 
-        <label className="flex flex-col gap-2 text-sm font-bold text-text-800">
+        <label className="text-text-800 flex flex-col gap-2 text-sm font-bold">
           Title
           <input
-            className="rounded-lg border border-background-300 bg-white px-3 py-2 text-text-950 outline-none focus:border-primary focus:ring focus:ring-primary-100"
+            className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
             maxLength={255}
             required
             value={title}
@@ -91,23 +91,23 @@ export default function RecipeFormDialog({
           />
         </label>
 
-        <label className="flex flex-col gap-2 text-sm font-bold text-text-800">
+        <label className="text-text-800 flex flex-col gap-2 text-sm font-bold">
           Description{' '}
-          <span className="font-normal text-text-500">(optional)</span>
+          <span className="text-text-500 font-normal">(optional)</span>
           <textarea
-            className="min-h-24 rounded-lg border border-background-300 bg-white px-3 py-2 text-text-950 outline-none focus:border-primary focus:ring focus:ring-primary-100"
+            className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 min-h-24 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
             maxLength={1000}
             value={description}
             onChange={(event) => setDescription(event.currentTarget.value)}
           />
         </label>
 
-        <label className="flex flex-col gap-2 text-sm font-bold text-text-800">
+        <label className="text-text-800 flex flex-col gap-2 text-sm font-bold">
           Image URL{' '}
-          <span className="font-normal text-text-500">(optional)</span>
+          <span className="text-text-500 font-normal">(optional)</span>
           <input
             type="url"
-            className="rounded-lg border border-background-300 bg-white px-3 py-2 text-text-950 outline-none focus:border-primary focus:ring focus:ring-primary-100"
+            className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
             maxLength={2048}
             placeholder="https://example.com/recipe.jpg"
             value={imageUrl}
@@ -137,7 +137,7 @@ export default function RecipeFormDialog({
         <div className="flex justify-end gap-3">
           <button
             type="button"
-            className="rounded-lg px-4 py-2.5 text-sm font-bold text-text-700 transition hover:bg-background-100"
+            className="text-text-700 hover:bg-background-100 rounded-lg px-4 py-2.5 text-sm font-bold transition"
             disabled={isPending}
             onClick={onCancel}
           >
@@ -145,7 +145,7 @@ export default function RecipeFormDialog({
           </button>
           <button
             type="submit"
-            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="bg-primary text-text-50 hover:bg-primary-700 rounded-lg px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isPending || !title.trim()}
           >
             {isPending
@@ -172,13 +172,13 @@ function NumberField({
   onChange: (value: string) => void;
 }) {
   return (
-    <label className="flex flex-col gap-2 text-sm font-bold text-text-800">
-      {label} <span className="font-normal text-text-500">(optional)</span>
+    <label className="text-text-800 flex flex-col gap-2 text-sm font-bold">
+      {label} <span className="text-text-500 font-normal">(optional)</span>
       <input
         type="number"
         min="1"
         step="1"
-        className="rounded-lg border border-background-300 bg-white px-3 py-2 text-text-950 outline-none focus:border-primary focus:ring focus:ring-primary-100"
+        className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
         value={value}
         onChange={(event) => onChange(event.currentTarget.value)}
       />

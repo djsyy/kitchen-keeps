@@ -14,8 +14,8 @@ export default function SectionHeader({
   return (
     <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h2 className="text-2xl font-bold text-text-950">{title}</h2>
-        <p className="text-sm text-text-500">{description}</p>
+        <h2 className="text-text-950 text-2xl font-bold">{title}</h2>
+        <p className="text-text-500 text-sm">{description}</p>
       </div>
       {actions}
     </div>

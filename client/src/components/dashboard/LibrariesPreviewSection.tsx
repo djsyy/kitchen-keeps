@@ -12,7 +12,7 @@ function LibraryCard({ library }: { library: LibraryPreview }) {
 
   return (
     <article
-      className={`rounded-lg border bg-background-50 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${library.borderClass}`}
+      className={`bg-background-50 rounded-lg border p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${library.borderClass}`}
     >
       <div className="mb-5 flex items-start justify-between gap-4">
         <span
@@ -20,15 +20,15 @@ function LibraryCard({ library }: { library: LibraryPreview }) {
         >
           <LibraryIcon className="h-5 w-5" />
         </span>
-        <span className="rounded-full bg-background-100 px-3 py-1 text-sm font-bold text-text-700">
+        <span className="bg-background-100 text-text-700 rounded-full px-3 py-1 text-sm font-bold">
           {library.recipeCount}
         </span>
       </div>
-      <h3 className="text-xl font-bold text-text-950">{library.title}</h3>
-      <p className="mt-2 min-h-10 text-sm text-text-600">
+      <h3 className="text-text-950 text-xl font-bold">{library.title}</h3>
+      <p className="text-text-600 mt-2 min-h-10 text-sm">
         {library.description}
       </p>
-      <p className="mt-5 flex items-center gap-2 text-sm font-bold text-text-500">
+      <p className="text-text-500 mt-5 flex items-center gap-2 text-sm font-bold">
         <LuClock3 className="h-4 w-4" />
         {library.updatedAt}
       </p>
@@ -39,11 +39,11 @@ function LibraryCard({ library }: { library: LibraryPreview }) {
 function SectionActions() {
   return (
     <div className="flex gap-2">
-      <button className="inline-flex h-10 items-center gap-2 rounded-lg border border-primary-200 bg-primary-100 px-3 text-sm font-bold text-primary-900 shadow-sm transition hover:border-primary-300 hover:bg-primary-200">
+      <button className="border-primary-200 bg-primary-100 text-primary-900 hover:border-primary-300 hover:bg-primary-200 inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-bold shadow-sm transition">
         <LuPlus className="h-4 w-4" />
         New
       </button>
-      <button className="inline-flex h-10 items-center gap-2 rounded-lg border border-text-200 bg-background-50 px-3 text-sm font-bold text-text-700 shadow-sm transition hover:border-text-300 hover:bg-background-100">
+      <button className="border-text-200 bg-background-50 text-text-700 hover:border-text-300 hover:bg-background-100 inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-bold shadow-sm transition">
         View all
         <LuArrowRight className="h-4 w-4" />
       </button>

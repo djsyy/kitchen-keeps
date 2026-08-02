@@ -21,13 +21,13 @@ export default function RecipePage() {
   const recipe = data?.data.recipe;
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="bg-background min-h-screen">
       <Navbar />
 
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
         <Link
           to="/recipes"
-          className="inline-flex items-center gap-2 text-sm font-bold text-text-600 transition hover:text-text-950"
+          className="text-text-600 hover:text-text-950 inline-flex items-center gap-2 text-sm font-bold transition"
         >
           <LuArrowLeft className="h-4 w-4" />
           All recipes
@@ -38,7 +38,7 @@ export default function RecipePage() {
             <ErrorMessage message="This recipe link is invalid." />
           </div>
         ) : isPending ? (
-          <p className="mt-6 text-text-600">Loading recipe…</p>
+          <p className="text-text-600 mt-6">Loading recipe…</p>
         ) : error || !recipe ? (
           <div className="mt-6">
             <ErrorMessage message="We couldn’t load this recipe. Please try again." />

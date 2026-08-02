@@ -32,13 +32,13 @@ export default function RegisterForm() {
   return (
     <form className="flex w-full flex-col gap-5" onSubmit={handleSubmit}>
       <div className="flex justify-center">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-50 text-primary">
+        <div className="bg-primary-50 text-primary flex h-12 w-12 items-center justify-center rounded-full">
           <VscAccount className="h-7 w-7" />
         </div>
       </div>
 
       <div className="text-center">
-        <h2 className="text-xl font-bold text-text-900">Create an account</h2>
+        <h2 className="text-text-900 text-xl font-bold">Create an account</h2>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -99,17 +99,17 @@ export default function RegisterForm() {
 
       <button
         type="submit"
-        className="w-full rounded-md bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+        className="bg-primary text-text-50 hover:bg-primary-700 w-full rounded-md px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
         disabled={registerMutation.isPending}
       >
         {registerMutation.isPending ? 'Creating account...' : 'Create account'}
       </button>
 
-      <p className="text-center text-sm text-text-700">
+      <p className="text-text-700 text-center text-sm">
         Already have an account?{' '}
         <Link
           to="/login"
-          className="font-bold text-primary hover:text-primary-700"
+          className="text-primary hover:text-primary-700 font-bold"
         >
           Log in
         </Link>

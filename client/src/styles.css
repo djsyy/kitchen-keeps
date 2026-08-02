@@ -87,7 +87,7 @@
   html,
   body,
   #root {
-    @apply min-h-screen bg-background font-sans text-text;
+    @apply bg-background text-text min-h-screen font-sans;
   }
 
   :root {

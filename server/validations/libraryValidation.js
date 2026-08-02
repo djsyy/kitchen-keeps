@@ -13,7 +13,10 @@ import {
 
 const libraryFields = ['name', 'description', 'icon_key', 'color_key'];
 const libraryIdParam = positiveIntegerParam('id', 'Id');
-const membershipLibraryIdParam = positiveIntegerParam('libraryId', 'Library id');
+const membershipLibraryIdParam = positiveIntegerParam(
+  'libraryId',
+  'Library id'
+);
 const recipeIdParam = positiveIntegerParam('recipeId', 'Recipe id');
 
 // Create library validation rules

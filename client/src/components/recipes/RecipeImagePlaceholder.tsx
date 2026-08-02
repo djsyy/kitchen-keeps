@@ -13,7 +13,7 @@ export default function RecipeImagePlaceholder({
     <div
       role="img"
       aria-label="Recipe image placeholder"
-      className={`flex items-center justify-center bg-background-100 text-text-500 ${className}`}
+      className={`bg-background-100 text-text-500 flex items-center justify-center ${className}`}
     >
       <LuImagePlus aria-hidden="true" className={iconClassName} />
     </div>

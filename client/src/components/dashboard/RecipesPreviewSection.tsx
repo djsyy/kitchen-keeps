@@ -11,17 +11,17 @@ function RecipeRow({ recipe }: { recipe: RecipePreview }) {
   const RecipeIcon = recipe.icon;
 
   return (
-    <article className="grid gap-4 rounded-lg border border-background-200 bg-background-50 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
+    <article className="border-background-200 bg-background-50 grid gap-4 rounded-lg border p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
       <span
         className={`flex h-12 w-12 items-center justify-center rounded-lg ${recipe.iconClass}`}
       >
         <RecipeIcon className="h-6 w-6" />
       </span>
       <div className="min-w-0">
-        <h3 className="truncate text-base font-bold text-text-950">
+        <h3 className="text-text-950 truncate text-base font-bold">
           {recipe.title}
         </h3>
-        <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-text-500">
+        <p className="text-text-500 mt-1 flex flex-wrap items-center gap-2 text-sm">
           <LuFolderPlus className="h-4 w-4" />
           {recipe.library}
           <span className="text-text-300">/</span>
@@ -29,10 +29,10 @@ function RecipeRow({ recipe }: { recipe: RecipePreview }) {
         </p>
       </div>
       <div className="flex items-center gap-2 sm:justify-end">
-        <span className="inline-flex h-9 items-center justify-center rounded-full bg-background-100 px-3 text-sm font-bold text-text-700">
+        <span className="bg-background-100 text-text-700 inline-flex h-9 items-center justify-center rounded-full px-3 text-sm font-bold">
           {recipe.ingredientCount} ingredients
         </span>
-        <button className="inline-flex h-9 items-center justify-center rounded-lg border border-text-200 bg-background-50 px-3 text-sm font-bold text-text-700 shadow-sm transition hover:border-text-300 hover:bg-background-100">
+        <button className="border-text-200 bg-background-50 text-text-700 hover:border-text-300 hover:bg-background-100 inline-flex h-9 items-center justify-center rounded-lg border px-3 text-sm font-bold shadow-sm transition">
           Open
         </button>
       </div>
@@ -43,11 +43,11 @@ function RecipeRow({ recipe }: { recipe: RecipePreview }) {
 function SectionActions() {
   return (
     <div className="flex gap-2">
-      <button className="inline-flex h-10 items-center gap-2 rounded-lg border border-primary-200 bg-primary-100 px-3 text-sm font-bold text-primary-900 shadow-sm transition hover:border-primary-300 hover:bg-primary-200">
+      <button className="border-primary-200 bg-primary-100 text-primary-900 hover:border-primary-300 hover:bg-primary-200 inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-bold shadow-sm transition">
         <LuPlus className="h-4 w-4" />
         New
       </button>
-      <button className="inline-flex h-10 items-center gap-2 rounded-lg border border-text-200 bg-background-50 px-3 text-sm font-bold text-text-700 shadow-sm transition hover:border-text-300 hover:bg-background-100">
+      <button className="border-text-200 bg-background-50 text-text-700 hover:border-text-300 hover:bg-background-100 inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-bold shadow-sm transition">
         View all
         <LuArrowRight className="h-4 w-4" />
       </button>

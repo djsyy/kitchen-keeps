@@ -15,7 +15,7 @@ export default function RecipeOverviewCard({ recipe }: { recipe: Recipe }) {
   const totalTime = getRecipeTotalTime(recipe);
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-background-300 bg-background-50 shadow-lg">
+    <section className="border-background-300 bg-background-50 overflow-hidden rounded-2xl border shadow-lg">
       <div className="grid lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)] lg:items-stretch">
         {recipe.image_url ? (
           <img
@@ -25,7 +25,7 @@ export default function RecipeOverviewCard({ recipe }: { recipe: Recipe }) {
           />
         ) : (
           <RecipeImagePlaceholder
-            className="relative z-10 h-64 w-full border-b border-background-300 lg:h-full lg:min-h-80 lg:border-r lg:border-b-0 lg:shadow-lg"
+            className="border-background-300 relative z-10 h-64 w-full border-b lg:h-full lg:min-h-80 lg:border-r lg:border-b-0 lg:shadow-lg"
             iconClassName="h-12 w-12"
           />
         )}
@@ -33,36 +33,36 @@ export default function RecipeOverviewCard({ recipe }: { recipe: Recipe }) {
           <button
             type="button"
             aria-label="Edit recipe"
-            className="absolute top-5 right-5 inline-flex h-10 w-10 items-center justify-center rounded-lg border border-background-300 bg-background-50 text-text-700 shadow-sm transition hover:bg-background-100 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="border-background-300 bg-background-50 text-text-700 hover:bg-background-100 hover:text-primary focus-visible:outline-primary absolute top-5 right-5 inline-flex h-10 w-10 items-center justify-center rounded-lg border shadow-sm transition focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             <LuPencil className="h-4 w-4" />
           </button>
-          <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary-700">
+          <p className="text-primary-700 text-sm font-bold tracking-[0.16em] uppercase">
             Your recipe
           </p>
-          <h1 className="mt-1 pr-12 text-3xl font-bold text-text-950 sm:text-4xl">
+          <h1 className="text-text-950 mt-1 pr-12 text-3xl font-bold sm:text-4xl">
             {recipe.title}
           </h1>
           {recipe.description && (
-            <p className="mt-3 max-w-xl text-sm leading-6 text-text-600">
+            <p className="text-text-600 mt-3 max-w-xl text-sm leading-6">
               {recipe.description}
             </p>
           )}
 
-          <div className="mt-6 grid gap-3 border-t border-background-200 pt-5 text-sm text-text-600 sm:grid-cols-2">
+          <div className="border-background-200 text-text-600 mt-6 grid gap-3 border-t pt-5 text-sm sm:grid-cols-2">
             {totalTime > 0 && (
-              <p className="flex items-center gap-2 rounded-lg bg-background-50/70 px-3 py-2.5">
-                <LuClock3 className="h-4 w-4 text-primary" />
+              <p className="bg-background-50/70 flex items-center gap-2 rounded-lg px-3 py-2.5">
+                <LuClock3 className="text-primary h-4 w-4" />
                 <span>{totalTime} minutes total</span>
               </p>
             )}
             {recipe.servings && (
-              <p className="flex items-center gap-2 rounded-lg bg-background-50/70 px-3 py-2.5">
-                <LuUsersRound className="h-4 w-4 text-primary" />
+              <p className="bg-background-50/70 flex items-center gap-2 rounded-lg px-3 py-2.5">
+                <LuUsersRound className="text-primary h-4 w-4" />
                 <span>{recipe.servings} servings</span>
               </p>
             )}
-            <p className="self-center px-1 text-text-500 sm:col-span-2">
+            <p className="text-text-500 self-center px-1 sm:col-span-2">
               {formatCreatedDate(recipe.created_at)}
             </p>
           </div>

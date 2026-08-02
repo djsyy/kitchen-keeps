@@ -10,44 +10,44 @@ export default function PrepListPanel({ activeCookList }: PrepListPanelProps) {
     <aside className="space-y-4">
       <section>
         <div className="mb-4">
-          <h2 className="text-2xl font-bold text-text-950">Prep List</h2>
-          <p className="text-sm text-text-500">Temporary recipe prep.</p>
+          <h2 className="text-text-950 text-2xl font-bold">Prep List</h2>
+          <p className="text-text-500 text-sm">Temporary recipe prep.</p>
         </div>
 
         {activeCookList ? (
-          <article className="rounded-lg border border-secondary-200 bg-secondary-50 p-5 shadow-sm">
+          <article className="border-secondary-200 bg-secondary-50 rounded-lg border p-5 shadow-sm">
             <div className="mb-5 flex items-start justify-between gap-4">
-              <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-secondary-100 text-secondary-800">
+              <span className="bg-secondary-100 text-secondary-800 flex h-11 w-11 items-center justify-center rounded-lg">
                 <LuCarrot className="h-5 w-5" />
               </span>
-              <span className="rounded-full bg-background-50 px-3 py-1 text-sm font-bold text-secondary-900">
+              <span className="bg-background-50 text-secondary-900 rounded-full px-3 py-1 text-sm font-bold">
                 {activeCookList.remainingCount} left
               </span>
             </div>
-            <h3 className="text-xl font-bold text-secondary-950">
+            <h3 className="text-secondary-950 text-xl font-bold">
               {activeCookList.recipeTitle}
             </h3>
-            <p className="mt-2 text-sm text-secondary-900">
+            <p className="text-secondary-900 mt-2 text-sm">
               {activeCookList.checkedCount} of {activeCookList.totalCount}{' '}
               checked
             </p>
-            <button className="mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-secondary px-4 text-sm font-bold text-background-50 shadow-sm transition hover:bg-secondary-700">
+            <button className="bg-secondary text-background-50 hover:bg-secondary-700 mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold shadow-sm transition">
               Continue
               <LuArrowRight className="h-4 w-4" />
             </button>
           </article>
         ) : (
-          <article className="rounded-lg border border-background-200 bg-background-50 p-5 shadow-sm">
-            <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-background-100 text-text-700">
+          <article className="border-background-200 bg-background-50 rounded-lg border p-5 shadow-sm">
+            <span className="bg-background-100 text-text-700 mb-4 flex h-11 w-11 items-center justify-center rounded-lg">
               <LuCarrot className="h-5 w-5" />
             </span>
-            <h3 className="text-xl font-bold text-text-950">
+            <h3 className="text-text-950 text-xl font-bold">
               No active prep list
             </h3>
-            <p className="mt-2 text-sm text-text-600">
+            <p className="text-text-600 mt-2 text-sm">
               No recipe checklist in progress.
             </p>
-            <button className="mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-text-200 bg-background-50 px-4 text-sm font-bold text-text-700 shadow-sm transition hover:border-text-300 hover:bg-background-100">
+            <button className="border-text-200 bg-background-50 text-text-700 hover:border-text-300 hover:bg-background-100 mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border px-4 text-sm font-bold shadow-sm transition">
               Browse recipes
               <LuArrowRight className="h-4 w-4" />
             </button>

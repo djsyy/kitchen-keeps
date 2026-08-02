@@ -18,7 +18,7 @@ export default function CookSessionCompletionSummaryModal({
 }: CookSessionCompletionSummaryModalProps) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-text-950/50 p-4"
+      className="bg-text-950/50 fixed inset-0 z-50 flex items-center justify-center p-4"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
@@ -31,41 +31,41 @@ export default function CookSessionCompletionSummaryModal({
         aria-modal="true"
         aria-labelledby="completion-summary-title"
         aria-describedby="completion-summary-description"
-        className="max-h-[calc(100vh-2rem)] w-full max-w-3xl overflow-y-auto rounded-2xl bg-background-50 p-6 shadow-xl sm:p-8"
+        className="bg-background-50 max-h-[calc(100vh-2rem)] w-full max-w-3xl overflow-y-auto rounded-2xl p-6 shadow-xl sm:p-8"
       >
-        <p className="text-sm font-bold uppercase tracking-wide text-text-500">
+        <p className="text-text-500 text-sm font-bold tracking-wide uppercase">
           Prep list complete
         </p>
         <h1
           id="completion-summary-title"
-          className="mt-1 text-2xl font-bold text-text-950"
+          className="text-text-950 mt-1 text-2xl font-bold"
         >
           Ingredient Summary
         </h1>
-        <p className="mt-1 text-sm font-bold text-text-800">{recipeTitle}</p>
+        <p className="text-text-800 mt-1 text-sm font-bold">{recipeTitle}</p>
         <p
           id="completion-summary-description"
-          className="mt-2 text-sm leading-6 text-text-600"
+          className="text-text-600 mt-2 text-sm leading-6"
         >
           Keep this summary and take a screenshot.
         </p>
 
-        <dl className="mt-6 divide-y divide-background-200 rounded-xl border border-background-200 bg-background-100/70 px-4">
+        <dl className="divide-background-200 border-background-200 bg-background-100/70 mt-6 divide-y rounded-xl border px-4">
           <div className="flex items-center justify-between py-3 text-sm">
-            <dt className="font-bold text-secondary-900">Have it</dt>
-            <dd className="text-lg font-bold text-secondary-950">
+            <dt className="text-secondary-900 font-bold">Have it</dt>
+            <dd className="text-secondary-950 text-lg font-bold">
               {availableItems.length}
             </dd>
           </div>
           <div className="flex items-center justify-between py-3 text-sm">
-            <dt className="font-bold text-text-800">Not sure</dt>
-            <dd className="text-lg font-bold text-text-950">
+            <dt className="text-text-800 font-bold">Not sure</dt>
+            <dd className="text-text-950 text-lg font-bold">
               {unsureItems.length}
             </dd>
           </div>
           <div className="flex items-center justify-between py-3 text-sm">
-            <dt className="font-bold text-primary-900">Need it</dt>
-            <dd className="text-lg font-bold text-primary-950">
+            <dt className="text-primary-900 font-bold">Need it</dt>
+            <dd className="text-primary-950 text-lg font-bold">
               {neededItems.length}
             </dd>
           </div>
@@ -91,7 +91,7 @@ export default function CookSessionCompletionSummaryModal({
         <div className="mt-8 flex justify-end">
           <button
             type="button"
-            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700"
+            className="bg-primary text-text-50 hover:bg-primary-700 rounded-lg px-4 py-2.5 text-sm font-bold transition"
             onClick={onClose}
             autoFocus
           >
@@ -120,9 +120,9 @@ function SummaryItemList({
 }: SummaryItemListProps) {
   return (
     <section>
-      <h2 className="text-lg font-bold text-text-950">{heading}</h2>
+      <h2 className="text-text-950 text-lg font-bold">{heading}</h2>
       {items.length === 0 ? (
-        <p className="mt-2 text-sm text-text-600">{emptyMessage}</p>
+        <p className="text-text-600 mt-2 text-sm">{emptyMessage}</p>
       ) : (
         <ul className="mt-3 space-y-2">
           {items.map((item) => {

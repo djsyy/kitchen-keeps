@@ -111,7 +111,7 @@ export default function CookSessionPage() {
   });
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="bg-background min-h-screen">
       <Navbar />
 
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
@@ -127,20 +127,20 @@ export default function CookSessionPage() {
           <div className="space-y-8">
             <Link
               to={`/recipes/${cookSession.recipe_id}`}
-              className="inline-flex items-center gap-2 text-sm font-bold text-text-600 transition hover:text-text-950"
+              className="text-text-600 hover:text-text-950 inline-flex items-center gap-2 text-sm font-bold transition"
             >
               <LuArrowLeft className="h-4 w-4" />
               Back to recipe
             </Link>
 
-            <section className="rounded-2xl border border-background-300 bg-background-50 p-6 shadow-lg sm:p-8">
-              <p className="text-sm font-bold uppercase tracking-wide text-text-500">
+            <section className="border-background-300 bg-background-50 rounded-2xl border p-6 shadow-lg sm:p-8">
+              <p className="text-text-500 text-sm font-bold tracking-wide uppercase">
                 Prep list
               </p>
-              <h1 className="mt-1 text-3xl font-bold text-text-950">
+              <h1 className="text-text-950 mt-1 text-3xl font-bold">
                 What do I need for {cookSession.recipe_title}?
               </h1>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-text-600">
+              <p className="text-text-600 mt-2 max-w-2xl text-sm leading-6">
                 Check off the ingredients you have to discover what&apos;s
                 missing.
               </p>
@@ -148,13 +148,13 @@ export default function CookSessionPage() {
 
             {cookSession.status === 'cancelled' && (
               <section
-                className="rounded-2xl border border-background-300 bg-background-100 p-5"
+                className="border-background-300 bg-background-100 rounded-2xl border p-5"
                 role="status"
               >
-                <h2 className="text-lg font-bold text-text-950">
+                <h2 className="text-text-950 text-lg font-bold">
                   This prep list is no longer active
                 </h2>
-                <p className="mt-2 text-sm leading-6 text-text-700">
+                <p className="text-text-700 mt-2 text-sm leading-6">
                   It was cancelled and can no longer be changed. Return to the
                   recipe to start a fresh prep list.
                 </p>

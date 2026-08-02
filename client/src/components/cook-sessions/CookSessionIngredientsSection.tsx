@@ -65,14 +65,14 @@ export default function CookSessionIngredientsSection({
   const areActionsPending = isClosing || isUpdatingItem;
 
   return (
-    <section className="rounded-2xl border border-background-300 bg-background-50 p-6 shadow-lg sm:p-8">
-      <h2 className="text-2xl font-bold text-text-950">Ingredients</h2>
+    <section className="border-background-300 bg-background-50 rounded-2xl border p-6 shadow-lg sm:p-8">
+      <h2 className="text-text-950 text-2xl font-bold">Ingredients</h2>
       {items.length === 0 ? (
-        <p className="mt-5 text-sm text-text-600">
+        <p className="text-text-600 mt-5 text-sm">
           This recipe did not have any ingredients when this prep list started.
         </p>
       ) : (
-        <ul className="mt-5 divide-y divide-background-200 rounded-xl border border-background-200 bg-background-100/70 px-5">
+        <ul className="divide-background-200 border-background-200 bg-background-100/70 mt-5 divide-y rounded-xl border px-5">
           {items.map((item) => {
             const quantity = formatIngredientQuantity(item);
 
@@ -82,9 +82,9 @@ export default function CookSessionIngredientsSection({
                 className="flex flex-col gap-3 py-4 first:pt-5 last:pb-5 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div>
-                  <p className="font-bold text-text-800">{item.display_name}</p>
+                  <p className="text-text-800 font-bold">{item.display_name}</p>
                   {quantity && (
-                    <p className="mt-1 text-sm text-text-600">{quantity}</p>
+                    <p className="text-text-600 mt-1 text-sm">{quantity}</p>
                   )}
                 </div>
                 <div
@@ -118,7 +118,7 @@ export default function CookSessionIngredientsSection({
       {updateError && (
         <ErrorMessage className="mt-4" message={updateError.message} />
       )}
-      <div className="mt-6 border-t border-background-200 pt-6">
+      <div className="border-background-200 mt-6 border-t pt-6">
         {(completeError || cancelError) && (
           <ErrorMessage
             className="mb-4"
@@ -132,7 +132,7 @@ export default function CookSessionIngredientsSection({
         <div className="flex flex-wrap gap-3">
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="bg-primary text-text-50 hover:bg-primary-700 inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
             disabled={areActionsPending}
             onClick={onComplete}
           >
@@ -141,7 +141,7 @@ export default function CookSessionIngredientsSection({
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-lg border border-background-300 bg-background-50 px-4 py-2.5 text-sm font-bold text-text-700 transition hover:bg-background-100 disabled:cursor-not-allowed disabled:opacity-60"
+            className="border-background-300 bg-background-50 text-text-700 hover:bg-background-100 inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
             disabled={areActionsPending}
             onClick={onCancel}
           >

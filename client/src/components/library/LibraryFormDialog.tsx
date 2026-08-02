@@ -50,7 +50,7 @@ export default function LibraryFormDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-text-950/50 p-4"
+      className="bg-text-950/50 fixed inset-0 z-50 flex items-center justify-center p-4"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget && !isPending) {
@@ -63,29 +63,29 @@ export default function LibraryFormDialog({
         aria-modal="true"
         aria-labelledby="library-form-title"
         aria-describedby="library-form-description"
-        className="flex max-h-full w-full max-w-2xl flex-col gap-4 overflow-y-auto rounded-3xl border border-background-300 bg-background-50 p-6 shadow-xl"
+        className="border-background-300 bg-background-50 flex max-h-full w-full max-w-2xl flex-col gap-4 overflow-y-auto rounded-3xl border p-6 shadow-xl"
         onSubmit={handleSubmit}
       >
         <div>
           <h1
             id="library-form-title"
-            className="text-xl font-bold text-text-950"
+            className="text-text-950 text-xl font-bold"
           >
             {isEditing ? 'Edit library' : 'Create a library'}
           </h1>
           <p
             id="library-form-description"
-            className="mt-1 text-sm text-text-600"
+            className="text-text-600 mt-1 text-sm"
           >
             {isEditing
               ? 'Update this collection’s details and appearance.'
               : 'Group recipes by meal type, occasion, or any collection you use.'}
           </p>
         </div>
-        <label className="flex flex-col gap-2 text-sm font-bold text-text-800">
+        <label className="text-text-800 flex flex-col gap-2 text-sm font-bold">
           Name
           <input
-            className="rounded-lg border border-background-300 bg-white px-3 py-2 text-text-950 outline-none focus:border-primary focus:ring focus:ring-primary-100"
+            className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
             maxLength={100}
             required
             value={name}
@@ -93,7 +93,7 @@ export default function LibraryFormDialog({
           />
         </label>
         <fieldset>
-          <legend className="text-sm font-bold text-text-800">Icon</legend>
+          <legend className="text-text-800 text-sm font-bold">Icon</legend>
           <div className="mt-2 grid grid-cols-5 gap-2 sm:grid-cols-10">
             {libraryIconOptions.map((option) => {
               const Icon = libraryIcons[option.key];
@@ -105,9 +105,9 @@ export default function LibraryFormDialog({
                   type="button"
                   aria-label={option.label}
                   aria-pressed={isSelected}
-                  className={`flex h-10 items-center justify-center rounded-lg border border-background-300 bg-background-50 text-text-700 transition ${
+                  className={`border-background-300 bg-background-50 text-text-700 flex h-10 items-center justify-center rounded-lg border transition ${
                     isSelected
-                      ? 'border-2 border-primary bg-primary-50 text-primary shadow-sm'
+                      ? 'border-primary bg-primary-50 text-primary border-2 shadow-sm'
                       : 'hover:bg-background-100'
                   }`}
                   onClick={() => setIconKey(option.key)}
@@ -119,7 +119,7 @@ export default function LibraryFormDialog({
           </div>
         </fieldset>
         <fieldset>
-          <legend className="text-sm font-bold text-text-800">
+          <legend className="text-text-800 text-sm font-bold">
             Card color
           </legend>
           <div className="mt-2 flex gap-2">
@@ -144,11 +144,11 @@ export default function LibraryFormDialog({
             })}
           </div>
         </fieldset>
-        <label className="flex flex-col gap-2 text-sm font-bold text-text-800">
+        <label className="text-text-800 flex flex-col gap-2 text-sm font-bold">
           Description{' '}
-          <span className="font-normal text-text-500">(optional)</span>
+          <span className="text-text-500 font-normal">(optional)</span>
           <textarea
-            className="min-h-24 rounded-lg border border-background-300 bg-white px-3 py-2 text-text-950 outline-none focus:border-primary focus:ring focus:ring-primary-100"
+            className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 min-h-24 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
             maxLength={1000}
             value={description}
             onChange={(event) => setDescription(event.currentTarget.value)}
@@ -158,7 +158,7 @@ export default function LibraryFormDialog({
         <div className="flex justify-end gap-3">
           <button
             type="button"
-            className="rounded-lg px-4 py-2.5 text-sm font-bold text-text-700 transition hover:bg-background-100"
+            className="text-text-700 hover:bg-background-100 rounded-lg px-4 py-2.5 text-sm font-bold transition"
             disabled={isPending}
             onClick={onCancel}
           >
@@ -166,7 +166,7 @@ export default function LibraryFormDialog({
           </button>
           <button
             type="submit"
-            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="bg-primary text-text-50 hover:bg-primary-700 rounded-lg px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isPending || !name.trim()}
           >
             {isPending

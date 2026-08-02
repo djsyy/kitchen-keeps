@@ -100,13 +100,13 @@ export default function LibraryPage() {
     : libraryColorClasses.primary;
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="bg-background min-h-screen">
       <Navbar />
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <Link
           to="/library"
-          className="inline-flex items-center gap-2 text-sm font-bold text-text-600 transition hover:text-text-950"
+          className="text-text-600 hover:text-text-950 inline-flex items-center gap-2 text-sm font-bold transition"
         >
           <LuArrowLeft className="h-4 w-4" />
           All libraries
@@ -117,29 +117,29 @@ export default function LibraryPage() {
             <ErrorMessage message="This library link is invalid." />
           </div>
         ) : isPending ? (
-          <p className="mt-6 text-text-600">Loading library…</p>
+          <p className="text-text-600 mt-6">Loading library…</p>
         ) : error || !library ? (
           <div className="mt-6">
             <ErrorMessage message="We couldn’t load this library. Please try again." />
           </div>
         ) : (
           <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,2fr)]">
-            <aside className="h-fit rounded-3xl border border-background-300 bg-background-50 p-6 shadow-sm">
+            <aside className="border-background-300 bg-background-50 h-fit rounded-3xl border p-6 shadow-sm">
               <span
                 className={`flex h-14 w-14 items-center justify-center rounded-2xl border ${colorClass}`}
               >
                 <LibraryIcon className="h-7 w-7" />
               </span>
-              <h1 className="mt-5 text-3xl font-bold text-text-950">
+              <h1 className="text-text-950 mt-5 text-3xl font-bold">
                 {library.name}
               </h1>
               {library.description && (
-                <p className="mt-3 text-sm leading-6 text-text-600">
+                <p className="text-text-600 mt-3 text-sm leading-6">
                   {library.description}
                 </p>
               )}
 
-              <div className="mt-6 border-t border-background-200 pt-5 text-sm text-text-500">
+              <div className="border-background-200 text-text-500 mt-6 border-t pt-5 text-sm">
                 <p className="flex items-center gap-2">
                   <LuClock3 className="h-4 w-4" />
                   {formatCreatedDate(library.created_at)}
@@ -149,7 +149,7 @@ export default function LibraryPage() {
               <div className="mt-6 flex gap-2">
                 <button
                   type="button"
-                  className="inline-flex items-center gap-2 rounded-lg border border-background-300 px-3 py-2 text-sm font-bold text-text-700 hover:bg-background-100"
+                  className="border-background-300 text-text-700 hover:bg-background-100 inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-bold"
                   onClick={() => setIsEditFormOpen(true)}
                 >
                   <LuPencil className="h-4 w-4" />
@@ -158,7 +158,7 @@ export default function LibraryPage() {
                 <button
                   type="button"
                   aria-label="Delete library"
-                  className="rounded-lg border border-background-300 p-2 text-text-600 hover:bg-background-100"
+                  className="border-background-300 text-text-600 hover:bg-background-100 rounded-lg border p-2"
                   onClick={() => setIsDeleteDialogOpen(true)}
                 >
                   <LuTrash2 className="h-4 w-4" />
@@ -166,22 +166,22 @@ export default function LibraryPage() {
               </div>
             </aside>
 
-            <section className="rounded-3xl border border-background-300 bg-background-50 p-6 shadow-sm">
+            <section className="border-background-300 bg-background-50 rounded-3xl border p-6 shadow-sm">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <p className="text-sm font-bold uppercase tracking-wide text-text-500">
+                  <p className="text-text-500 text-sm font-bold tracking-wide uppercase">
                     Collection
                   </p>
-                  <h2 className="mt-1 text-2xl font-bold text-text-950">
+                  <h2 className="text-text-950 mt-1 text-2xl font-bold">
                     Recipes
                   </h2>
-                  <p className="mt-1 text-sm text-text-600">
+                  <p className="text-text-600 mt-1 text-sm">
                     Recipes you add to {library.name} will appear here.
                   </p>
                 </div>
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700"
+                  className="bg-primary text-text-50 hover:bg-primary-700 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition"
                   onClick={() => setIsRecipePickerOpen(true)}
                 >
                   <LuPlus className="h-4 w-4" />
@@ -215,14 +215,14 @@ export default function LibraryPage() {
                   })}
                 </div>
               ) : (
-                <div className="mt-8 rounded-2xl border border-dashed border-background-300 px-6 py-14 text-center">
-                  <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-background-100 text-text-600">
+                <div className="border-background-300 mt-8 rounded-2xl border border-dashed px-6 py-14 text-center">
+                  <span className="bg-background-100 text-text-600 mx-auto flex h-12 w-12 items-center justify-center rounded-2xl">
                     <LuBookOpen className="h-6 w-6" />
                   </span>
-                  <h3 className="mt-4 text-lg font-bold text-text-950">
+                  <h3 className="text-text-950 mt-4 text-lg font-bold">
                     No recipes in this library yet
                   </h3>
-                  <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-text-600">
+                  <p className="text-text-600 mx-auto mt-2 max-w-md text-sm leading-6">
                     Add recipes here to keep this collection organized and easy
                     to browse.
                   </p>
@@ -284,14 +284,14 @@ function LibraryRecipeCard({
   return (
     <article
       ref={containerRef}
-      className="relative overflow-hidden rounded-2xl border border-background-300 bg-background-50 shadow-sm"
+      className="border-background-300 bg-background-50 relative overflow-hidden rounded-2xl border shadow-sm"
     >
       <button
         type="button"
         aria-label={`Show options for ${recipe.title}`}
         aria-expanded={isOptionsOpen}
         aria-haspopup="menu"
-        className="absolute top-3 right-3 z-10 rounded-md bg-background-50/90 p-1 text-text-600 transition hover:bg-background-100 hover:text-text-950"
+        className="bg-background-50/90 text-text-600 hover:bg-background-100 hover:text-text-950 absolute top-3 right-3 z-10 rounded-md p-1 transition"
         onClick={toggleOptions}
       >
         <LuEllipsisVertical className="h-5 w-5" />
@@ -299,19 +299,19 @@ function LibraryRecipeCard({
       {isOptionsOpen && (
         <div
           role="menu"
-          className="absolute top-12 right-3 z-10 w-44 rounded-lg border border-background-300 bg-background-50 p-1 shadow-md"
+          className="border-background-300 bg-background-50 absolute top-12 right-3 z-10 w-44 rounded-lg border p-1 shadow-md"
         >
           <Link
             to={`/recipes/${recipe.id}`}
             role="menuitem"
-            className="block w-full rounded-md px-3 py-2 text-left text-sm font-bold text-text-700 transition hover:bg-background-100"
+            className="text-text-700 hover:bg-background-100 block w-full rounded-md px-3 py-2 text-left text-sm font-bold transition"
           >
             Edit recipe
           </Link>
           <button
             type="button"
             role="menuitem"
-            className="w-full rounded-md px-3 py-2 text-left text-sm font-bold text-primary transition hover:bg-primary-100 disabled:cursor-not-allowed disabled:opacity-60"
+            className="text-primary hover:bg-primary-100 w-full rounded-md px-3 py-2 text-left text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isRemovalPending}
             onClick={onRemove}
           >
@@ -321,7 +321,7 @@ function LibraryRecipeCard({
       )}
       <Link
         to={`/recipes/${recipe.id}`}
-        className="block transition hover:bg-background-100"
+        className="hover:bg-background-100 block transition"
       >
         {recipe.image_url ? (
           <img
@@ -336,14 +336,14 @@ function LibraryRecipeCard({
           />
         )}
         <div className="p-4">
-          <h3 className="text-lg font-bold text-text-950">{recipe.title}</h3>
+          <h3 className="text-text-950 text-lg font-bold">{recipe.title}</h3>
           {recipe.description && (
-            <p className="mt-1 line-clamp-2 text-sm leading-5 text-text-600">
+            <p className="text-text-600 mt-1 line-clamp-2 text-sm leading-5">
               {recipe.description}
             </p>
           )}
           {totalTime > 0 && (
-            <p className="mt-3 text-sm text-text-600">{totalTime} min</p>
+            <p className="text-text-600 mt-3 text-sm">{totalTime} min</p>
           )}
         </div>
       </Link>

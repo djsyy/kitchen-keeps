@@ -59,7 +59,7 @@ export default function RecipeListPage() {
   });
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="bg-background min-h-screen">
       <Navbar />
 
       {isCreateFormOpen && (
@@ -96,9 +96,9 @@ export default function RecipeListPage() {
       )}
 
       {isPending ? (
-        <p className="mt-6 text-text-600">Loading recipes…</p>
+        <p className="text-text-600 mt-6">Loading recipes…</p>
       ) : error ? (
-        <p className="mt-6 text-text-600">
+        <p className="text-text-600 mt-6">
           We couldn’t load your recipes. Please try again.
         </p>
       ) : recipes.length === 0 ? (

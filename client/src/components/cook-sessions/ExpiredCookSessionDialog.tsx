@@ -16,26 +16,26 @@ export default function ExpiredCookSessionDialog({
   onBack,
 }: ExpiredCookSessionDialogProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-text-950/50 p-4">
+    <div className="bg-text-950/50 fixed inset-0 z-50 flex items-center justify-center p-4">
       <section
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="expired-cook-session-title"
         aria-describedby="expired-cook-session-description"
-        className="w-full max-w-md rounded-2xl bg-background-50 p-6 shadow-xl"
+        className="bg-background-50 w-full max-w-md rounded-2xl p-6 shadow-xl"
       >
-        <p className="text-sm font-bold uppercase tracking-wide text-primary-700">
+        <p className="text-primary-700 text-sm font-bold tracking-wide uppercase">
           Prep list expired
         </p>
         <h1
           id="expired-cook-session-title"
-          className="mt-1 text-2xl font-bold text-text-950"
+          className="text-text-950 mt-1 text-2xl font-bold"
         >
           Start a fresh prep list?
         </h1>
         <p
           id="expired-cook-session-description"
-          className="mt-3 text-sm leading-6 text-text-700"
+          className="text-text-700 mt-3 text-sm leading-6"
         >
           Your {recipeTitle} prep list was inactive for more than seven days, so
           it has expired. A new list will use the recipe&apos;s current
@@ -45,7 +45,7 @@ export default function ExpiredCookSessionDialog({
         <div className="mt-6 flex flex-wrap justify-end gap-3">
           <button
             type="button"
-            className="rounded-lg border border-background-300 bg-background-50 px-4 py-2.5 text-sm font-bold text-text-700 transition hover:bg-background-100 disabled:cursor-not-allowed disabled:opacity-60"
+            className="border-background-300 bg-background-50 text-text-700 hover:bg-background-100 rounded-lg border px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isPending}
             onClick={onBack}
           >
@@ -53,7 +53,7 @@ export default function ExpiredCookSessionDialog({
           </button>
           <button
             type="button"
-            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="bg-primary text-text-50 hover:bg-primary-700 rounded-lg px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isPending}
             onClick={onCreateNew}
             autoFocus

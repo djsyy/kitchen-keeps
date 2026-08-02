@@ -30,13 +30,13 @@ export default function LoginForm() {
   return (
     <form className="flex w-full flex-col gap-5" onSubmit={handleSubmit}>
       <div className="flex justify-center">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-50 text-primary">
+        <div className="bg-primary-50 text-primary flex h-12 w-12 items-center justify-center rounded-full">
           <IoIosLogIn className="h-7 w-7" />
         </div>
       </div>
 
       <div className="text-center">
-        <h2 className="text-xl font-bold text-text-900">
+        <h2 className="text-text-900 text-xl font-bold">
           Sign in to your account
         </h2>
       </div>
@@ -73,17 +73,17 @@ export default function LoginForm() {
 
       <button
         type="submit"
-        className="w-full rounded-md bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+        className="bg-primary text-text-50 hover:bg-primary-700 w-full rounded-md px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
         disabled={loginMutation.isPending}
       >
         {loginMutation.isPending ? 'Signing in...' : 'Sign In'}
       </button>
 
-      <p className="text-center text-sm text-text-700">
+      <p className="text-text-700 text-center text-sm">
         Don&apos;t have an account?{' '}
         <Link
           to="/register"
-          className="font-bold text-primary hover:text-primary-700"
+          className="text-primary hover:text-primary-700 font-bold"
         >
           Create one
         </Link>

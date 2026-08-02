@@ -85,7 +85,7 @@ export default function LibraryList() {
   });
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="bg-background min-h-screen">
       <Navbar />
       {isCreateFormOpen && (
         <LibraryFormDialog

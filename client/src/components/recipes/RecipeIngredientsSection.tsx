@@ -113,25 +113,25 @@ export default function RecipeIngredientsSection({
   };
 
   return (
-    <section className="relative overflow-hidden rounded-2xl border-2 border-t-0 border-background-300 bg-background-50 p-6 shadow-lg sm:p-8">
+    <section className="border-background-300 bg-background-50 relative overflow-hidden rounded-2xl border-2 border-t-0 p-6 shadow-lg sm:p-8">
       <div
         aria-hidden="true"
-        className="absolute inset-x-0 top-0 h-1.5 bg-primary"
+        className="bg-primary absolute inset-x-0 top-0 h-1.5"
       />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-sm font-bold uppercase tracking-wide text-text-500">
+          <p className="text-text-500 text-sm font-bold tracking-wide uppercase">
             Recipe essentials
           </p>
-          <h2 className="mt-1 text-2xl font-bold text-text-950">Ingredients</h2>
-          <p className="mt-1 text-sm text-text-600">
+          <h2 className="text-text-950 mt-1 text-2xl font-bold">Ingredients</h2>
+          <p className="text-text-600 mt-1 text-sm">
             Everything you’ll need before you start cooking.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-background-300 bg-background-50 px-4 py-2.5 text-sm font-bold text-text-700 transition hover:bg-background-100"
+            className="border-background-300 bg-background-50 text-text-700 hover:bg-background-100 inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-bold transition"
             onClick={() => setIsAdding(true)}
           >
             <LuPlus className="h-4 w-4" />
@@ -139,7 +139,7 @@ export default function RecipeIngredientsSection({
           </button>
           <button
             type="button"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="bg-primary text-text-50 hover:bg-primary-700 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
             disabled={createCookSessionMutation.isPending}
             onClick={() => createCookSessionMutation.mutate()}
           >
@@ -158,15 +158,15 @@ export default function RecipeIngredientsSection({
         />
       )}
 
-      <ul className="mt-8 divide-y divide-background-200 rounded-xl border border-background-200 bg-background-100/70 px-5">
+      <ul className="divide-background-200 border-background-200 bg-background-100/70 mt-8 divide-y rounded-xl border px-5">
         {isPending ? (
-          <li className="py-5 text-sm text-text-600">Loading ingredients…</li>
+          <li className="text-text-600 py-5 text-sm">Loading ingredients…</li>
         ) : isError ? (
-          <li className="py-5 text-sm text-text-600">
+          <li className="text-text-600 py-5 text-sm">
             We couldn’t load the ingredients. Please try again.
           </li>
         ) : recipeIngredients.length === 0 ? (
-          <li className="py-5 text-sm text-text-600">
+          <li className="text-text-600 py-5 text-sm">
             No ingredients have been added yet.
           </li>
         ) : (
@@ -179,24 +179,24 @@ export default function RecipeIngredientsSection({
                 className="flex gap-4 py-4 text-sm first:pt-5 last:pb-5"
               >
                 <span>
-                  <span className="block font-bold text-text-800">
+                  <span className="text-text-800 block font-bold">
                     {ingredient.display_name}
                   </span>
                   {ingredient.preparation_note && (
-                    <span className="mt-1 block text-text-600">
+                    <span className="text-text-600 mt-1 block">
                       {ingredient.preparation_note}
                     </span>
                   )}
                 </span>
                 <div className="ml-auto flex shrink-0 items-start gap-2">
                   {quantity && (
-                    <span className="pt-2 text-text-600">{quantity}</span>
+                    <span className="text-text-600 pt-2">{quantity}</span>
                   )}
-                  <div className="flex rounded-md border border-background-200 bg-background-50">
+                  <div className="border-background-200 bg-background-50 flex rounded-md border">
                     <button
                       type="button"
                       aria-label={`Move ${ingredient.display_name} up`}
-                      className="p-2 text-text-600 transition hover:bg-background-100 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="text-text-600 hover:bg-background-100 p-2 transition disabled:cursor-not-allowed disabled:opacity-40"
                       disabled={index === 0 || reorderMutation.isPending}
                       onClick={() => moveIngredient(ingredient.id, -1)}
                     >
@@ -205,7 +205,7 @@ export default function RecipeIngredientsSection({
                     <button
                       type="button"
                       aria-label={`Move ${ingredient.display_name} down`}
-                      className="border-l border-background-200 p-2 text-text-600 transition hover:bg-background-100 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="border-background-200 text-text-600 hover:bg-background-100 border-l p-2 transition disabled:cursor-not-allowed disabled:opacity-40"
                       disabled={
                         index === recipeIngredients.length - 1 ||
                         reorderMutation.isPending
@@ -218,7 +218,7 @@ export default function RecipeIngredientsSection({
                   <button
                     type="button"
                     aria-label={`Edit ${ingredient.display_name}`}
-                    className="rounded-md p-2 text-text-600 transition hover:bg-background-100 hover:text-primary"
+                    className="text-text-600 hover:bg-background-100 hover:text-primary rounded-md p-2 transition"
                     onClick={() => setEditingIngredient(ingredient)}
                   >
                     <LuPencil className="h-4 w-4" />
@@ -226,7 +226,7 @@ export default function RecipeIngredientsSection({
                   <button
                     type="button"
                     aria-label={`Delete ${ingredient.display_name}`}
-                    className="rounded-md p-2 text-text-600 transition hover:bg-primary-50 hover:text-primary"
+                    className="text-text-600 hover:bg-primary-50 hover:text-primary rounded-md p-2 transition"
                     onClick={() => setDeletingIngredient(ingredient)}
                   >
                     <LuTrash2 className="h-4 w-4" />

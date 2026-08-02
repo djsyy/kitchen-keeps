@@ -91,24 +91,24 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
   };
 
   return (
-    <section className="relative overflow-hidden rounded-2xl border-2 border-t-0 border-background-300 bg-background-50 p-6 shadow-lg sm:p-8">
+    <section className="border-background-300 bg-background-50 relative overflow-hidden rounded-2xl border-2 border-t-0 p-6 shadow-lg sm:p-8">
       <div
         aria-hidden="true"
-        className="absolute inset-x-0 top-0 h-1.5 bg-secondary"
+        className="bg-secondary absolute inset-x-0 top-0 h-1.5"
       />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-sm font-bold uppercase tracking-wide text-text-500">
+          <p className="text-text-500 text-sm font-bold tracking-wide uppercase">
             Recipe instructions
           </p>
-          <h2 className="mt-1 text-2xl font-bold text-text-950">Steps</h2>
-          <p className="mt-1 text-sm text-text-600">
+          <h2 className="text-text-950 mt-1 text-2xl font-bold">Steps</h2>
+          <p className="text-text-600 mt-1 text-sm">
             Follow each step from start to finish.
           </p>
         </div>
         <button
           type="button"
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-secondary px-4 py-2.5 text-sm font-bold text-background-50 transition hover:bg-secondary-700"
+          className="bg-secondary text-background-50 hover:bg-secondary-700 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition"
           onClick={() => setIsAdding(true)}
         >
           <LuPlus className="h-4 w-4" />
@@ -118,39 +118,39 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
 
       <ol className="mt-8 space-y-1">
         {isPending ? (
-          <li className="py-5 text-sm text-text-600">Loading steps…</li>
+          <li className="text-text-600 py-5 text-sm">Loading steps…</li>
         ) : isError ? (
-          <li className="py-5 text-sm text-text-600">
+          <li className="text-text-600 py-5 text-sm">
             We couldn’t load the recipe steps. Please try again.
           </li>
         ) : recipeSteps.length === 0 ? (
-          <li className="rounded-xl border border-dashed border-background-300 px-5 py-8 text-center text-sm text-text-600">
+          <li className="border-background-300 text-text-600 rounded-xl border border-dashed px-5 py-8 text-center text-sm">
             No steps have been added yet.
           </li>
         ) : (
           recipeSteps.map((step, index) => (
             <li
               key={step.id}
-              className="relative flex items-start gap-4 py-3 text-sm leading-6 text-text-700"
+              className="text-text-700 relative flex items-start gap-4 py-3 text-sm leading-6"
             >
               {index < recipeSteps.length - 1 && (
                 <span
                   aria-hidden="true"
-                  className="absolute left-3.5 top-9 h-[calc(100%-0.5rem)] w-px bg-background-300"
+                  className="bg-background-300 absolute top-9 left-3.5 h-[calc(100%-0.5rem)] w-px"
                 />
               )}
-              <span className="relative z-10 mt-2.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary-100 font-bold text-secondary-800">
+              <span className="bg-secondary-100 text-secondary-800 relative z-10 mt-2.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-bold">
                 {index + 1}
               </span>
-              <p className="min-w-0 flex-1 rounded-lg bg-background-100/60 px-3 py-2.5 text-text-700">
+              <p className="bg-background-100/60 text-text-700 min-w-0 flex-1 rounded-lg px-3 py-2.5">
                 {step.instruction}
               </p>
               <div className="flex shrink-0 items-start gap-2">
-                <div className="flex rounded-md border border-background-200 bg-background-50">
+                <div className="border-background-200 bg-background-50 flex rounded-md border">
                   <button
                     type="button"
                     aria-label={`Move step ${index + 1} up`}
-                    className="p-2 text-text-600 transition hover:bg-background-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="text-text-600 hover:bg-background-100 p-2 transition disabled:cursor-not-allowed disabled:opacity-40"
                     disabled={index === 0 || reorderMutation.isPending}
                     onClick={() => moveStep(step.id, -1)}
                   >
@@ -159,7 +159,7 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
                   <button
                     type="button"
                     aria-label={`Move step ${index + 1} down`}
-                    className="border-l border-background-200 p-2 text-text-600 transition hover:bg-background-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="border-background-200 text-text-600 hover:bg-background-100 border-l p-2 transition disabled:cursor-not-allowed disabled:opacity-40"
                     disabled={
                       index === recipeSteps.length - 1 ||
                       reorderMutation.isPending
@@ -172,7 +172,7 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
                 <button
                   type="button"
                   aria-label={`Edit step ${index + 1}`}
-                  className="rounded-md p-2 text-text-600 transition hover:bg-background-100 hover:text-primary"
+                  className="text-text-600 hover:bg-background-100 hover:text-primary rounded-md p-2 transition"
                   onClick={() => setEditingStep(step)}
                 >
                   <LuPencil className="h-4 w-4" />
@@ -180,7 +180,7 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
                 <button
                   type="button"
                   aria-label={`Delete step ${index + 1}`}
-                  className="rounded-md p-2 text-text-600 transition hover:bg-primary-50 hover:text-primary"
+                  className="text-text-600 hover:bg-primary-50 hover:text-primary rounded-md p-2 transition"
                   onClick={() => setDeletingStep(step)}
                 >
                   <LuTrash2 className="h-4 w-4" />

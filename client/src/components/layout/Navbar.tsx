@@ -12,19 +12,19 @@ export default function Navbar() {
   };
 
   return (
-    <header className="border-b border-background-200 bg-background-50/90 shadow-sm">
+    <header className="border-background-200 bg-background-50/90 border-b shadow-sm">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-4">
           <button
             type="button"
-            className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-text-100 shadow-sm transition hover:cursor-pointer"
+            className="bg-primary text-text-100 flex h-11 w-11 items-center justify-center rounded-lg shadow-sm transition hover:cursor-pointer"
             onClick={handleClick}
             aria-label="Go to dashboard"
           >
             <LuChefHat className="h-7 w-7" />
           </button>
           <div>
-            <span className="block text-2xl font-bold text-text-950">
+            <span className="text-text-950 block text-2xl font-bold">
               What&apos;s Cooking?
             </span>
           </div>
@@ -32,13 +32,13 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
           {user && (
-            <span className="hidden text-base font-bold text-text-700 sm:block">
+            <span className="text-text-700 hidden text-base font-bold sm:block">
               Hi, {user.name}
             </span>
           )}
 
           {isPending && (
-            <span className="hidden h-6 w-24 rounded-md bg-background-100 sm:block" />
+            <span className="bg-background-100 hidden h-6 w-24 rounded-md sm:block" />
           )}
 
           <ProfileDropdown />

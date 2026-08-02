@@ -140,7 +140,7 @@ export default function RecipeIngredientFormDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-text-950/50 p-4"
+      className="bg-text-950/50 fixed inset-0 z-50 flex items-center justify-center p-4"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget && !isPending) {
@@ -153,25 +153,25 @@ export default function RecipeIngredientFormDialog({
         aria-modal="true"
         aria-labelledby="recipe-ingredient-form-title"
         aria-describedby="recipe-ingredient-form-description"
-        className="flex max-h-full w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-2xl border border-background-300 bg-background-50 p-6 shadow-xl"
+        className="border-background-300 bg-background-50 flex max-h-full w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-2xl border p-6 shadow-xl"
         onSubmit={handleSubmit}
       >
         <div>
           <h1
             id="recipe-ingredient-form-title"
-            className="text-xl font-bold text-text-950"
+            className="text-text-950 text-xl font-bold"
           >
             {isEditing ? 'Edit ingredient' : 'Add ingredient'}
           </h1>
           <p
             id="recipe-ingredient-form-description"
-            className="mt-1 text-sm text-text-600"
+            className="text-text-600 mt-1 text-sm"
           >
             Add the amount and any preparation details you need while cooking.
           </p>
         </div>
 
-        <div className="relative flex flex-col gap-2 text-sm font-bold text-text-800">
+        <div className="text-text-800 relative flex flex-col gap-2 text-sm font-bold">
           <label htmlFor="recipe-ingredient-name">Ingredient</label>
           <input
             id="recipe-ingredient-name"
@@ -181,7 +181,7 @@ export default function RecipeIngredientFormDialog({
             aria-autocomplete="list"
             aria-controls="ingredient-search-results"
             aria-expanded={isIngredientMenuOpen && search.length >= 2}
-            className="rounded-lg border border-background-300 bg-white px-3 py-2 text-text-950 outline-none focus:border-primary focus:ring focus:ring-primary-100"
+            className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
             value={displayName}
             onFocus={() => setIsIngredientMenuOpen(true)}
             onBlur={() => setIsIngredientMenuOpen(false)}
@@ -196,14 +196,14 @@ export default function RecipeIngredientFormDialog({
             <div
               id="ingredient-search-results"
               role="listbox"
-              className="absolute top-full z-10 mt-1 w-full overflow-hidden rounded-lg border border-background-300 bg-white py-1 shadow-lg"
+              className="border-background-300 absolute top-full z-10 mt-1 w-full overflow-hidden rounded-lg border bg-white py-1 shadow-lg"
             >
               {ingredientQuery.isFetching ? (
-                <p className="px-3 py-2 font-normal text-text-600">
+                <p className="text-text-600 px-3 py-2 font-normal">
                   Searching ingredients…
                 </p>
               ) : ingredientQuery.isError ? (
-                <p className="px-3 py-2 font-normal text-text-600">
+                <p className="text-text-600 px-3 py-2 font-normal">
                   We couldn’t search ingredients. Try again.
                 </p>
               ) : (
@@ -214,13 +214,13 @@ export default function RecipeIngredientFormDialog({
                       type="button"
                       role="option"
                       aria-selected={selectedIngredient?.id === ingredient.id}
-                      className="flex w-full items-center justify-between px-3 py-2 text-left font-normal text-text-950 transition hover:bg-background-100"
+                      className="text-text-950 hover:bg-background-100 flex w-full items-center justify-between px-3 py-2 text-left font-normal transition"
                       onMouseDown={(event) => event.preventDefault()}
                       onClick={() => selectIngredient(ingredient)}
                     >
                       <span>{ingredient.name}</span>
                       {ingredient.created_by_user_id !== null && (
-                        <span className="text-xs text-text-500">
+                        <span className="text-text-500 text-xs">
                           Your ingredient
                         </span>
                       )}
@@ -229,7 +229,7 @@ export default function RecipeIngredientFormDialog({
                   {!hasExactMatch && (
                     <button
                       type="button"
-                      className="w-full border-t border-background-200 px-3 py-2 text-left font-bold text-primary transition hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="border-background-200 text-primary hover:bg-primary-50 w-full border-t px-3 py-2 text-left font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
                       disabled={
                         createIngredientMutation.isPending ||
                         !canCreateIngredient
@@ -245,12 +245,12 @@ export default function RecipeIngredientFormDialog({
                     </button>
                   )}
                   {matchingIngredients.length === 0 && !hasExactMatch && (
-                    <p className="px-3 pb-2 font-normal text-text-500">
+                    <p className="text-text-500 px-3 pb-2 font-normal">
                       No matching ingredients found.
                     </p>
                   )}
                   {!canCreateIngredient && search.length > 100 && (
-                    <p className="px-3 pb-2 font-normal text-primary-700">
+                    <p className="text-primary-700 px-3 pb-2 font-normal">
                       Private ingredient names can be up to 100 characters.
                     </p>
                   )}
@@ -265,7 +265,7 @@ export default function RecipeIngredientFormDialog({
         )}
 
         {!hasSelectedIngredient && (
-          <p className="text-sm text-text-600">
+          <p className="text-text-600 text-sm">
             Choose an ingredient from search or add it privately to continue.
           </p>
         )}
@@ -275,12 +275,12 @@ export default function RecipeIngredientFormDialog({
           className="contents disabled:opacity-60"
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-2 text-sm font-bold text-text-800">
+            <label className="text-text-800 flex flex-col gap-2 text-sm font-bold">
               Amount{' '}
-              <span className="font-normal text-text-500">(optional)</span>
+              <span className="text-text-500 font-normal">(optional)</span>
               <input
                 maxLength={100}
-                className="rounded-lg border border-background-300 bg-white px-3 py-2 text-text-950 outline-none focus:border-primary focus:ring focus:ring-primary-100"
+                className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
                 placeholder="2"
                 value={quantityValue}
                 onChange={(event) =>
@@ -288,11 +288,11 @@ export default function RecipeIngredientFormDialog({
                 }
               />
             </label>
-            <label className="flex flex-col gap-2 text-sm font-bold text-text-800">
-              Unit <span className="font-normal text-text-500">(optional)</span>
+            <label className="text-text-800 flex flex-col gap-2 text-sm font-bold">
+              Unit <span className="text-text-500 font-normal">(optional)</span>
               <input
                 maxLength={50}
-                className="rounded-lg border border-background-300 bg-white px-3 py-2 text-text-950 outline-none focus:border-primary focus:ring focus:ring-primary-100"
+                className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
                 placeholder="tbsp"
                 value={quantityUnit}
                 onChange={(event) => setQuantityUnit(event.currentTarget.value)}
@@ -300,12 +300,12 @@ export default function RecipeIngredientFormDialog({
             </label>
           </div>
 
-          <label className="flex flex-col gap-2 text-sm font-bold text-text-800">
+          <label className="text-text-800 flex flex-col gap-2 text-sm font-bold">
             Preparation note{' '}
-            <span className="font-normal text-text-500">(optional)</span>
+            <span className="text-text-500 font-normal">(optional)</span>
             <input
               maxLength={255}
-              className="rounded-lg border border-background-300 bg-white px-3 py-2 text-text-950 outline-none focus:border-primary focus:ring focus:ring-primary-100"
+              className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
               placeholder="Finely chopped"
               value={preparationNote}
               onChange={(event) =>
@@ -319,7 +319,7 @@ export default function RecipeIngredientFormDialog({
         <div className="flex justify-end gap-3">
           <button
             type="button"
-            className="rounded-lg px-4 py-2.5 text-sm font-bold text-text-700 transition hover:bg-background-100"
+            className="text-text-700 hover:bg-background-100 rounded-lg px-4 py-2.5 text-sm font-bold transition"
             disabled={isPending}
             onClick={onCancel}
           >
@@ -327,7 +327,7 @@ export default function RecipeIngredientFormDialog({
           </button>
           <button
             type="submit"
-            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="bg-primary text-text-50 hover:bg-primary-700 rounded-lg px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isPending || !hasSelectedIngredient}
           >
             {isPending

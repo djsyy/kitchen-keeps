@@ -27,7 +27,7 @@ export default function ProfileDropdown() {
   return (
     <div className="relative">
       <button
-        className="rounded-lg border border-primary-100 bg-white/60 p-2 text-primary shadow-sm transition hover:border-primary-300 hover:bg-primary-50"
+        className="border-primary-100 text-primary hover:border-primary-300 hover:bg-primary-50 rounded-lg border bg-white/60 p-2 shadow-sm transition"
         aria-label="Open profile menu"
         onClick={toggleDropdown}
       >
@@ -35,34 +35,34 @@ export default function ProfileDropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute bg-background-50 h-fit w-30 top-full right-0 left-1/2 -translate-x-1/2  mt-2 px-2 py-4 shadow-md border border-accent-300 rounded-md z-50">
-          <div className="flex flex-col gap-2 text-md text-text">
+        <div className="bg-background-50 border-accent-300 absolute top-full right-0 left-1/2 z-50 mt-2 h-fit w-30 -translate-x-1/2 rounded-md border px-2 py-4 shadow-md">
+          <div className="text-md text-text flex flex-col gap-2">
             <Link
               to="/profile"
-              className="text-center rounded-sm transition hover:bg-accent-100 "
+              className="hover:bg-accent-100 rounded-sm text-center transition"
             >
               Profile
             </Link>
             <Link
               to="/dashboard"
-              className="text-center rounded-sm transition hover:bg-accent-100 "
+              className="hover:bg-accent-100 rounded-sm text-center transition"
             >
               Dashboard
             </Link>
             <Link
               to="/library"
-              className="text-center rounded-sm transition hover:bg-accent-100"
+              className="hover:bg-accent-100 rounded-sm text-center transition"
             >
               Library
             </Link>
             <Link
               to="/recipes"
-              className="text-center rounded-sm transition hover:bg-accent-100"
+              className="hover:bg-accent-100 rounded-sm text-center transition"
             >
               Recipes
             </Link>
 
-            <hr className="border-t border-text-400 my-1" />
+            <hr className="border-text-400 my-1 border-t" />
 
             {logoutUserMutation.isError && (
               <ErrorMessage
@@ -73,7 +73,7 @@ export default function ProfileDropdown() {
 
             <button
               type="button"
-              className="rounded-sm transition hover:bg-accent-100 disabled:cursor-not-allowed disabled:opacity-60"
+              className="hover:bg-accent-100 rounded-sm transition disabled:cursor-not-allowed disabled:opacity-60"
               onClick={() => logoutUserMutation.mutate()}
               disabled={logoutUserMutation.isPending}
             >

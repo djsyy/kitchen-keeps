@@ -18,7 +18,7 @@ export default function RecipeDeleteDialog({
 }: RecipeDeleteDialogProps) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-text-950/50 p-4"
+      className="bg-text-950/50 fixed inset-0 z-50 flex items-center justify-center p-4"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget && !isPending) {
@@ -31,16 +31,16 @@ export default function RecipeDeleteDialog({
         aria-modal="true"
         aria-labelledby="delete-recipe-title"
         aria-describedby="delete-recipe-description"
-        className="w-full max-w-md rounded-2xl bg-background-50 p-6 shadow-xl"
+        className="bg-background-50 w-full max-w-md rounded-2xl p-6 shadow-xl"
       >
         <div className="space-y-3">
           <h1
             id="delete-recipe-title"
-            className="text-xl font-bold text-text-950"
+            className="text-text-950 text-xl font-bold"
           >
             Delete {recipe.title}?
           </h1>
-          <p id="delete-recipe-description" className="text-sm text-text-700">
+          <p id="delete-recipe-description" className="text-text-700 text-sm">
             This permanently deletes the recipe and its associated ingredients.
           </p>
           {error && <ErrorMessage message={error.message} />}
@@ -48,7 +48,7 @@ export default function RecipeDeleteDialog({
         <div className="mt-6 flex justify-end gap-3">
           <button
             type="button"
-            className="rounded-md border border-background-300 px-4 py-2 text-sm font-bold text-text-700 transition hover:bg-background-100 disabled:cursor-not-allowed disabled:opacity-60"
+            className="border-background-300 text-text-700 hover:bg-background-100 rounded-md border px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isPending}
             onClick={onCancel}
             autoFocus
@@ -57,7 +57,7 @@ export default function RecipeDeleteDialog({
           </button>
           <button
             type="button"
-            className="rounded-md bg-primary-700 px-4 py-2 text-sm font-bold text-text-50 transition hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="bg-primary-700 text-text-50 hover:bg-primary-600 rounded-md px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isPending}
             onClick={onConfirm}
           >

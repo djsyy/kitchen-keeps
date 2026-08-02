@@ -36,16 +36,16 @@ function SettingsRow({
   children,
 }: SettingsRowProps) {
   return (
-    <section className="border-b border-background-200 pb-6 last:border-b-0 last:pb-0">
+    <section className="border-background-200 border-b pb-6 last:border-b-0 last:pb-0">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
-          <h2 className="text-base font-bold text-text-950">{title}</h2>
-          <p className="text-sm text-text-700">{description}</p>
+          <h2 className="text-text-950 text-base font-bold">{title}</h2>
+          <p className="text-text-700 text-sm">{description}</p>
         </div>
 
         <div className="flex items-center gap-3 sm:justify-end">
           <p
-            className="max-w-xs truncate text-sm font-medium text-text-950"
+            className="text-text-950 max-w-xs truncate text-sm font-medium"
             title={value}
           >
             {value}
@@ -53,7 +53,7 @@ function SettingsRow({
           {actionLabel && (
             <button
               type="button"
-              className="shrink-0 rounded-md border border-background-300 px-4 py-2 text-sm font-bold text-text-700 transition hover:bg-background-100 disabled:cursor-not-allowed disabled:opacity-60"
+              className="border-background-300 text-text-700 hover:bg-background-100 shrink-0 rounded-md border px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
               onClick={onActionClick}
               disabled={actionDisabled}
             >
@@ -64,7 +64,7 @@ function SettingsRow({
       </div>
 
       {isEditing && (
-        <div className="mt-5 border-t border-background-200 pt-5">
+        <div className="border-background-200 mt-5 border-t pt-5">
           {children}
         </div>
       )}
@@ -213,23 +213,23 @@ export default function ProfilePage() {
   const isNameDirty = Boolean(user && name !== user.name);
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="bg-background min-h-screen">
       <Navbar />
 
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6">
         <div className="space-y-3">
-          <h1 className="text-3xl font-bold text-text-950">Account Settings</h1>
-          <p className="text-base text-text-700">
+          <h1 className="text-text-950 text-3xl font-bold">Account Settings</h1>
+          <p className="text-text-700 text-base">
             Edit your account details and preferences.
           </p>
         </div>
 
-        <section className="rounded-2xl border border-background-200 bg-background-50 p-6 shadow-lg sm:p-8 lg:p-10">
+        <section className="border-background-200 bg-background-50 rounded-2xl border p-6 shadow-lg sm:p-8 lg:p-10">
           <div className="flex flex-col gap-6">
-            <section className="border-b border-background-200 pb-6">
+            <section className="border-background-200 border-b pb-6">
               <div className="space-y-1">
-                <h2 className="text-base font-bold text-text-950">Your Name</h2>
-                <p className="text-sm text-text-700">
+                <h2 className="text-text-950 text-base font-bold">Your Name</h2>
+                <p className="text-text-700 text-sm">
                   This is the name shown on your account.
                 </p>
               </div>
@@ -262,14 +262,14 @@ export default function ProfilePage() {
                   <div className="flex justify-end gap-3">
                     <button
                       type="button"
-                      className="rounded-md border border-background-300 px-4 py-2 text-sm font-bold text-text-700 transition hover:bg-background-100"
+                      className="border-background-300 text-text-700 hover:bg-background-100 rounded-md border px-4 py-2 text-sm font-bold transition"
                       onClick={resetNameChanges}
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="rounded-md bg-primary px-4 py-2 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="bg-primary text-text-50 hover:bg-primary-700 rounded-md px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
                       disabled={updateNameMutation.isPending}
                     >
                       {updateNameMutation.isPending
@@ -365,14 +365,14 @@ export default function ProfilePage() {
                 <div className="flex justify-end gap-3">
                   <button
                     type="button"
-                    className="rounded-md border border-background-300 px-4 py-2 text-sm font-bold text-text-700 transition hover:bg-background-100"
+                    className="border-background-300 text-text-700 hover:bg-background-100 rounded-md border px-4 py-2 text-sm font-bold transition"
                     onClick={closePasswordEditor}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="rounded-md bg-primary px-4 py-2 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="bg-primary text-text-50 hover:bg-primary-700 rounded-md px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
                     disabled={
                       updatePasswordMutation.isPending ||
                       !currentPassword ||
@@ -431,14 +431,14 @@ export default function ProfilePage() {
                 <div className="flex justify-end gap-3">
                   <button
                     type="button"
-                    className="rounded-md border border-background-300 px-4 py-2 text-sm font-bold text-text-700 transition hover:bg-background-100"
+                    className="border-background-300 text-text-700 hover:bg-background-100 rounded-md border px-4 py-2 text-sm font-bold transition"
                     onClick={closeEmailEditor}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="rounded-md bg-primary px-4 py-2 text-sm font-bold text-text-50 transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="bg-primary text-text-50 hover:bg-primary-700 rounded-md px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
                     disabled={
                       updateEmailMutation.isPending || email === user?.email
                     }
@@ -451,19 +451,19 @@ export default function ProfilePage() {
               </form>
             </SettingsRow>
 
-            <section className="border-b border-background-200 pb-6 last:border-b-0 last:pb-0">
+            <section className="border-background-200 border-b pb-6 last:border-b-0 last:pb-0">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="space-y-1">
-                  <h2 className="text-base font-bold text-text-950">
+                  <h2 className="text-text-950 text-base font-bold">
                     Delete Your Account
                   </h2>
-                  <p className="text-sm text-text-700">
+                  <p className="text-text-700 text-sm">
                     Permanently remove your account and saved libraries.
                   </p>
                 </div>
                 <button
                   type="button"
-                  className="w-fit rounded-md bg-primary-700 px-4 py-2 text-sm font-bold text-text-50 transition hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="bg-primary-700 text-text-50 hover:bg-primary-600 w-fit rounded-md px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
                   onClick={openDeleteDialog}
                   disabled={deleteUserMutation.isPending}
                 >
@@ -477,7 +477,7 @@ export default function ProfilePage() {
 
       {isDeleteDialogOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-text-950/50 p-4"
+          className="bg-text-950/50 fixed inset-0 z-50 flex items-center justify-center p-4"
           role="presentation"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
@@ -490,18 +490,18 @@ export default function ProfilePage() {
             aria-modal="true"
             aria-labelledby="delete-account-title"
             aria-describedby="delete-account-description"
-            className="w-full max-w-md rounded-2xl bg-background-50 p-6 shadow-xl"
+            className="bg-background-50 w-full max-w-md rounded-2xl p-6 shadow-xl"
           >
             <div className="space-y-3">
               <h2
                 id="delete-account-title"
-                className="text-xl font-bold text-text-950"
+                className="text-text-950 text-xl font-bold"
               >
                 Delete your account?
               </h2>
               <p
                 id="delete-account-description"
-                className="text-sm text-text-700"
+                className="text-text-700 text-sm"
               >
                 This permanently removes your account and saved libraries. This
                 action cannot be undone.
@@ -513,7 +513,7 @@ export default function ProfilePage() {
             <div className="mt-6 flex justify-end gap-3">
               <button
                 type="button"
-                className="rounded-md border border-background-300 px-4 py-2 text-sm font-bold text-text-700 transition hover:bg-background-100 disabled:cursor-not-allowed disabled:opacity-60"
+                className="border-background-300 text-text-700 hover:bg-background-100 rounded-md border px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
                 onClick={closeDeleteDialog}
                 disabled={deleteUserMutation.isPending}
                 autoFocus
@@ -522,7 +522,7 @@ export default function ProfilePage() {
               </button>
               <button
                 type="button"
-                className="rounded-md bg-primary-700 px-4 py-2 text-sm font-bold text-text-50 transition hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-60"
+                className="bg-primary-700 text-text-50 hover:bg-primary-600 rounded-md px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
                 onClick={confirmDeleteAccount}
                 disabled={deleteUserMutation.isPending}
               >

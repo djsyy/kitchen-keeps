@@ -8,7 +8,10 @@ import {
 
 const recipeStepFields = ['instruction'];
 const recipeIdParam = positiveIntegerParam('recipeId', 'Recipe id');
-const recipeStepIdParam = positiveIntegerParam('recipeStepId', 'Recipe step id');
+const recipeStepIdParam = positiveIntegerParam(
+  'recipeStepId',
+  'Recipe step id'
+);
 
 export const getRecipeStepsValidation = [recipeIdParam];
 

@@ -9,15 +9,20 @@ import {
   LuPlus,
   LuTrash2,
 } from 'react-icons/lu';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import LibraryDeleteDialog from '../components/library/LibraryDeleteDialog';
+import LibraryFormDialog from '../components/library/LibraryFormDialog';
 import LibraryRecipePickerDialog from '../components/library/LibraryRecipePickerDialog';
 import Navbar from '../components/layout/Navbar';
 import ErrorMessage from '../components/ui/ErrorMessage';
 import { libraryColorClasses, libraryIcons } from '../config/libraryIcons';
 import {
   addRecipeToLibrary,
+  deleteLibrary,
   getLibrary,
   removeRecipeFromLibrary,
+  type CreateLibraryPayload,
+  updateLibrary,
 } from '../services/libraryService';
 
 function formatCreatedDate(createdAt?: string) {
@@ -37,7 +42,10 @@ export default function LibraryPage() {
   const libraryId = Number(id);
   const isValidLibraryId = Number.isInteger(libraryId) && libraryId > 0;
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [isRecipePickerOpen, setIsRecipePickerOpen] = useState(false);
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { data, error, isPending } = useQuery({
     queryKey: ['libraries', libraryId],
     queryFn: () => getLibrary(libraryId),
@@ -57,6 +65,22 @@ export default function LibraryPage() {
       removeRecipeFromLibrary(libraryId, recipeId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['libraries', libraryId] });
+    },
+  });
+  const updateLibraryMutation = useMutation({
+    mutationFn: (payload: CreateLibraryPayload) =>
+      updateLibrary(libraryId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['libraries'] });
+      queryClient.invalidateQueries({ queryKey: ['libraries', libraryId] });
+      setIsEditFormOpen(false);
+    },
+  });
+  const deleteLibraryMutation = useMutation({
+    mutationFn: () => deleteLibrary(libraryId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['libraries'] });
+      navigate('/library', { replace: true });
     },
   });
   const LibraryIcon = library ? libraryIcons[library.icon_key] : LuBookOpen;
@@ -114,7 +138,8 @@ export default function LibraryPage() {
               <div className="mt-6 flex gap-2">
                 <button
                   type="button"
-                  className="inline-flex items-center gap-2 rounded-lg border border-background-300 px-3 py-2 text-sm font-bold text-text-700"
+                  className="inline-flex items-center gap-2 rounded-lg border border-background-300 px-3 py-2 text-sm font-bold text-text-700 hover:bg-background-100"
+                  onClick={() => setIsEditFormOpen(true)}
                 >
                   <LuPencil className="h-4 w-4" />
                   Edit
@@ -122,7 +147,8 @@ export default function LibraryPage() {
                 <button
                   type="button"
                   aria-label="Delete library"
-                  className="rounded-lg border border-background-300 p-2 text-text-600"
+                  className="rounded-lg border border-background-300 p-2 text-text-600 hover:bg-background-100"
+                  onClick={() => setIsDeleteDialogOpen(true)}
                 >
                   <LuTrash2 className="h-4 w-4" />
                 </button>
@@ -210,7 +236,9 @@ export default function LibraryPage() {
                             type="button"
                             className="text-sm font-bold text-primary transition hover:text-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
                             disabled={removeRecipeMutation.isPending}
-                            onClick={() => removeRecipeMutation.mutate(recipe.id)}
+                            onClick={() =>
+                              removeRecipeMutation.mutate(recipe.id)
+                            }
                           >
                             {isRemoving ? 'Removing...' : 'Remove'}
                           </button>
@@ -228,8 +256,8 @@ export default function LibraryPage() {
                     No recipes in this library yet
                   </h3>
                   <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-text-600">
-                    Add recipes here to keep this collection organized and easy to
-                    browse.
+                    Add recipes here to keep this collection organized and easy
+                    to browse.
                   </p>
                 </div>
               )}
@@ -244,6 +272,25 @@ export default function LibraryPage() {
           error={addRecipeMutation.error}
           onAdd={(recipeId) => addRecipeMutation.mutate(recipeId)}
           onClose={() => setIsRecipePickerOpen(false)}
+        />
+      )}
+      {isEditFormOpen && library && (
+        <LibraryFormDialog
+          key={library.id}
+          library={library}
+          isPending={updateLibraryMutation.isPending}
+          error={updateLibraryMutation.error}
+          onCancel={() => setIsEditFormOpen(false)}
+          onSubmit={(payload) => updateLibraryMutation.mutate(payload)}
+        />
+      )}
+      {isDeleteDialogOpen && library && (
+        <LibraryDeleteDialog
+          library={library}
+          isPending={deleteLibraryMutation.isPending}
+          error={deleteLibraryMutation.error}
+          onCancel={() => setIsDeleteDialogOpen(false)}
+          onConfirm={() => deleteLibraryMutation.mutate()}
         />
       )}
     </main>

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { LuSearch, LuX } from 'react-icons/lu';
 import ErrorMessage from '../ui/ErrorMessage';
+import { RecipePickerSkeleton } from '../ui/LoadingSkeletons';
 import { getRecipes } from '../../services/recipeService';
 import { queryKeys } from '../../utils/queryKeys';
 
@@ -107,7 +108,7 @@ export default function LibraryRecipePickerDialog({
         )}
 
         {areRecipesPending ? (
-          <p className="text-text-600 mt-6 text-sm">Loading recipes…</p>
+          <RecipePickerSkeleton />
         ) : availableRecipes.length > 0 ? (
           <ul className="divide-background-200 border-background-200 mt-5 divide-y rounded-xl border">
             {availableRecipes.map((recipe) => (

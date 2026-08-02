@@ -12,6 +12,7 @@ import {
 import { ApiError } from '../../services/apiClient';
 import { queryKeys } from '../../utils/queryKeys';
 import ErrorMessage from '../ui/ErrorMessage';
+import { IngredientSearchSkeleton } from '../ui/LoadingSkeletons';
 
 type RecipeIngredientFormDialogProps = {
   recipeIngredient?: RecipeIngredient;
@@ -199,9 +200,7 @@ export default function RecipeIngredientFormDialog({
               className="border-background-300 absolute top-full z-10 mt-1 w-full overflow-hidden rounded-lg border bg-white py-1 shadow-lg"
             >
               {ingredientQuery.isFetching ? (
-                <p className="text-text-600 px-3 py-2 font-normal">
-                  Searching ingredients…
-                </p>
+                <IngredientSearchSkeleton />
               ) : ingredientQuery.isError ? (
                 <p className="text-text-600 px-3 py-2 font-normal">
                   We couldn’t search ingredients. Try again.

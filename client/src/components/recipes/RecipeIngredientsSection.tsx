@@ -22,6 +22,7 @@ import { createCookSession } from '../../services/cookSessionService';
 import { formatIngredientQuantity } from '../../utils/recipeDisplay';
 import { queryKeys } from '../../utils/queryKeys';
 import ErrorMessage from '../ui/ErrorMessage';
+import { IngredientListSkeleton } from '../ui/LoadingSkeletons';
 import RecipeIngredientDeleteDialog from './RecipeIngredientDeleteDialog';
 import RecipeIngredientFormDialog from './RecipeIngredientFormDialog';
 
@@ -160,7 +161,9 @@ export default function RecipeIngredientsSection({
 
       <ul className="divide-background-200 border-background-200 bg-background-100/70 mt-8 divide-y rounded-xl border px-5">
         {isPending ? (
-          <li className="text-text-600 py-5 text-sm">Loading ingredients…</li>
+          <li>
+            <IngredientListSkeleton />
+          </li>
         ) : isError ? (
           <li className="text-text-600 py-5 text-sm">
             We couldn’t load the ingredients. Please try again.

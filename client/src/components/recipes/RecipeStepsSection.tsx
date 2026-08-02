@@ -18,6 +18,7 @@ import {
 } from '../../services/recipeStepService';
 import { queryKeys } from '../../utils/queryKeys';
 import ErrorMessage from '../ui/ErrorMessage';
+import { StepListSkeleton } from '../ui/LoadingSkeletons';
 import RecipeStepDeleteDialog from './RecipeStepDeleteDialog';
 import RecipeStepFormDialog from './RecipeStepFormDialog';
 
@@ -118,7 +119,9 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
 
       <ol className="mt-8 space-y-1">
         {isPending ? (
-          <li className="text-text-600 py-5 text-sm">Loading steps…</li>
+          <li>
+            <StepListSkeleton />
+          </li>
         ) : isError ? (
           <li className="text-text-600 py-5 text-sm">
             We couldn’t load the recipe steps. Please try again.

@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import BadRequestError from '../errors/BadRequestError.js';
+import { userOwnsRecipe } from '../utils/recipeOwnership.js';
 
 const recipeIngredientDBAttributes = [
   'ingredient_id',
@@ -25,20 +26,6 @@ const buildUpdatedRecipeIngredientFields = (req) => {
   });
 
   return { updatedValues, updatedFields };
-};
-
-// Helper function to make sure recipe owner and the current user matches
-const checkUserOwnership = async (recipeId, userId) => {
-  const result = await query(
-    `
-      SELECT id
-      FROM recipes
-      WHERE id = $1 AND created_by_user_id = $2
-      `,
-    [recipeId, userId]
-  );
-
-  return Boolean(result.rows[0]);
 };
 
 // Helper function to make sure the recipe ingredient ids match
@@ -69,9 +56,9 @@ export const createRecipeIngredient = async (req, res, next) => {
     } = req.body;
     const { recipeId } = req.params;
     const userId = req.user.userId;
-    const userOwnsRecipe = await checkUserOwnership(recipeId, userId);
+    const ownsRecipe = await userOwnsRecipe(recipeId, userId);
 
-    if (!userOwnsRecipe) {
+    if (!ownsRecipe) {
       throw new NotFoundError('Recipe not found');
     }
 
@@ -141,9 +128,9 @@ export const getRecipeIngredient = async (req, res, next) => {
   try {
     const { recipeId } = req.params;
     const userId = req.user.userId;
-    const userOwnsRecipe = await checkUserOwnership(recipeId, userId);
+    const ownsRecipe = await userOwnsRecipe(recipeId, userId);
 
-    if (!userOwnsRecipe) {
+    if (!ownsRecipe) {
       throw new NotFoundError('Recipe not found');
     }
 
@@ -174,9 +161,9 @@ export const updateRecipeIngredient = async (req, res, next) => {
   try {
     const { recipeId, recipeIngredientId } = req.params;
     const userId = req.user.userId;
-    const userOwnsRecipe = await checkUserOwnership(recipeId, userId);
+    const ownsRecipe = await userOwnsRecipe(recipeId, userId);
 
-    if (!userOwnsRecipe) {
+    if (!ownsRecipe) {
       throw new NotFoundError('Recipe not found');
     }
 
@@ -236,9 +223,9 @@ export const deleteRecipeIngredient = async (req, res, next) => {
   try {
     const { recipeId, recipeIngredientId } = req.params;
     const userId = req.user.userId;
-    const userOwnsRecipe = await checkUserOwnership(recipeId, userId);
+    const ownsRecipe = await userOwnsRecipe(recipeId, userId);
 
-    if (!userOwnsRecipe) {
+    if (!ownsRecipe) {
       throw new NotFoundError('Recipe not found');
     }
 
@@ -296,9 +283,9 @@ export const reorderRecipeIngredients = async (req, res, next) => {
     const { recipeId } = req.params;
     const { recipeIngredientIds } = req.body;
     const userId = req.user.userId;
-    const userOwnsRecipe = await checkUserOwnership(recipeId, userId);
+    const ownsRecipe = await userOwnsRecipe(recipeId, userId);
 
-    if (!userOwnsRecipe) {
+    if (!ownsRecipe) {
       throw new NotFoundError('Recipe not found');
     }
 

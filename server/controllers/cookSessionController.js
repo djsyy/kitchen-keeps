@@ -2,6 +2,7 @@ import { getClient, query } from '../config/db.js';
 import { StatusCodes } from 'http-status-codes';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
+import { lockOwnedRecipe } from '../utils/recipeOwnership.js';
 
 const cookSessionFields =
   'id, user_id, recipe_id, status, created_at, updated_at, completed_at, cancelled_at, cancellation_reason, expired_prompt_seen_at';
@@ -9,23 +10,6 @@ const cookSessionItemFields =
   'id, cook_session_id, recipe_ingredient_id, display_name, quantity_value, quantity_unit, sort_order, status, created_at, updated_at';
 const cookSessionItemReturnFields =
   'cook_session_items.id, cook_session_items.cook_session_id, cook_session_items.recipe_ingredient_id, cook_session_items.display_name, cook_session_items.quantity_value, cook_session_items.quantity_unit, cook_session_items.sort_order, cook_session_items.status, cook_session_items.created_at, cook_session_items.updated_at';
-
-// Lock the owned recipe so concurrent create requests resume the same session
-const lockOwnedRecipe = async (client, recipeId, userId) => {
-  const result = await client.query(
-    `
-      SELECT id
-      FROM recipes
-      WHERE id = $1 AND created_by_user_id = $2
-      FOR UPDATE
-    `,
-    [recipeId, userId]
-  );
-
-  if (!result.rows[0]) {
-    throw new NotFoundError('Recipe not found');
-  }
-};
 
 const expireStaleCookSessions = async (
   database,

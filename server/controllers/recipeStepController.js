@@ -3,38 +3,10 @@ import { StatusCodes } from 'http-status-codes';
 import BadRequestError from '../errors/BadRequestError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import NotFoundError from '../errors/NotFoundError.js';
+import { lockOwnedRecipe, userOwnsRecipe } from '../utils/recipeOwnership.js';
 
 const recipeStepFields =
   'id, recipe_id, sort_order, instruction, created_at, updated_at';
-
-const userOwnsRecipe = async (recipeId, userId) => {
-  const result = await query(
-    `
-      SELECT id
-      FROM recipes
-      WHERE id = $1 AND created_by_user_id = $2
-    `,
-    [recipeId, userId]
-  );
-
-  return Boolean(result.rows[0]);
-};
-
-const lockOwnedRecipe = async (client, recipeId, userId) => {
-  const result = await client.query(
-    `
-      SELECT id
-      FROM recipes
-      WHERE id = $1 AND created_by_user_id = $2
-      FOR UPDATE
-    `,
-    [recipeId, userId]
-  );
-
-  if (!result.rows[0]) {
-    throw new NotFoundError('Recipe not found');
-  }
-};
 
 const hasSameIds = (currentIds, submittedIds) => {
   if (currentIds.length !== submittedIds.length) {

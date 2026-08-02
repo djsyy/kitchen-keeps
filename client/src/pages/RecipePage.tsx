@@ -7,13 +7,14 @@ import RecipeOverviewCard from '../components/recipes/RecipeOverviewCard';
 import RecipeStepsSection from '../components/recipes/RecipeStepsSection';
 import ErrorMessage from '../components/ui/ErrorMessage';
 import { getRecipe } from '../services/recipeService';
+import { queryKeys } from '../utils/queryKeys';
 
 export default function RecipePage() {
   const { id } = useParams();
   const recipeId = Number(id);
   const isValidRecipeId = Number.isInteger(recipeId) && recipeId > 0;
   const { data, error, isPending } = useQuery({
-    queryKey: ['recipes', recipeId],
+    queryKey: queryKeys.recipes.detail(recipeId),
     queryFn: () => getRecipe(recipeId),
     enabled: isValidRecipeId,
   });

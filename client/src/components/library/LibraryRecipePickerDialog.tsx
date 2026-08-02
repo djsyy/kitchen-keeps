@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { LuSearch, LuX } from 'react-icons/lu';
 import ErrorMessage from '../ui/ErrorMessage';
 import { getRecipes } from '../../services/recipeService';
+import { queryKeys } from '../../utils/queryKeys';
 
 type LibraryRecipePickerDialogProps = {
   memberRecipeIds: number[];
@@ -25,7 +26,7 @@ export default function LibraryRecipePickerDialog({
     error: recipesError,
     isPending: areRecipesPending,
   } = useQuery({
-    queryKey: ['recipes'],
+    queryKey: queryKeys.recipes.all,
     queryFn: getRecipes,
   });
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();

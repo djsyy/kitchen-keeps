@@ -12,6 +12,7 @@ import {
   updateUser,
 } from '../services/authService';
 import { getApiFieldError } from '../services/apiClient';
+import { queryKeys } from '../utils/queryKeys';
 
 type SettingsRowProps = {
   title: string;
@@ -101,7 +102,7 @@ export default function ProfilePage() {
   const updateNameMutation = useMutation({
     mutationFn: (updatedName: string) => updateUser({ name: updatedName }),
     onSuccess: (response) => {
-      queryClient.setQueryData(['auth', 'me'], response.data.user);
+      queryClient.setQueryData(queryKeys.auth.me, response.data.user);
       setName(response.data.user.name);
     },
   });
@@ -109,7 +110,7 @@ export default function ProfilePage() {
   const updateEmailMutation = useMutation({
     mutationFn: (updatedEmail: string) => updateUser({ email: updatedEmail }),
     onSuccess: (response) => {
-      queryClient.setQueryData(['auth', 'me'], response.data.user);
+      queryClient.setQueryData(queryKeys.auth.me, response.data.user);
       setEmail(response.data.user.email);
       setIsEditingEmail(false);
     },
@@ -126,7 +127,7 @@ export default function ProfilePage() {
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ['auth', 'me'] });
+      queryClient.removeQueries({ queryKey: queryKeys.auth.me });
       navigate('/', { replace: true });
     },
   });

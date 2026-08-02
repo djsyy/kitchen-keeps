@@ -16,6 +16,7 @@ import {
   type UpdateRecipeStepPayload,
   updateRecipeStep,
 } from '../../services/recipeStepService';
+import { queryKeys } from '../../utils/queryKeys';
 import ErrorMessage from '../ui/ErrorMessage';
 import RecipeStepDeleteDialog from './RecipeStepDeleteDialog';
 import RecipeStepFormDialog from './RecipeStepFormDialog';
@@ -25,7 +26,7 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
   const [isAdding, setIsAdding] = useState(false);
   const [editingStep, setEditingStep] = useState<RecipeStep | null>(null);
   const [deletingStep, setDeletingStep] = useState<RecipeStep | null>(null);
-  const stepQueryKey = ['recipes', recipeId, 'steps'] as const;
+  const stepQueryKey = queryKeys.recipes.steps(recipeId);
   const { data, isError, isPending } = useQuery({
     queryKey: stepQueryKey,
     queryFn: () => getRecipeSteps(recipeId),

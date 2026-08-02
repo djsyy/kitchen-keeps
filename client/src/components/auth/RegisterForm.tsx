@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { VscAccount } from 'react-icons/vsc';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { registerUser } from '../../services/authService';
+import { queryKeys } from '../../utils/queryKeys';
 
 export default function RegisterForm() {
   const queryClient = useQueryClient();
@@ -18,7 +19,7 @@ export default function RegisterForm() {
   const registerMutation = useMutation({
     mutationFn: registerUser,
     onSuccess: (response) => {
-      queryClient.setQueryData(['auth', 'me'], response.data.user);
+      queryClient.setQueryData(queryKeys.auth.me, response.data.user);
       navigate('/dashboard', { replace: true });
     },
   });

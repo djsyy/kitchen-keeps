@@ -20,6 +20,7 @@ import {
 } from '../../services/recipeIngredientService';
 import { createCookSession } from '../../services/cookSessionService';
 import { formatIngredientQuantity } from '../../utils/recipeDisplay';
+import { queryKeys } from '../../utils/queryKeys';
 import ErrorMessage from '../ui/ErrorMessage';
 import RecipeIngredientDeleteDialog from './RecipeIngredientDeleteDialog';
 import RecipeIngredientFormDialog from './RecipeIngredientFormDialog';
@@ -36,7 +37,7 @@ export default function RecipeIngredientsSection({
     useState<RecipeIngredient | null>(null);
   const [deletingIngredient, setDeletingIngredient] =
     useState<RecipeIngredient | null>(null);
-  const ingredientQueryKey = ['recipes', recipeId, 'ingredients'] as const;
+  const ingredientQueryKey = queryKeys.recipes.ingredients(recipeId);
   const { data, isError, isPending } = useQuery({
     queryKey: ingredientQueryKey,
     queryFn: () => getRecipeIngredients(recipeId),
@@ -81,7 +82,7 @@ export default function RecipeIngredientsSection({
   const createCookSessionMutation = useMutation({
     mutationFn: () => createCookSession(recipeId),
     onSuccess: ({ data }) => {
-      queryClient.invalidateQueries({ queryKey: ['cook-sessions'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cookSessions.all });
       navigate(`/cook-sessions/${data.cookSession.id}`);
     },
   });

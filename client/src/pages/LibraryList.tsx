@@ -15,6 +15,7 @@ import {
 } from '../services/libraryService';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { queryKeys } from '../utils/queryKeys';
 
 function LibraryLoading() {
   return (
@@ -41,7 +42,7 @@ export default function LibraryList() {
   const [editingLibrary, setEditingLibrary] = useState<Library | null>(null);
   const [deletingLibrary, setDeletingLibrary] = useState<Library | null>(null);
   const { data, isError, isPending } = useQuery({
-    queryKey: ['libraries'],
+    queryKey: queryKeys.libraries.all,
     queryFn: getLibraries,
   });
 
@@ -50,7 +51,7 @@ export default function LibraryList() {
   const createLibraryMutation = useMutation({
     mutationFn: createLibrary,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['libraries'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.libraries.all });
       setIsCreateFormOpen(false);
     },
   });
@@ -64,7 +65,7 @@ export default function LibraryList() {
       payload: CreateLibraryPayload;
     }) => updateLibrary(libraryId, payload),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['libraries'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.libraries.all });
       setEditingLibrary(null);
     },
   });
@@ -72,7 +73,7 @@ export default function LibraryList() {
   const deleteLibraryMutation = useMutation({
     mutationFn: deleteLibrary,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['libraries'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.libraries.all });
       setDeletingLibrary(null);
     },
   });

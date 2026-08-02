@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { IoIosLogIn } from 'react-icons/io';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { loginUser } from '../../services/authService';
+import { queryKeys } from '../../utils/queryKeys';
 
 export default function LoginForm() {
   const queryClient = useQueryClient();
@@ -16,7 +17,7 @@ export default function LoginForm() {
   const loginMutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (response) => {
-      queryClient.setQueryData(['auth', 'me'], response.data.user);
+      queryClient.setQueryData(queryKeys.auth.me, response.data.user);
       navigate('/dashboard', { replace: true });
     },
   });

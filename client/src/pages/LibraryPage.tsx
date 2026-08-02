@@ -28,6 +28,7 @@ import {
 } from '../services/libraryService';
 import type { Recipe } from '../services/recipeService';
 import { getRecipeTotalTime } from '../utils/recipeDisplay';
+import { queryKeys } from '../utils/queryKeys';
 
 function formatCreatedDate(createdAt?: string) {
   if (!createdAt) {
@@ -51,7 +52,7 @@ export default function LibraryPage() {
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { data, error, isPending } = useQuery({
-    queryKey: ['libraries', libraryId],
+    queryKey: queryKeys.libraries.detail(libraryId),
     queryFn: () => getLibrary(libraryId),
     enabled: isValidLibraryId,
   });
@@ -61,29 +62,35 @@ export default function LibraryPage() {
   const addRecipeMutation = useMutation({
     mutationFn: (recipeId: number) => addRecipeToLibrary(libraryId, recipeId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['libraries', libraryId] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.libraries.detail(libraryId),
+      });
     },
   });
   const removeRecipeMutation = useMutation({
     mutationFn: (recipeId: number) =>
       removeRecipeFromLibrary(libraryId, recipeId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['libraries', libraryId] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.libraries.detail(libraryId),
+      });
     },
   });
   const updateLibraryMutation = useMutation({
     mutationFn: (payload: CreateLibraryPayload) =>
       updateLibrary(libraryId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['libraries'] });
-      queryClient.invalidateQueries({ queryKey: ['libraries', libraryId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.libraries.all });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.libraries.detail(libraryId),
+      });
       setIsEditFormOpen(false);
     },
   });
   const deleteLibraryMutation = useMutation({
     mutationFn: () => deleteLibrary(libraryId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['libraries'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.libraries.all });
       navigate('/library', { replace: true });
     },
   });

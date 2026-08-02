@@ -15,6 +15,7 @@ import EmptyPage from '../components/ui/EmptyPage';
 import RecipeGridPage from '../components/recipes/RecipeGridPage';
 import RecipeFormDialog from '../components/recipes/RecipeFormDialog';
 import RecipeDeleteDialog from '../components/recipes/RecipeDeleteDialog';
+import { queryKeys } from '../utils/queryKeys';
 
 export default function RecipeListPage() {
   const queryClient = useQueryClient();
@@ -23,7 +24,7 @@ export default function RecipeListPage() {
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const [deletingRecipe, setDeletingRecipe] = useState<Recipe | null>(null);
   const { data, error, isPending } = useQuery({
-    queryKey: ['recipes'],
+    queryKey: queryKeys.recipes.all,
     queryFn: getRecipes,
   });
 
@@ -32,7 +33,7 @@ export default function RecipeListPage() {
   const createRecipeMutation = useMutation({
     mutationFn: createRecipe,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['recipes'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
       setIsCreateFormOpen(false);
     },
   });
@@ -45,14 +46,14 @@ export default function RecipeListPage() {
       payload: CreateRecipePayload;
     }) => updateRecipe(recipeId, payload),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['recipes'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
       setEditingRecipe(null);
     },
   });
   const deleteRecipeMutation = useMutation({
     mutationFn: deleteRecipe,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['recipes'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
       setDeletingRecipe(null);
     },
   });

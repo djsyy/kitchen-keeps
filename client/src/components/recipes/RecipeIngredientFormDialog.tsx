@@ -10,6 +10,7 @@ import {
   type Ingredient,
 } from '../../services/ingredientService';
 import { ApiError } from '../../services/apiClient';
+import { queryKeys } from '../../utils/queryKeys';
 import ErrorMessage from '../ui/ErrorMessage';
 
 type RecipeIngredientFormDialogProps = {
@@ -94,7 +95,7 @@ export default function RecipeIngredientFormDialog({
   }, [search]);
 
   const ingredientQuery = useQuery({
-    queryKey: ['ingredients', 'search', debouncedSearch],
+    queryKey: queryKeys.ingredients.search(debouncedSearch),
     queryFn: () => searchIngredients(debouncedSearch),
     enabled: isIngredientMenuOpen && debouncedSearch.length >= 1,
   });

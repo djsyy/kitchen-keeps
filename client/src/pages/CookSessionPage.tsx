@@ -17,6 +17,7 @@ import {
   type CookSessionItemStatus,
   updateCookSessionItem,
 } from '../services/cookSessionService';
+import { queryKeys } from '../utils/queryKeys';
 
 export default function CookSessionPage() {
   const { id } = useParams();
@@ -26,7 +27,7 @@ export default function CookSessionPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isCompletionSummaryOpen, setIsCompletionSummaryOpen] = useState(false);
-  const cookSessionQueryKey = ['cook-sessions', cookSessionId] as const;
+  const cookSessionQueryKey = queryKeys.cookSessions.detail(cookSessionId);
   const { data, error, isPending } = useQuery({
     queryKey: cookSessionQueryKey,
     queryFn: () => getCookSession(cookSessionId),
@@ -58,7 +59,7 @@ export default function CookSessionPage() {
       return createCookSession(recipeId);
     },
     onSuccess: ({ data }) => {
-      queryClient.invalidateQueries({ queryKey: ['cook-sessions'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cookSessions.all });
       navigate(`/cook-sessions/${data.cookSession.id}`, { replace: true });
     },
   });
@@ -90,13 +91,13 @@ export default function CookSessionPage() {
         }
       );
       queryClient.invalidateQueries({ queryKey: cookSessionQueryKey });
-      queryClient.invalidateQueries({ queryKey: ['cook-sessions'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cookSessions.all });
     },
   });
   const completeMutation = useMutation({
     mutationFn: () => completeCookSession(cookSessionId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cook-sessions'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cookSessions.all });
       queryClient.invalidateQueries({ queryKey: cookSessionQueryKey });
       setIsCompletionSummaryOpen(true);
     },
@@ -104,7 +105,7 @@ export default function CookSessionPage() {
   const cancelMutation = useMutation({
     mutationFn: () => cancelCookSession(cookSessionId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cook-sessions'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cookSessions.all });
       navigate(`/recipes/${cookSession?.recipe_id}`, { replace: true });
     },
   });

@@ -1,6 +1,8 @@
 import express from 'express';
 import {
   createLibrary,
+  addRecipeToLibrary,
+  removeRecipeFromLibrary,
   getLibraries,
   getSingleLibrary,
   updateLibrary,
@@ -9,6 +11,8 @@ import {
 import validateRequest from '../middleware/validateRequest.js';
 import {
   createLibraryValidation,
+  addRecipeToLibraryValidation,
+  removeRecipeFromLibraryValidation,
   getSingleLibraryValidation,
   updateLibraryValidation,
   deleteLibraryValidation,
@@ -20,6 +24,21 @@ router
   .route('/')
   .post(createLibraryValidation, validateRequest, createLibrary)
   .get(getLibraries);
+
+router.post(
+  '/:libraryId/recipes',
+  addRecipeToLibraryValidation,
+  validateRequest,
+  addRecipeToLibrary
+);
+
+router.delete(
+  '/:libraryId/recipes/:recipeId',
+  removeRecipeFromLibraryValidation,
+  validateRequest,
+  removeRecipeFromLibrary
+);
+
 router
   .route('/:id')
   .get(getSingleLibraryValidation, validateRequest, getSingleLibrary)

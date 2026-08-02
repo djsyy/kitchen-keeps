@@ -13,6 +13,8 @@ import {
 
 const libraryFields = ['name', 'description', 'icon_key', 'color_key'];
 const libraryIdParam = positiveIntegerParam('id', 'Id');
+const membershipLibraryIdParam = positiveIntegerParam('libraryId', 'Library id');
+const recipeIdParam = positiveIntegerParam('recipeId', 'Recipe id');
 
 // Create library validation rules
 export const createLibraryValidation = [
@@ -30,6 +32,21 @@ export const createLibraryValidation = [
 
 // Get single library validation rules
 export const getSingleLibraryValidation = [libraryIdParam];
+
+export const addRecipeToLibraryValidation = [
+  membershipLibraryIdParam,
+  body('recipe_id')
+    .exists()
+    .withMessage('Recipe id is required')
+    .bail()
+    .isInt({ min: 1 })
+    .withMessage('Recipe id must be a valid positive integer'),
+];
+
+export const removeRecipeFromLibraryValidation = [
+  membershipLibraryIdParam,
+  recipeIdParam,
+];
 
 // Update library validation rules
 export const updateLibraryValidation = [

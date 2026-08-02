@@ -4,6 +4,19 @@ import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import ConflictError from '../errors/ConflictError.js';
 
+const checkUserOwnership = async (libraryId, userId) => {
+  const result = await query(
+    `
+      SELECT id
+      FROM libraries
+      WHERE id = $1 AND user_id = $2
+    `,
+    [libraryId, userId]
+  );
+
+  return Boolean(result.rows[0]);
+};
+
 export const createLibrary = async (req, res, next) => {
   try {
     const {
@@ -76,13 +89,109 @@ export const getSingleLibrary = async (req, res, next) => {
       throw new NotFoundError('Library not found');
     }
 
-    return res.status(StatusCodes.OK).json({ data: { library } });
+    const recipesResult = await query(
+      `
+      SELECT recipes.id, recipes.title, recipes.description, recipes.image_url,
+        recipes.created_by_user_id, recipes.prep_time_minutes,
+        recipes.cook_time_minutes, recipes.servings, recipes.created_at,
+        recipes.updated_at
+      FROM library_recipes
+      INNER JOIN recipes ON recipes.id = library_recipes.recipe_id
+      WHERE library_recipes.library_id = $1
+        AND recipes.created_by_user_id = $2
+      ORDER BY recipes.title
+      `,
+      [id, userId]
+    );
+
+    return res.status(StatusCodes.OK).json({
+      data: { library, recipes: recipesResult.rows },
+    });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);
     }
 
     return next(new InternalServerError('Unable to fetch library'));
+  }
+};
+
+export const addRecipeToLibrary = async (req, res, next) => {
+  try {
+    const { libraryId } = req.params;
+    const { recipe_id: recipeId } = req.body;
+    const userId = req.user.userId;
+    const userOwnsLibrary = await checkUserOwnership(libraryId, userId);
+
+    if (!userOwnsLibrary) {
+      throw new NotFoundError('Library not found');
+    }
+
+    const result = await query(
+      `
+      INSERT INTO library_recipes (library_id, recipe_id)
+      SELECT $1, id
+      FROM recipes
+      WHERE id = $2 AND created_by_user_id = $3
+      RETURNING library_id, recipe_id, added_at, notes
+      `,
+      [libraryId, recipeId, userId]
+    );
+
+    const libraryRecipe = result.rows[0];
+    if (!libraryRecipe) {
+      throw new NotFoundError('Recipe not found');
+    }
+
+    return res.status(StatusCodes.CREATED).json({
+      data: { libraryRecipe },
+    });
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return next(error);
+    }
+
+    if (error.code === '23505') {
+      return next(new ConflictError('Recipe is already in this library'));
+    }
+
+    return next(new InternalServerError('Unable to add recipe to library'));
+  }
+};
+
+export const removeRecipeFromLibrary = async (req, res, next) => {
+  try {
+    const { libraryId, recipeId } = req.params;
+    const userId = req.user.userId;
+    const userOwnsLibrary = await checkUserOwnership(libraryId, userId);
+
+    if (!userOwnsLibrary) {
+      throw new NotFoundError('Library not found');
+    }
+
+    const result = await query(
+      `
+      DELETE FROM library_recipes
+      WHERE library_id = $1 AND recipe_id = $2
+      RETURNING library_id, recipe_id, added_at, notes
+      `,
+      [libraryId, recipeId]
+    );
+
+    const libraryRecipe = result.rows[0];
+    if (!libraryRecipe) {
+      throw new NotFoundError('Recipe is not in this library');
+    }
+
+    return res.status(StatusCodes.OK).json({ data: { libraryRecipe } });
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return next(error);
+    }
+
+    return next(
+      new InternalServerError('Unable to remove recipe from library')
+    );
   }
 };
 

@@ -19,16 +19,10 @@ import {
   updateRecipeIngredient,
 } from '../../services/recipeIngredientService';
 import { createCookSession } from '../../services/cookSessionService';
+import { formatIngredientQuantity } from '../../utils/recipeDisplay';
 import ErrorMessage from '../ui/ErrorMessage';
 import RecipeIngredientDeleteDialog from './RecipeIngredientDeleteDialog';
 import RecipeIngredientFormDialog from './RecipeIngredientFormDialog';
-
-function formatQuantity({
-  quantity_value: quantityValue,
-  quantity_unit: quantityUnit,
-}: RecipeIngredient) {
-  return [quantityValue, quantityUnit].filter(Boolean).join(' ');
-}
 
 export default function RecipeIngredientsSection({
   recipeId,
@@ -176,7 +170,7 @@ export default function RecipeIngredientsSection({
           </li>
         ) : (
           recipeIngredients.map((ingredient, index) => {
-            const quantity = formatQuantity(ingredient);
+            const quantity = formatIngredientQuantity(ingredient);
 
             return (
               <li

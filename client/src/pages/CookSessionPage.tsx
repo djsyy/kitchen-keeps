@@ -15,6 +15,7 @@ import {
   type CookSessionItemStatus,
   updateCookSessionItem,
 } from '../services/cookSessionService';
+import { formatIngredientQuantity } from '../utils/recipeDisplay';
 
 const itemStatusOptions: {
   label: string;
@@ -42,9 +43,6 @@ const itemStatusOptions: {
     selectedClassName: 'border-primary-500 bg-primary-200 text-primary-950',
   },
 ];
-
-const formatQuantity = (item: CookSessionItem) =>
-  [item.quantity_value, item.quantity_unit].filter(Boolean).join(' ');
 
 type CompletionSummaryModalProps = {
   recipeTitle: string;
@@ -126,7 +124,7 @@ function CompletionSummaryModal({
             ) : (
               <ul className="mt-3 space-y-2">
                 {neededItems.map((item) => {
-                  const quantity = formatQuantity(item);
+                  const quantity = formatIngredientQuantity(item);
 
                   return (
                     <li
@@ -155,7 +153,7 @@ function CompletionSummaryModal({
             ) : (
               <ul className="mt-3 space-y-2">
                 {unsureItems.map((item) => {
-                  const quantity = formatQuantity(item);
+                  const quantity = formatIngredientQuantity(item);
 
                   return (
                     <li
@@ -410,7 +408,7 @@ export default function CookSessionPage() {
               ) : (
                 <ul className="mt-5 divide-y divide-background-200 rounded-xl border border-background-200 bg-background-100/70 px-5">
                   {items.map((item) => {
-                    const quantity = formatQuantity(item);
+                    const quantity = formatIngredientQuantity(item);
                     const isActive = cookSession.status === 'active';
 
                     return (

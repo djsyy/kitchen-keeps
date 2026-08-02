@@ -27,6 +27,7 @@ import {
   updateLibrary,
 } from '../services/libraryService';
 import type { Recipe } from '../services/recipeService';
+import { getRecipeTotalTime } from '../utils/recipeDisplay';
 
 function formatCreatedDate(createdAt?: string) {
   if (!createdAt) {
@@ -271,8 +272,7 @@ function LibraryRecipeCard({
 }: LibraryRecipeCardProps) {
   const { containerRef, isOptionsOpen, toggleOptions } =
     useCardOptionsMenu<HTMLElement>();
-  const totalTime =
-    (recipe.prep_time_minutes ?? 0) + (recipe.cook_time_minutes ?? 0);
+  const totalTime = getRecipeTotalTime(recipe);
 
   return (
     <article

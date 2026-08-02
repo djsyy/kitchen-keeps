@@ -1,5 +1,6 @@
 import { LuClock3, LuPencil, LuUsersRound } from 'react-icons/lu';
 import type { Recipe } from '../../services/recipeService';
+import { getRecipeTotalTime } from '../../utils/recipeDisplay';
 import RecipeImagePlaceholder from './RecipeImagePlaceholder';
 
 function formatCreatedDate(createdAt: string) {
@@ -11,8 +12,7 @@ function formatCreatedDate(createdAt: string) {
 }
 
 export default function RecipeOverviewCard({ recipe }: { recipe: Recipe }) {
-  const totalTime =
-    (recipe.prep_time_minutes ?? 0) + (recipe.cook_time_minutes ?? 0);
+  const totalTime = getRecipeTotalTime(recipe);
 
   return (
     <section className="overflow-hidden rounded-2xl border border-background-300 bg-background-50 shadow-lg">

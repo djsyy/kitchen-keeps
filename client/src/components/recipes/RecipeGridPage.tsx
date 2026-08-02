@@ -7,6 +7,7 @@ import {
   LuUsersRound,
 } from 'react-icons/lu';
 import type { Recipe } from '../../services/recipeService';
+import { getRecipeTotalTime } from '../../utils/recipeDisplay';
 import useCardOptionsMenu from '../../hooks/useCardOptionsMenu';
 import RecipeImagePlaceholder from './RecipeImagePlaceholder';
 
@@ -94,7 +95,7 @@ function RecipeCard({
   onEdit: (recipe: Recipe) => void;
   onDelete: (recipe: Recipe) => void;
 }) {
-  const totalTime = (recipe.prep_time_minutes ?? 0) + (recipe.cook_time_minutes ?? 0);
+  const totalTime = getRecipeTotalTime(recipe);
   const { containerRef, isOptionsOpen, toggleOptions } =
     useCardOptionsMenu<HTMLElement>();
 

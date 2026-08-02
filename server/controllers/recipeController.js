@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import ConflictError from '../errors/ConflictError.js';
+import { buildUpdatedFields } from '../utils/buildUpdatedFields.js';
 
 const recipeDBAttributes = [
   'title',
@@ -12,21 +13,6 @@ const recipeDBAttributes = [
   'cook_time_minutes',
   'servings',
 ];
-
-// Helper function to parse and keep optional values that have been set
-const buildUpdatedRecipeFields = (req) => {
-  const updatedValues = [];
-  const updatedFields = [];
-
-  recipeDBAttributes.forEach((attribute) => {
-    if (Object.hasOwn(req.body, attribute)) {
-      updatedValues.push(req.body[attribute]);
-      updatedFields.push(`${attribute} = $${updatedValues.length}`);
-    }
-  });
-
-  return { updatedValues, updatedFields };
-};
 
 export const createRecipe = async (req, res, next) => {
   try {
@@ -125,7 +111,10 @@ export const updateRecipe = async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.userId;
-    const { updatedFields, updatedValues } = buildUpdatedRecipeFields(req);
+    const { updatedFields, updatedValues } = buildUpdatedFields(
+      req.body,
+      recipeDBAttributes
+    );
 
     updatedValues.push(userId);
     updatedValues.push(id);

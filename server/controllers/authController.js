@@ -8,23 +8,9 @@ import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import ConflictError from '../errors/ConflictError.js';
 import BadRequestError from '../errors/BadRequestError.js';
+import { buildUpdatedFields } from '../utils/buildUpdatedFields.js';
 
 const authDBAttributes = ['name', 'email'];
-
-// Helper function to parse and keep optional values that have been set
-const buildUpdatedProfileFields = (req) => {
-  const updatedValues = [];
-  const updatedFields = [];
-
-  authDBAttributes.forEach((attribute) => {
-    if (Object.hasOwn(req.body, attribute)) {
-      updatedValues.push(req.body[attribute]);
-      updatedFields.push(`${attribute} = $${updatedValues.length}`);
-    }
-  });
-
-  return { updatedValues, updatedFields };
-};
 
 const createResetToken = () => crypto.randomBytes(32).toString('hex');
 
@@ -138,7 +124,10 @@ export const logout = (req, res, next) => {
 export const updateUser = async (req, res, next) => {
   try {
     const userId = req.user.userId;
-    const { updatedFields, updatedValues } = buildUpdatedProfileFields(req);
+    const { updatedFields, updatedValues } = buildUpdatedFields(
+      req.body,
+      authDBAttributes
+    );
 
     updatedValues.push(userId);
 

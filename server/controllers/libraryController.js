@@ -3,6 +3,9 @@ import { StatusCodes } from 'http-status-codes';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import ConflictError from '../errors/ConflictError.js';
+import { buildUpdatedFields } from '../utils/buildUpdatedFields.js';
+
+const libraryDBAttributes = ['name', 'description', 'icon_key', 'color_key'];
 
 const checkUserOwnership = async (libraryId, userId) => {
   const result = await query(
@@ -199,28 +202,10 @@ export const updateLibrary = async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.userId;
-    const updatedFields = [];
-    const updatedValues = [];
-
-    if (Object.hasOwn(req.body, 'name')) {
-      updatedValues.push(req.body.name);
-      updatedFields.push(`name = $${updatedValues.length}`);
-    }
-
-    if (Object.hasOwn(req.body, 'description')) {
-      updatedValues.push(req.body.description);
-      updatedFields.push(`description = $${updatedValues.length}`);
-    }
-
-    if (Object.hasOwn(req.body, 'icon_key')) {
-      updatedValues.push(req.body.icon_key);
-      updatedFields.push(`icon_key = $${updatedValues.length}`);
-    }
-
-    if (Object.hasOwn(req.body, 'color_key')) {
-      updatedValues.push(req.body.color_key);
-      updatedFields.push(`color_key = $${updatedValues.length}`);
-    }
+    const { updatedFields, updatedValues } = buildUpdatedFields(
+      req.body,
+      libraryDBAttributes
+    );
 
     updatedValues.push(userId);
     updatedValues.push(id);

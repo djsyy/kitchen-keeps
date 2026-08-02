@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import BadRequestError from '../errors/BadRequestError.js';
+import { buildUpdatedFields } from '../utils/buildUpdatedFields.js';
 import { userOwnsRecipe } from '../utils/recipeOwnership.js';
 
 const recipeIngredientDBAttributes = [
@@ -12,21 +13,6 @@ const recipeIngredientDBAttributes = [
   'preparation_note',
   'display_name',
 ];
-
-// Helper function to parse and keep optional values that have been set
-const buildUpdatedRecipeIngredientFields = (req) => {
-  const updatedValues = [];
-  const updatedFields = [];
-
-  recipeIngredientDBAttributes.forEach((attribute) => {
-    if (Object.hasOwn(req.body, attribute)) {
-      updatedValues.push(req.body[attribute]);
-      updatedFields.push(`${attribute} = $${updatedValues.length}`);
-    }
-  });
-
-  return { updatedValues, updatedFields };
-};
 
 // Helper function to make sure the recipe ingredient ids match
 const hasSameIds = (currentIds, submittedIds) => {
@@ -186,8 +172,10 @@ export const updateRecipeIngredient = async (req, res, next) => {
       }
     }
 
-    const { updatedFields, updatedValues } =
-      buildUpdatedRecipeIngredientFields(req);
+    const { updatedFields, updatedValues } = buildUpdatedFields(
+      req.body,
+      recipeIngredientDBAttributes
+    );
 
     updatedValues.push(recipeIngredientId);
     updatedValues.push(recipeId);

@@ -1,5 +1,6 @@
-import { LuClock3, LuImagePlus, LuPencil, LuUsersRound } from 'react-icons/lu';
+import { LuClock3, LuPencil, LuUsersRound } from 'react-icons/lu';
 import type { Recipe } from '../../services/recipeService';
+import RecipeImagePlaceholder from './RecipeImagePlaceholder';
 
 function formatCreatedDate(createdAt: string) {
   return `Created ${new Intl.DateTimeFormat('en', {
@@ -23,13 +24,10 @@ export default function RecipeOverviewCard({ recipe }: { recipe: Recipe }) {
             className="relative z-10 h-64 w-full object-cover lg:h-full lg:min-h-80 lg:shadow-lg"
           />
         ) : (
-          <div
-            role="img"
-            aria-label="Recipe image placeholder"
-            className="relative z-10 flex h-64 w-full items-center justify-center border-b border-background-300 bg-background-100 text-text-500 lg:h-full lg:min-h-80 lg:border-r lg:border-b-0 lg:shadow-lg"
-          >
-            <LuImagePlus aria-hidden="true" className="h-12 w-12" />
-          </div>
+          <RecipeImagePlaceholder
+            className="relative z-10 h-64 w-full border-b border-background-300 lg:h-full lg:min-h-80 lg:border-r lg:border-b-0 lg:shadow-lg"
+            iconClassName="h-12 w-12"
+          />
         )}
         <div className="relative flex flex-col justify-center p-6 sm:p-8">
           <button

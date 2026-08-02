@@ -2,12 +2,12 @@ import { type MouseEvent, useEffect, useRef, useState } from 'react';
 import {
   LuClock3,
   LuEllipsisVertical,
-  LuNotebookPen,
   LuPlus,
   LuSearch,
   LuUsersRound,
 } from 'react-icons/lu';
 import type { Recipe } from '../../services/recipeService';
+import RecipeImagePlaceholder from './RecipeImagePlaceholder';
 
 type RecipeGridProps = {
   recipes: Recipe[];
@@ -125,9 +125,10 @@ function RecipeCard({
           className="h-40 w-full object-cover"
         />
       ) : (
-        <div className="flex h-40 items-center justify-center bg-secondary-100 text-secondary-800">
-          <LuNotebookPen className="h-9 w-9" />
-        </div>
+        <RecipeImagePlaceholder
+          className="h-40 w-full"
+          iconClassName="h-9 w-9"
+        />
       )}
       <div className="p-5">
         <button

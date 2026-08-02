@@ -5,7 +5,6 @@ import {
   LuBookOpen,
   LuClock3,
   LuEllipsisVertical,
-  LuNotebookPen,
   LuPencil,
   LuPlus,
   LuTrash2,
@@ -14,6 +13,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import LibraryDeleteDialog from '../components/library/LibraryDeleteDialog';
 import LibraryFormDialog from '../components/library/LibraryFormDialog';
 import LibraryRecipePickerDialog from '../components/library/LibraryRecipePickerDialog';
+import RecipeImagePlaceholder from '../components/recipes/RecipeImagePlaceholder';
 import Navbar from '../components/layout/Navbar';
 import ErrorMessage from '../components/ui/ErrorMessage';
 import { libraryColorClasses, libraryIcons } from '../config/libraryIcons';
@@ -338,9 +338,10 @@ function LibraryRecipeCard({
             className="h-32 w-full object-cover"
           />
         ) : (
-          <div className="flex h-32 items-center justify-center bg-secondary-100 text-secondary-800">
-            <LuNotebookPen className="h-8 w-8" />
-          </div>
+          <RecipeImagePlaceholder
+            className="h-32 w-full"
+            iconClassName="h-8 w-8"
+          />
         )}
         <div className="p-4">
           <h3 className="text-lg font-bold text-text-950">{recipe.title}</h3>

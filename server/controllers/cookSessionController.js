@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import { lockOwnedRecipe } from '../utils/recipeOwnership.js';
+import { expireStaleCookSessions } from '../utils/cookSessionExpiry.js';
 
 const cookSessionFields =
   'id, user_id, recipe_id, status, created_at, updated_at, completed_at, cancelled_at, cancellation_reason, expired_prompt_seen_at';
@@ -10,40 +11,6 @@ const cookSessionItemFields =
   'id, cook_session_id, recipe_ingredient_id, display_name, quantity_value, quantity_unit, sort_order, status, created_at, updated_at';
 const cookSessionItemReturnFields =
   'cook_session_items.id, cook_session_items.cook_session_id, cook_session_items.recipe_ingredient_id, cook_session_items.display_name, cook_session_items.quantity_value, cook_session_items.quantity_unit, cook_session_items.sort_order, cook_session_items.status, cook_session_items.created_at, cook_session_items.updated_at';
-
-const expireStaleCookSessions = async (
-  database,
-  userId,
-  { recipeId, cookSessionId } = {}
-) => {
-  const values = [userId];
-  let sessionFilter = '';
-
-  if (recipeId !== undefined) {
-    values.push(recipeId);
-    sessionFilter = 'AND recipe_id = $2';
-  }
-
-  if (cookSessionId !== undefined) {
-    values.push(cookSessionId);
-    sessionFilter = 'AND id = $2';
-  }
-
-  await database.query(
-    `
-      UPDATE cook_sessions
-      SET status = 'cancelled',
-        cancelled_at = NOW(),
-        cancellation_reason = 'expired',
-        expired_prompt_seen_at = NULL
-      WHERE user_id = $1
-        ${sessionFilter}
-        AND status = 'active'
-        AND updated_at < NOW() - INTERVAL '7 days'
-    `,
-    values
-  );
-};
 
 const findOwnedCookSession = async (cookSessionId, userId) => {
   const result = await query(

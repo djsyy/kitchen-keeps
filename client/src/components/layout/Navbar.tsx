@@ -2,6 +2,7 @@ import { LuChefHat } from 'react-icons/lu';
 import { useCurrentUser } from '../../hooks/useCurrentUser';
 import ProfileDropdown from './ProfileDropdown';
 import { useNavigate } from 'react-router-dom';
+import { Skeleton } from '../ui/Skeleton';
 
 export default function Navbar() {
   const { data: user, isPending } = useCurrentUser();
@@ -38,7 +39,7 @@ export default function Navbar() {
           )}
 
           {isPending && (
-            <span className="bg-background-100 hidden h-6 w-24 rounded-md sm:block" />
+            <Skeleton className="hidden h-6 w-24 rounded-md sm:block" />
           )}
 
           <ProfileDropdown />

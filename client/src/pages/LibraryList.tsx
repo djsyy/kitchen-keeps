@@ -51,7 +51,9 @@ export default function LibraryList() {
   const createLibraryMutation = useMutation({
     mutationFn: createLibrary,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.libraries.all });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.libraries.all,
+      });
       setIsCreateFormOpen(false);
     },
   });
@@ -65,7 +67,9 @@ export default function LibraryList() {
       payload: CreateLibraryPayload;
     }) => updateLibrary(libraryId, payload),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.libraries.all });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.libraries.all,
+      });
       setEditingLibrary(null);
     },
   });
@@ -73,7 +77,9 @@ export default function LibraryList() {
   const deleteLibraryMutation = useMutation({
     mutationFn: deleteLibrary,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.libraries.all });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.libraries.all,
+      });
       setDeletingLibrary(null);
     },
   });

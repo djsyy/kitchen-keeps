@@ -507,9 +507,7 @@ export default function ProfilePage() {
                 action cannot be undone.
               </p>
               {deleteUserMutation.isError && (
-                <ErrorMessage
-                  message={deleteUserMutation.error.message}
-                />
+                <ErrorMessage message={deleteUserMutation.error.message} />
               )}
             </div>
             <div className="mt-6 flex justify-end gap-3">

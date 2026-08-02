@@ -67,10 +67,7 @@ export const addRecipeToLibrary = (libraryId: number, recipeId: number) =>
     recipe_id: recipeId,
   });
 
-export const removeRecipeFromLibrary = (
-  libraryId: number,
-  recipeId: number
-) =>
+export const removeRecipeFromLibrary = (libraryId: number, recipeId: number) =>
   apiClient.delete<LibraryRecipeResponse>(
     `/libraries/${libraryId}/recipes/${recipeId}`
   );

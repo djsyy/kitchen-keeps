@@ -28,10 +28,7 @@ export default function LoginForm() {
   };
 
   return (
-    <form
-      className="flex w-full flex-col gap-5"
-      onSubmit={handleSubmit}
-    >
+    <form className="flex w-full flex-col gap-5" onSubmit={handleSubmit}>
       <div className="flex justify-center">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-50 text-primary">
           <IoIosLogIn className="h-7 w-7" />

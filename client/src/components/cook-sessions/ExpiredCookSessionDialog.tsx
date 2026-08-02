@@ -37,8 +37,8 @@ export default function ExpiredCookSessionDialog({
           id="expired-cook-session-description"
           className="mt-3 text-sm leading-6 text-text-700"
         >
-          Your {recipeTitle} prep list was inactive for more than seven days,
-          so it has expired. A new list will use the recipe&apos;s current
+          Your {recipeTitle} prep list was inactive for more than seven days, so
+          it has expired. A new list will use the recipe&apos;s current
           ingredients.
         </p>
         {error && <ErrorMessage className="mt-4" message={error.message} />}

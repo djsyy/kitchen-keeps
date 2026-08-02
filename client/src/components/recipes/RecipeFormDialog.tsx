@@ -64,10 +64,16 @@ export default function RecipeFormDialog({
         onSubmit={handleSubmit}
       >
         <div>
-          <h1 id="recipe-form-title" className="text-xl font-bold text-text-950">
+          <h1
+            id="recipe-form-title"
+            className="text-xl font-bold text-text-950"
+          >
             {isEditing ? 'Edit recipe' : 'Create a recipe'}
           </h1>
-          <p id="recipe-form-description" className="mt-1 text-sm text-text-600">
+          <p
+            id="recipe-form-description"
+            className="mt-1 text-sm text-text-600"
+          >
             {isEditing
               ? 'Update this recipe’s details.'
               : 'Add the basics now. You can add ingredients and steps afterwards.'}
@@ -120,7 +126,11 @@ export default function RecipeFormDialog({
             value={cookTimeMinutes}
             onChange={setCookTimeMinutes}
           />
-          <NumberField label="Servings" value={servings} onChange={setServings} />
+          <NumberField
+            label="Servings"
+            value={servings}
+            onChange={setServings}
+          />
         </div>
 
         {error && <ErrorMessage message={error.message} />}

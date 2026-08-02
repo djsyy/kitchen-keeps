@@ -195,7 +195,8 @@ export default function CookSessionPage() {
         <ExpiredCookSessionDialog
           recipeTitle={cookSession.recipe_title}
           isPending={
-            acknowledgeExpiryMutation.isPending || createReplacementMutation.isPending
+            acknowledgeExpiryMutation.isPending ||
+            createReplacementMutation.isPending
           }
           error={
             createReplacementMutation.error ?? acknowledgeExpiryMutation.error

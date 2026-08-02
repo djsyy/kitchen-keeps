@@ -46,10 +46,8 @@ export const getRecipes = () => apiClient.get<RecipesResponse>('/recipes');
 export const getRecipe = (recipeId: number) =>
   apiClient.get<RecipeResponse>(`/recipes/${recipeId}`);
 
-export const updateRecipe = (
-  recipeId: number,
-  payload: UpdateRecipePayload
-) => apiClient.patch<RecipeResponse>(`/recipes/${recipeId}`, payload);
+export const updateRecipe = (recipeId: number, payload: UpdateRecipePayload) =>
+  apiClient.patch<RecipeResponse>(`/recipes/${recipeId}`, payload);
 
 export const deleteRecipe = (recipeId: number) =>
   apiClient.delete<RecipeResponse>(`/recipes/${recipeId}`);

@@ -135,7 +135,9 @@ function SummaryItemList({
               >
                 <span className="font-bold">{item.display_name}</span>
                 {quantity && (
-                  <span className={`ml-2 ${quantityClassName}`}>{quantity}</span>
+                  <span className={`ml-2 ${quantityClassName}`}>
+                    {quantity}
+                  </span>
                 )}
               </li>
             );

@@ -34,7 +34,10 @@ export default function RecipeDeleteDialog({
         className="w-full max-w-md rounded-2xl bg-background-50 p-6 shadow-xl"
       >
         <div className="space-y-3">
-          <h1 id="delete-recipe-title" className="text-xl font-bold text-text-950">
+          <h1
+            id="delete-recipe-title"
+            className="text-xl font-bold text-text-950"
+          >
             Delete {recipe.title}?
           </h1>
           <p id="delete-recipe-description" className="text-sm text-text-700">

@@ -10,6 +10,8 @@ import './styles.css';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import NotFoundPage from './pages/NotFoundPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
@@ -19,6 +21,7 @@ import RecipePage from './pages/RecipePage';
 import RecipeListPage from './pages/RecipeListPage';
 import CookSessionPage from './pages/CookSessionPage';
 import { RequireAuth } from './components/auth/RequireAuth';
+import { GuestOnly } from './components/auth/GuestOnly';
 
 const queryClient = new QueryClient();
 
@@ -75,13 +78,25 @@ const router = createBrowserRouter([
   },
 
   {
-    path: '/login',
-    element: <LoginPage />,
-  },
-
-  {
-    path: '/register',
-    element: <RegisterPage />,
+    element: <GuestOnly />,
+    children: [
+      {
+        path: '/login',
+        element: <LoginPage />,
+      },
+      {
+        path: '/register',
+        element: <RegisterPage />,
+      },
+      {
+        path: '/forgot-password',
+        element: <ForgotPasswordPage />,
+      },
+      {
+        path: '/reset-password',
+        element: <ResetPasswordPage />,
+      },
+    ],
   },
 ]);
 

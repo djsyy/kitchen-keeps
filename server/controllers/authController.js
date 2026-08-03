@@ -336,11 +336,12 @@ export const resetPassword = async (req, res, next) => {
 
     const resetTokenResult = await client.query(
       `
-      SELECT id, user_id
-      FROM password_reset_tokens
-      WHERE token_hash = $1
-        AND used_at IS NULL
-        AND expires_at > NOW()
+      SELECT reset_token.id, reset_token.user_id, users.password_hash
+      FROM password_reset_tokens AS reset_token
+      JOIN users ON users.id = reset_token.user_id
+      WHERE reset_token.token_hash = $1
+        AND reset_token.used_at IS NULL
+        AND reset_token.expires_at > NOW()
       LIMIT 1
       FOR UPDATE
       `,
@@ -352,6 +353,17 @@ export const resetPassword = async (req, res, next) => {
     if (!resetToken) {
       throw new BadRequestError(
         'Password reset link is invalid or has expired'
+      );
+    }
+
+    const newPasswordMatchesCurrent = await comparePasswords(
+      newPassword,
+      resetToken.password_hash
+    );
+
+    if (newPasswordMatchesCurrent) {
+      throw new BadRequestError(
+        'Your new password must be different from your current password'
       );
     }
 

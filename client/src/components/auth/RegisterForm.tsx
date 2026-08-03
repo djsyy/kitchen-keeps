@@ -2,11 +2,16 @@ import { FormEvent, useState } from 'react';
 import Input from '../ui/Input';
 import Label from '../ui/Label';
 import ErrorMessage from '../ui/ErrorMessage';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { VscAccount } from 'react-icons/vsc';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { registerUser } from '../../services/authService';
 import { queryKeys } from '../../utils/queryKeys';
+import { getPostAuthDestination } from '../../utils/authRedirect';
+import {
+  PasswordConfirmationStatus,
+  default as PasswordRequirements,
+} from './PasswordRequirements';
 
 export default function RegisterForm() {
   const queryClient = useQueryClient();
@@ -15,12 +20,13 @@ export default function RegisterForm() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
 
   const registerMutation = useMutation({
     mutationFn: registerUser,
     onSuccess: (response) => {
       queryClient.setQueryData(queryKeys.auth.me, response.data.user);
-      navigate('/dashboard', { replace: true });
+      navigate(getPostAuthDestination(location.state), { replace: true });
     },
   });
 
@@ -73,11 +79,13 @@ export default function RegisterForm() {
           id="password-input"
           type="password"
           autoComplete="new-password"
+          minLength={4}
           value={password}
           onChange={(e) => {
             setPassword(e.currentTarget.value);
           }}
         />
+        <PasswordRequirements password={password} />
       </div>
 
       <div className="flex flex-col gap-2">
@@ -86,10 +94,15 @@ export default function RegisterForm() {
           id="confirm-password-input"
           type="password"
           autoComplete="new-password"
+          minLength={4}
           value={confirmPassword}
           onChange={(e) => {
             setConfirmPassword(e.currentTarget.value);
           }}
+        />
+        <PasswordConfirmationStatus
+          password={password}
+          confirmation={confirmPassword}
         />
       </div>
 
@@ -109,6 +122,7 @@ export default function RegisterForm() {
         Already have an account?{' '}
         <Link
           to="/login"
+          state={location.state}
           className="text-primary hover:text-primary-700 font-bold"
         >
           Log in

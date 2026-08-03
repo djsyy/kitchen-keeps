@@ -2,23 +2,25 @@ import { FormEvent, useState } from 'react';
 import Input from '../ui/Input';
 import Label from '../ui/Label';
 import ErrorMessage from '../ui/ErrorMessage';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { IoIosLogIn } from 'react-icons/io';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { loginUser } from '../../services/authService';
 import { queryKeys } from '../../utils/queryKeys';
+import { getPostAuthDestination } from '../../utils/authRedirect';
 
 export default function LoginForm() {
   const queryClient = useQueryClient();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
 
   const loginMutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (response) => {
       queryClient.setQueryData(queryKeys.auth.me, response.data.user);
-      navigate('/dashboard', { replace: true });
+      navigate(getPostAuthDestination(location.state), { replace: true });
     },
   });
 
@@ -65,6 +67,14 @@ export default function LoginForm() {
             setPassword(e.currentTarget.value);
           }}
         />
+        <div className="flex justify-end">
+          <Link
+            to="/forgot-password"
+            className="text-primary hover:text-primary-700 text-sm font-bold"
+          >
+            Forgot password?
+          </Link>
+        </div>
       </div>
 
       {loginMutation.isError && (
@@ -83,6 +93,7 @@ export default function LoginForm() {
         Don&apos;t have an account?{' '}
         <Link
           to="/register"
+          state={location.state}
           className="text-primary hover:text-primary-700 font-bold"
         >
           Create one

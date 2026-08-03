@@ -14,6 +14,10 @@ import {
 } from '../services/authService';
 import { getApiFieldError } from '../services/apiClient';
 import { queryKeys } from '../utils/queryKeys';
+import {
+  PasswordConfirmationStatus,
+  default as PasswordRequirements,
+} from '../components/auth/PasswordRequirements';
 
 type SettingsRowProps = {
   title: string;
@@ -326,6 +330,8 @@ export default function ProfilePage() {
                   <Input
                     id="new-password"
                     type="password"
+                    autoComplete="new-password"
+                    minLength={4}
                     value={newPassword}
                     onChange={(event) => {
                       setNewPassword(event.currentTarget.value);
@@ -338,6 +344,7 @@ export default function ProfilePage() {
                       {newPasswordError}
                     </p>
                   )}
+                  <PasswordRequirements password={newPassword} />
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="confirm-new-password">
@@ -346,6 +353,8 @@ export default function ProfilePage() {
                   <Input
                     id="confirm-new-password"
                     type="password"
+                    autoComplete="new-password"
+                    minLength={4}
                     value={confirmNewPassword}
                     onChange={(event) => {
                       setConfirmNewPassword(event.currentTarget.value);
@@ -358,6 +367,11 @@ export default function ProfilePage() {
                       {confirmNewPasswordError}
                     </p>
                   )}
+                  <PasswordConfirmationStatus
+                    password={newPassword}
+                    confirmation={confirmNewPassword}
+                    label="New passwords match"
+                  />
                 </div>
                 {updatePasswordMutation.isError &&
                   !currentPasswordError &&

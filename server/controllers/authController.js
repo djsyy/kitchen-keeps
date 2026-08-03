@@ -303,10 +303,16 @@ export const forgotPassword = async (req, res, next) => {
     const resetUrl = new URL('/reset-password', process.env.CLIENT_URL);
     resetUrl.searchParams.set('token', resetToken);
 
-    await sendPasswordResetEmail({
-      to: user.email,
-      resetUrl: resetUrl.toString(),
-    });
+    try {
+      await sendPasswordResetEmail({
+        to: user.email,
+        resetUrl: resetUrl.toString(),
+      });
+    } catch (error) {
+      console.error('Password reset email delivery failed', {
+        message: error instanceof Error ? error.message : 'Unknown email error',
+      });
+    }
 
     return res.status(StatusCodes.OK).json({
       message:

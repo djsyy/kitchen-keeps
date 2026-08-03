@@ -5,6 +5,8 @@ import {
   getSingleRecipe,
   updateRecipe,
   deleteRecipe,
+  uploadRecipeImage,
+  removeRecipeImage,
 } from '../controllers/recipeController.js';
 import validateRequest from '../middleware/validateRequest.js';
 import {
@@ -17,6 +19,7 @@ import {
 import recipeIngredientRouter from './recipeIngredientRouter.js';
 import recipeStepRouter from './recipeStepRouter.js';
 import { recipeCookSessionRouter } from './cookSessionRouter.js';
+import { uploadRecipeImageFile } from '../middleware/recipeImageUpload.js';
 
 const router = express.Router();
 
@@ -28,6 +31,16 @@ router
 router.use('/:recipeId/ingredients', recipeIngredientRouter);
 router.use('/:recipeId/steps', recipeStepRouter);
 router.use('/:recipeId/cook-sessions', recipeCookSessionRouter);
+
+router
+  .route('/:id/image')
+  .post(
+    getSingleRecipeValidation,
+    validateRequest,
+    uploadRecipeImageFile,
+    uploadRecipeImage
+  )
+  .delete(getSingleRecipeValidation, validateRequest, removeRecipeImage);
 
 router
   .route('/:id')

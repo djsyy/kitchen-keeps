@@ -128,8 +128,19 @@ const request = async <T>(
 ): Promise<T> => {
   const { body, headers, query, ...fetchOptions } = options;
   const requestHeaders = new Headers(headers);
+  const isFormData = body instanceof FormData;
+  const requestBody =
+    body === undefined
+      ? undefined
+      : isFormData
+        ? (body as FormData)
+        : JSON.stringify(body);
 
-  if (body !== undefined && !requestHeaders.has('Content-Type')) {
+  if (
+    body !== undefined &&
+    !isFormData &&
+    !requestHeaders.has('Content-Type')
+  ) {
     requestHeaders.set('Content-Type', 'application/json');
   }
 
@@ -137,7 +148,7 @@ const request = async <T>(
     credentials: 'include',
     ...fetchOptions,
     headers: requestHeaders,
-    body: body === undefined ? undefined : JSON.stringify(body),
+    body: requestBody,
   });
 
   const data = await parseResponseBody(response);

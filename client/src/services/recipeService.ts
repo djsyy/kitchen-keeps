@@ -28,7 +28,6 @@ type RecipeData = {
 export interface CreateRecipePayload {
   title: string;
   description?: string | null;
-  image_url?: string | null;
   prep_time_minutes?: number | null;
   cook_time_minutes?: number | null;
   servings?: number | null;
@@ -52,10 +51,22 @@ export const updateRecipe = (recipeId: number, payload: UpdateRecipePayload) =>
 export const deleteRecipe = (recipeId: number) =>
   apiClient.delete<RecipeResponse>(`/recipes/${recipeId}`);
 
+export const uploadRecipeImage = (recipeId: number, image: File) => {
+  const formData = new FormData();
+  formData.append('image', image);
+
+  return apiClient.post<RecipeResponse>(`/recipes/${recipeId}/image`, formData);
+};
+
+export const removeRecipeImage = (recipeId: number) =>
+  apiClient.delete<RecipeResponse>(`/recipes/${recipeId}/image`);
+
 export const recipeService = {
   createRecipe,
   getRecipes,
   getRecipe,
   updateRecipe,
   deleteRecipe,
+  uploadRecipeImage,
+  removeRecipeImage,
 };

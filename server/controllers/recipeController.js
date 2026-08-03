@@ -3,23 +3,49 @@ import { StatusCodes } from 'http-status-codes';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import ConflictError from '../errors/ConflictError.js';
+import BadRequestError from '../errors/BadRequestError.js';
 import { buildUpdatedFields } from '../utils/buildUpdatedFields.js';
+import {
+  destroyRecipeImage,
+  uploadRecipeImage as uploadToCloudinary,
+} from '../config/cloudinary.js';
 
 const recipeDBAttributes = [
   'title',
   'description',
-  'image_url',
   'prep_time_minutes',
   'cook_time_minutes',
   'servings',
 ];
+
+const getOwnedRecipeImage = async (recipeId, userId) => {
+  const result = await query(
+    `
+      SELECT id, image_url, image_public_id
+      FROM recipes
+      WHERE id = $1 AND created_by_user_id = $2
+    `,
+    [recipeId, userId]
+  );
+
+  return result.rows[0];
+};
+
+const removeCloudinaryImage = async (publicId) => {
+  try {
+    await destroyRecipeImage(publicId);
+  } catch (error) {
+    console.error('Unable to remove recipe image from Cloudinary', {
+      message: error instanceof Error ? error.message : 'Unknown image error',
+    });
+  }
+};
 
 export const createRecipe = async (req, res, next) => {
   try {
     const {
       title,
       description,
-      image_url,
       prep_time_minutes,
       cook_time_minutes,
       servings,
@@ -35,7 +61,7 @@ export const createRecipe = async (req, res, next) => {
       [
         title,
         description ?? null,
-        image_url ?? null,
+        null,
         userId,
         prep_time_minutes ?? null,
         cook_time_minutes ?? null,
@@ -157,7 +183,7 @@ export const deleteRecipe = async (req, res, next) => {
       `
       DELETE from recipes
       WHERE created_by_user_id = $1 AND id = $2
-      RETURNING id, title, description, image_url, created_by_user_id, prep_time_minutes, cook_time_minutes, servings, created_at, updated_at
+      RETURNING id, title, description, image_url, image_public_id, created_by_user_id, prep_time_minutes, cook_time_minutes, servings, created_at, updated_at
       `,
       [userId, id]
     );
@@ -167,12 +193,105 @@ export const deleteRecipe = async (req, res, next) => {
       throw new NotFoundError('Recipe not found');
     }
 
-    return res.status(StatusCodes.OK).json({ data: { recipe } });
+    await removeCloudinaryImage(recipe.image_public_id);
+
+    const { image_public_id: _imagePublicId, ...recipeData } = recipe;
+
+    return res.status(StatusCodes.OK).json({ data: { recipe: recipeData } });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);
     }
 
     return next(new InternalServerError('Unable to delete recipe'));
+  }
+};
+
+export const uploadRecipeImage = async (req, res, next) => {
+  let uploadedImage;
+
+  try {
+    if (!req.file) {
+      throw new BadRequestError('Recipe image is required');
+    }
+
+    const { id } = req.params;
+    const userId = req.user.userId;
+    const recipe = await getOwnedRecipeImage(id, userId);
+
+    if (!recipe) {
+      throw new NotFoundError('Recipe not found');
+    }
+
+    uploadedImage = await uploadToCloudinary(req.file, {
+      recipeId: recipe.id,
+      userId,
+    });
+
+    const result = await query(
+      `
+      UPDATE recipes
+      SET image_url = $1, image_public_id = $2
+      WHERE id = $3 AND created_by_user_id = $4
+      RETURNING id, title, description, image_url, created_by_user_id, prep_time_minutes, cook_time_minutes, servings, created_at, updated_at
+      `,
+      [uploadedImage.secure_url, uploadedImage.public_id, id, userId]
+    );
+
+    const updatedRecipe = result.rows[0];
+    if (!updatedRecipe) {
+      throw new NotFoundError('Recipe not found');
+    }
+
+    await removeCloudinaryImage(recipe.image_public_id);
+
+    return res.status(StatusCodes.OK).json({ data: { recipe: updatedRecipe } });
+  } catch (error) {
+    if (uploadedImage?.public_id) {
+      await removeCloudinaryImage(uploadedImage.public_id);
+    }
+
+    if (error instanceof BadRequestError || error instanceof NotFoundError) {
+      return next(error);
+    }
+
+    return next(new InternalServerError('Unable to upload recipe image'));
+  }
+};
+
+export const removeRecipeImage = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+    const recipe = await getOwnedRecipeImage(id, userId);
+
+    if (!recipe) {
+      throw new NotFoundError('Recipe not found');
+    }
+
+    const result = await query(
+      `
+      UPDATE recipes
+      SET image_url = NULL, image_public_id = NULL
+      WHERE id = $1 AND created_by_user_id = $2
+      RETURNING id, title, description, image_url, created_by_user_id, prep_time_minutes, cook_time_minutes, servings, created_at, updated_at
+      `,
+      [id, userId]
+    );
+
+    const updatedRecipe = result.rows[0];
+    if (!updatedRecipe) {
+      throw new NotFoundError('Recipe not found');
+    }
+
+    await removeCloudinaryImage(recipe.image_public_id);
+
+    return res.status(StatusCodes.OK).json({ data: { recipe: updatedRecipe } });
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return next(error);
+    }
+
+    return next(new InternalServerError('Unable to remove recipe image'));
   }
 };

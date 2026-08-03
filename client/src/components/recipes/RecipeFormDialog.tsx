@@ -1,4 +1,5 @@
-import { type FormEvent, useEffect, useState } from 'react';
+import { LuImagePlus, LuTrash2 } from 'react-icons/lu';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 import type { CreateRecipePayload, Recipe } from '../../services/recipeService';
 import ErrorMessage from '../ui/ErrorMessage';
 
@@ -48,6 +49,7 @@ export default function RecipeFormDialog({
   );
   const [servings, setServings] = useState(recipe?.servings?.toString() ?? '');
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const isAwaitingImageRetry = Boolean(onRetryImageAction);
 
   useEffect(() => {
@@ -190,46 +192,63 @@ export default function RecipeFormDialog({
               JPG, PNG, or WebP · 5 MB max
             </span>
           </div>
-          {imageSource ? (
-            <img
-              src={imageSource}
-              alt="Recipe image preview"
-              className="border-background-300 h-44 w-full rounded-lg border object-cover"
-            />
-          ) : (
-            <div className="border-background-300 bg-background-100 text-text-500 flex h-44 items-center justify-center rounded-lg border text-sm">
-              No image selected
-            </div>
-          )}
-          <div className="flex flex-wrap gap-3">
-            <label className="border-background-300 text-text-700 hover:bg-background-100 cursor-pointer rounded-lg border px-4 py-2.5 text-sm font-bold transition">
-              {imageSource ? 'Change image' : 'Choose image'}
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="sr-only"
-                disabled={isAwaitingImageRetry}
-                onChange={(event) => {
-                  handleImageChange(event.currentTarget.files?.[0] ?? null);
-                  event.currentTarget.value = '';
-                }}
-              />
-            </label>
+          <div className="relative">
+            <button
+              type="button"
+              aria-label={
+                imageSource ? 'Change recipe image' : 'Choose recipe image'
+              }
+              className="border-background-300 focus-visible:outline-primary group relative block w-full overflow-hidden rounded-lg border text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed"
+              disabled={isAwaitingImageRetry}
+              onClick={() => imageInputRef.current?.click()}
+            >
+              {imageSource ? (
+                <img
+                  src={imageSource}
+                  alt="Recipe image preview"
+                  className="h-44 w-full object-cover"
+                />
+              ) : (
+                <div className="bg-background-100 text-text-500 hover:bg-background-100/50 flex h-44 flex-col items-center justify-center gap-2 text-sm hover:cursor-pointer">
+                  <LuImagePlus className="h-8 w-8" aria-hidden="true" />
+                </div>
+              )}
+              <span
+                aria-hidden="true"
+                className="bg-text-950/55 text-text-50 pointer-events-none absolute inset-0 flex items-center justify-center gap-2 text-sm font-bold opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+              >
+                <LuImagePlus className="h-5 w-5" />
+                {imageSource ? 'Change image' : 'Choose image'}
+              </span>
+            </button>
             {imageSource && (
               <button
                 type="button"
-                className="text-text-600 hover:bg-background-100 rounded-lg px-4 py-2.5 text-sm font-bold transition"
+                aria-label="Remove recipe image"
+                className="text-text-50 focus-visible:outline-text-50 absolute top-3 right-3 inline-flex h-9 w-9 items-center justify-center rounded-lg drop-shadow-md transition hover:text-red-200 focus-visible:outline-2 focus-visible:outline-offset-2"
                 disabled={isAwaitingImageRetry}
-                onClick={() => {
+                onClick={(event) => {
+                  event.stopPropagation();
                   setImageFile(null);
                   setImageError(null);
                   setIsImageRemoved(Boolean(recipe?.image_url));
                 }}
               >
-                Remove image
+                <LuTrash2 className="h-4 w-4" aria-hidden="true" />
               </button>
             )}
           </div>
+          <input
+            ref={imageInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="sr-only"
+            disabled={isAwaitingImageRetry}
+            onChange={(event) => {
+              handleImageChange(event.currentTarget.files?.[0] ?? null);
+              event.currentTarget.value = '';
+            }}
+          />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">

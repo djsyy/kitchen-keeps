@@ -74,6 +74,19 @@ export default [
     },
   },
   {
+    files: ['server/tests/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        vi: 'readonly',
+      },
+    },
+  },
+  {
     files: ['client/vite.config.js'],
     languageOptions: {
       ecmaVersion: 'latest',

@@ -11,6 +11,7 @@
     "db:rollback": "node-pg-migrate down --migrations-dir db/migrations --envPath ../.env",
     "db:seed:ingredients": "node scripts/seedGlobalIngredients.js",
     "ingredients:review": "node scripts/generateFoundationIngredientReview.js",
+    "test": "vitest run",
     "start": "node index.js"
   },
   "dependencies": {
@@ -28,6 +29,8 @@
     "resend": "^6.12.4"
   },
   "devDependencies": {
-    "node-pg-migrate": "^8.0.4"
+    "node-pg-migrate": "^8.0.4",
+    "supertest": "^7.2.2",
+    "vitest": "^4.1.10"
   }
 }

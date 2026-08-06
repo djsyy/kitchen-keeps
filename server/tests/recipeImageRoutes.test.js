@@ -1,5 +1,6 @@
 import request from 'supertest';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import sharp from 'sharp';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { query, uploadRecipeImage, destroyRecipeImage } = vi.hoisted(() => ({
   query: vi.fn(),
@@ -29,8 +30,19 @@ const createTestApp = (userId = 1) =>
     },
   });
 
-const validImage = () =>
-  Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46]);
+const createImage = (format, width = 1, height = 1) =>
+  sharp({
+    create: {
+      width,
+      height,
+      channels: 3,
+      background: { r: 255, g: 255, b: 255 },
+    },
+  })
+    .toFormat(format)
+    .toBuffer();
+
+let validImages;
 
 const ownedRecipe = {
   id: 10,
@@ -52,6 +64,14 @@ const updatedRecipe = {
 };
 
 describe('recipe image routes', () => {
+  beforeAll(async () => {
+    validImages = {
+      jpeg: await createImage('jpeg'),
+      png: await createImage('png'),
+      webp: await createImage('webp'),
+    };
+  });
+
   beforeEach(() => {
     query.mockReset();
     uploadRecipeImage.mockReset();
@@ -66,7 +86,7 @@ describe('recipe image routes', () => {
   it('requires authentication before accepting an upload', async () => {
     const response = await request(createTestApp(null))
       .post('/api/recipes/10/image')
-      .attach('image', validImage(), {
+      .attach('image', validImages.jpeg, {
         filename: 'recipe.jpg',
         contentType: 'image/jpeg',
       });
@@ -87,11 +107,11 @@ describe('recipe image routes', () => {
 
     const multipleImagesResponse = await request(createTestApp())
       .post('/api/recipes/10/image')
-      .attach('image', validImage(), {
+      .attach('image', validImages.jpeg, {
         filename: 'first.jpg',
         contentType: 'image/jpeg',
       })
-      .attach('image', validImage(), {
+      .attach('image', validImages.jpeg, {
         filename: 'second.jpg',
         contentType: 'image/jpeg',
       });
@@ -103,12 +123,12 @@ describe('recipe image routes', () => {
     expect(query).not.toHaveBeenCalled();
   });
 
-  it('rejects invalid uploads before looking up a recipe', async () => {
+  it('rejects spoofed and unsupported image content before looking up a recipe', async () => {
     const response = await request(createTestApp())
       .post('/api/recipes/10/image')
       .attach('image', Buffer.from('not an image'), {
-        filename: 'recipe.gif',
-        contentType: 'image/gif',
+        filename: 'recipe.jpg',
+        contentType: 'image/jpeg',
       });
 
     expect(response.status).toBe(400);
@@ -116,6 +136,83 @@ describe('recipe image routes', () => {
       'Recipe images must be JPG, PNG, or WebP files'
     );
     expect(query).not.toHaveBeenCalled();
+    expect(uploadRecipeImage).not.toHaveBeenCalled();
+
+    const svgResponse = await request(createTestApp())
+      .post('/api/recipes/10/image')
+      .attach(
+        'image',
+        Buffer.from(
+          '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1" />'
+        ),
+        {
+          filename: 'recipe.png',
+          contentType: 'image/png',
+        }
+      );
+
+    expect(svgResponse.status).toBe(400);
+    expect(svgResponse.body.message).toBe(
+      'Recipe images must be JPG, PNG, or WebP files'
+    );
+    expect(query).not.toHaveBeenCalled();
+    expect(uploadRecipeImage).not.toHaveBeenCalled();
+  });
+
+  it('rejects truncated image data before looking up a recipe', async () => {
+    const response = await request(createTestApp())
+      .post('/api/recipes/10/image')
+      .attach('image', Buffer.from([0xff, 0xd8, 0xff, 0xe0]), {
+        filename: 'truncated.jpg',
+        contentType: 'image/jpeg',
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      'Recipe images must be JPG, PNG, or WebP files'
+    );
+    expect(query).not.toHaveBeenCalled();
+    expect(uploadRecipeImage).not.toHaveBeenCalled();
+  });
+
+  it.each(['jpeg', 'png', 'webp'])(
+    'accepts valid %s image content when the multipart MIME type is inaccurate',
+    async (format) => {
+      query
+        .mockResolvedValueOnce({ rows: [ownedRecipe] })
+        .mockResolvedValueOnce({ rows: [updatedRecipe] });
+
+      const response = await request(createTestApp())
+        .post('/api/recipes/10/image')
+        .attach('image', validImages[format], {
+          filename: `recipe.${format}`,
+          contentType: 'application/octet-stream',
+        });
+
+      expect(response.status).toBe(200);
+      expect(uploadRecipeImage).toHaveBeenCalledWith(
+        expect.objectContaining({ buffer: validImages[format] }),
+        { recipeId: 10, userId: 1 }
+      );
+    }
+  );
+
+  it('rejects images that exceed the dimension limit before looking up a recipe', async () => {
+    const oversizedImage = await createImage('png', 8001, 1);
+
+    const response = await request(createTestApp())
+      .post('/api/recipes/10/image')
+      .attach('image', oversizedImage, {
+        filename: 'wide.png',
+        contentType: 'image/png',
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      'Recipe images must be 8,000 pixels or less on each side and no more than 20 megapixels'
+    );
+    expect(query).not.toHaveBeenCalled();
+    expect(uploadRecipeImage).not.toHaveBeenCalled();
   });
 
   it('rejects images larger than 5 MB', async () => {
@@ -136,7 +233,7 @@ describe('recipe image routes', () => {
 
     const response = await request(createTestApp())
       .post('/api/recipes/99/image')
-      .attach('image', validImage(), {
+      .attach('image', validImages.jpeg, {
         filename: 'recipe.jpg',
         contentType: 'image/jpeg',
       });
@@ -152,7 +249,7 @@ describe('recipe image routes', () => {
 
     const response = await request(createTestApp())
       .post('/api/recipes/10/image')
-      .attach('image', validImage(), {
+      .attach('image', validImages.jpeg, {
         filename: 'recipe.jpg',
         contentType: 'image/jpeg',
       });
@@ -182,7 +279,7 @@ describe('recipe image routes', () => {
 
     const response = await request(createTestApp())
       .post('/api/recipes/10/image')
-      .attach('image', validImage(), {
+      .attach('image', validImages.jpeg, {
         filename: 'recipe.jpg',
         contentType: 'image/jpeg',
       });
@@ -202,7 +299,7 @@ describe('recipe image routes', () => {
 
     const response = await request(createTestApp())
       .post('/api/recipes/10/image')
-      .attach('image', validImage(), {
+      .attach('image', validImages.jpeg, {
         filename: 'recipe.jpg',
         contentType: 'image/jpeg',
       });

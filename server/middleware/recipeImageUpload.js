@@ -1,7 +1,44 @@
 import multer from 'multer';
+import sharp from 'sharp';
 import BadRequestError from '../errors/BadRequestError.js';
 
-const allowedMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const allowedImageFormats = new Set(['jpeg', 'png', 'webp']);
+const maxImageDimension = 8000;
+const maxImagePixels = 20_000_000;
+
+const invalidImageError = () =>
+  new BadRequestError('Recipe images must be JPG, PNG, or WebP files');
+
+const validateRecipeImage = async (file) => {
+  let metadata;
+
+  try {
+    metadata = await sharp(file.buffer, {
+      failOn: 'error',
+      limitInputPixels: maxImagePixels,
+    }).metadata();
+  } catch (_error) {
+    throw invalidImageError();
+  }
+
+  if (
+    !allowedImageFormats.has(metadata.format) ||
+    !metadata.width ||
+    !metadata.height
+  ) {
+    throw invalidImageError();
+  }
+
+  if (
+    metadata.width > maxImageDimension ||
+    metadata.height > maxImageDimension ||
+    metadata.width * metadata.height > maxImagePixels
+  ) {
+    throw new BadRequestError(
+      'Recipe images must be 8,000 pixels or less on each side and no more than 20 megapixels'
+    );
+  }
+};
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -9,24 +46,10 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024,
     files: 1,
   },
-  fileFilter: (_req, file, callback) => {
-    if (!allowedMimeTypes.has(file.mimetype)) {
-      callback(
-        new BadRequestError('Recipe images must be JPG, PNG, or WebP files')
-      );
-      return;
-    }
-
-    callback(null, true);
-  },
 });
 
 export const uploadRecipeImageFile = (req, res, next) => {
-  upload.single('image')(req, res, (error) => {
-    if (!error) {
-      return next();
-    }
-
+  upload.single('image')(req, res, async (error) => {
     if (error instanceof multer.MulterError) {
       if (error.code === 'LIMIT_FILE_SIZE') {
         return next(
@@ -37,10 +60,24 @@ export const uploadRecipeImageFile = (req, res, next) => {
       return next(new BadRequestError('Upload one recipe image at a time'));
     }
 
-    if (error instanceof BadRequestError) {
-      return next(error);
+    if (error) {
+      return next(new BadRequestError('Unable to process recipe image'));
     }
 
-    return next(new BadRequestError('Unable to process recipe image'));
+    if (!req.file) {
+      return next();
+    }
+
+    try {
+      await validateRecipeImage(req.file);
+    } catch (validationError) {
+      if (validationError instanceof BadRequestError) {
+        return next(validationError);
+      }
+
+      return next(new BadRequestError('Unable to process recipe image'));
+    }
+
+    return next();
   });
 };

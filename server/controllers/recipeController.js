@@ -32,6 +32,10 @@ const getOwnedRecipeImage = async (recipeId, userId) => {
 };
 
 const removeCloudinaryImage = async (publicId) => {
+  if (!publicId) {
+    return;
+  }
+
   try {
     await destroyRecipeImage(publicId);
   } catch (error) {
@@ -254,6 +258,10 @@ export const uploadRecipeImage = async (req, res, next) => {
     if (error instanceof BadRequestError || error instanceof NotFoundError) {
       return next(error);
     }
+
+    console.error('Unable to upload recipe image to Cloudinary', {
+      message: error instanceof Error ? error.message : 'Unknown image error',
+    });
 
     return next(new InternalServerError('Unable to upload recipe image'));
   }

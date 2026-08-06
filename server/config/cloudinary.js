@@ -8,6 +8,14 @@ const hasCloudinaryConfiguration = () =>
     process.env.CLOUDINARY_API_SECRET
   );
 
+export const logCloudinaryConfigurationStatus = () => {
+  if (!hasCloudinaryConfiguration()) {
+    console.warn(
+      'Cloudinary recipe image uploads are unavailable: required configuration is missing'
+    );
+  }
+};
+
 const configureCloudinary = () => {
   if (!hasCloudinaryConfiguration()) {
     throw new Error('Cloudinary is not configured');

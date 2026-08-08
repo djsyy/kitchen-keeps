@@ -21,6 +21,7 @@ import RecipePage from './pages/RecipePage';
 import RecipeListPage from './pages/RecipeListPage';
 import CookSessionPage from './pages/CookSessionPage';
 import PantryPage from './pages/PantryPage';
+import IngredientManagementPage from './pages/IngredientManagementPage';
 import { RequireAuth } from './components/auth/RequireAuth';
 import { GuestOnly } from './components/auth/GuestOnly';
 
@@ -76,6 +77,10 @@ const router = createBrowserRouter([
           {
             path: '/pantry',
             element: <PantryPage />,
+          },
+          {
+            path: '/ingredients',
+            element: <IngredientManagementPage />,
           },
         ],
       },

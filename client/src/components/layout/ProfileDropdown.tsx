@@ -67,6 +67,12 @@ export default function ProfileDropdown() {
             >
               Pantry
             </Link>
+            <Link
+              to="/ingredients"
+              className="hover:bg-accent-100 rounded-sm text-center transition"
+            >
+              Ingredients
+            </Link>
 
             <hr className="border-text-400 my-1 border-t" />
 

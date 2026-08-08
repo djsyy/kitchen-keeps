@@ -198,6 +198,29 @@ export function PantrySkeleton() {
   );
 }
 
+export function IngredientManagementSkeleton() {
+  return (
+    <main className="bg-background min-h-screen">
+      <Navbar />
+      <LoadingRegion
+        label="Loading private ingredients"
+        className="mx-auto max-w-5xl px-4 py-8 sm:px-6"
+      >
+        <HeaderSkeleton />
+        <div className="mt-8 flex gap-3">
+          <Skeleton className="h-10 w-24 rounded-lg" />
+          <Skeleton className="h-10 w-24 rounded-lg" />
+        </div>
+        <div className="mt-6 space-y-3">
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
+        </div>
+      </LoadingRegion>
+    </main>
+  );
+}
+
 function DetailShell({
   label,
   children,

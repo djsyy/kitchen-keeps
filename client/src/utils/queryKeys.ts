@@ -23,6 +23,8 @@ export const queryKeys = {
   },
   ingredients: {
     search: (search: string) => ['ingredients', 'search', search] as const,
+    manage: (status: 'active' | 'hidden') =>
+      ['ingredients', 'manage', status] as const,
   },
   pantry: {
     all: ['pantry'] as const,

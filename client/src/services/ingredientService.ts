@@ -26,6 +26,10 @@ export interface GetIngredientsOptions {
   search?: string;
 }
 
+export interface GetManagedIngredientsOptions {
+  status?: 'active' | 'hidden';
+}
+
 export interface CreateIngredientPayload {
   name: string;
 }
@@ -38,6 +42,13 @@ export const getIngredients = (options: GetIngredientsOptions = {}) =>
   });
 
 export const searchIngredients = (search: string) => getIngredients({ search });
+
+export const getManagedIngredients = (
+  options: GetManagedIngredientsOptions = {}
+) =>
+  apiClient.get<IngredientsResponse>('/ingredients/manage', {
+    query: { status: options.status ?? 'active' },
+  });
 
 export const getIngredient = (ingredientId: number) =>
   apiClient.get<IngredientResponse>(`/ingredients/${ingredientId}`);
@@ -62,6 +73,7 @@ export const reactivateIngredient = (ingredientId: number) =>
 export const ingredientService = {
   getIngredients,
   searchIngredients,
+  getManagedIngredients,
   getIngredient,
   createIngredient,
   updateIngredient,

@@ -89,6 +89,8 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteCurrentPassword, setDeleteCurrentPassword] = useState('');
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const initializedUserId = useRef<number | null>(null);
 
   useEffect(() => {
@@ -126,14 +128,23 @@ export default function ProfilePage() {
     onSuccess: () => {
       clearPasswordFields();
       setIsEditingPassword(false);
+      queryClient.clear();
+      navigate('/login', {
+        replace: true,
+        state: { message: 'Password updated. Please sign in again.' },
+      });
     },
   });
 
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: queryKeys.auth.me });
-      navigate('/', { replace: true });
+      clearDeleteFields();
+      queryClient.clear();
+      navigate('/login', {
+        replace: true,
+        state: { message: 'Your account has been deleted.' },
+      });
     },
   });
 
@@ -141,6 +152,11 @@ export default function ProfilePage() {
     setCurrentPassword('');
     setNewPassword('');
     setConfirmNewPassword('');
+  };
+
+  const clearDeleteFields = () => {
+    setDeleteCurrentPassword('');
+    setDeleteConfirmation('');
   };
 
   const resetNameChanges = () => {
@@ -187,17 +203,23 @@ export default function ProfilePage() {
 
   const openDeleteDialog = () => {
     deleteUserMutation.reset();
+    clearDeleteFields();
     setIsDeleteDialogOpen(true);
   };
 
   const closeDeleteDialog = () => {
     if (!deleteUserMutation.isPending) {
+      clearDeleteFields();
+      deleteUserMutation.reset();
       setIsDeleteDialogOpen(false);
     }
   };
 
   const confirmDeleteAccount = () => {
-    deleteUserMutation.mutate();
+    deleteUserMutation.mutate({
+      currentPassword: deleteCurrentPassword,
+      confirmation: 'DELETE',
+    });
   };
 
   const nameError = getApiFieldError(updateNameMutation.error, 'name');
@@ -216,6 +238,12 @@ export default function ProfilePage() {
   );
   const isEditingAnotherSetting = isEditingEmail || isEditingPassword;
   const isNameDirty = Boolean(user && name !== user.name);
+  const isDeleteConfirmationValid = deleteConfirmation === 'DELETE';
+  const canDeleteAccount = Boolean(
+    deleteCurrentPassword &&
+    isDeleteConfirmationValid &&
+    !deleteUserMutation.isPending
+  );
 
   if (isPending) {
     return <ProfileSkeleton />;
@@ -477,7 +505,7 @@ export default function ProfilePage() {
                     Delete Your Account
                   </h2>
                   <p className="text-text-700 text-sm">
-                    Permanently remove your account and saved libraries.
+                    Permanently remove your account and all Kitchen Keeps data.
                   </p>
                 </div>
                 <button
@@ -522,12 +550,45 @@ export default function ProfilePage() {
                 id="delete-account-description"
                 className="text-text-700 text-sm"
               >
-                This permanently removes your account and saved libraries. This
+                This permanently removes your recipes, libraries, private
+                ingredients, pantry items, prep lists, and managed images. This
                 action cannot be undone.
               </p>
               {deleteUserMutation.isError && (
                 <ErrorMessage message={deleteUserMutation.error.message} />
               )}
+            </div>
+            <div className="mt-5 space-y-4">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="delete-account-password">
+                  Current password
+                </Label>
+                <Input
+                  id="delete-account-password"
+                  type="password"
+                  autoComplete="current-password"
+                  value={deleteCurrentPassword}
+                  onChange={(event) => {
+                    setDeleteCurrentPassword(event.currentTarget.value);
+                    deleteUserMutation.reset();
+                  }}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="delete-account-confirmation">
+                  Type DELETE to confirm
+                </Label>
+                <Input
+                  id="delete-account-confirmation"
+                  type="text"
+                  autoComplete="off"
+                  value={deleteConfirmation}
+                  onChange={(event) => {
+                    setDeleteConfirmation(event.currentTarget.value);
+                    deleteUserMutation.reset();
+                  }}
+                />
+              </div>
             </div>
             <div className="mt-6 flex justify-end gap-3">
               <button
@@ -543,7 +604,7 @@ export default function ProfilePage() {
                 type="button"
                 className="bg-primary-700 text-text-50 hover:bg-primary-600 rounded-md px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
                 onClick={confirmDeleteAccount}
-                disabled={deleteUserMutation.isPending}
+                disabled={!canDeleteAccount}
               >
                 {deleteUserMutation.isPending
                   ? 'Deleting account...'

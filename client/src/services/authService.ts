@@ -50,6 +50,11 @@ export interface ResetPasswordPayload {
   confirmNewPassword: string;
 }
 
+export interface DeleteUserPayload {
+  currentPassword: string;
+  confirmation: 'DELETE';
+}
+
 export type AuthUserResponse = ApiDataResponse<AuthUserData>;
 export type LogoutResponse = ApiMessageResponse;
 export type UpdatePasswordResponse = ApiMessageResponse;
@@ -74,8 +79,9 @@ export const getCurrentUser = () => apiClient.get<AuthUserResponse>('/auth/me');
 export const updateUser = (payload: UpdateUserPayload) =>
   apiClient.patch<AuthUserResponse>('/auth/me', payload);
 
-// Deletes the account associated with the current auth cookie.
-export const deleteUser = () => apiClient.delete<AuthUserResponse>('/auth/me');
+// Permanently deletes the authenticated account after reauthentication.
+export const deleteUser = (payload: DeleteUserPayload) =>
+  apiClient.delete<ApiMessageResponse>('/auth/me', payload);
 
 // Updates the current user's password.
 export const updatePassword = (payload: UpdatePasswordPayload) =>

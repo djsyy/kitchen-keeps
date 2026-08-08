@@ -15,6 +15,12 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
+  const statusMessage =
+    location.state &&
+    typeof location.state === 'object' &&
+    typeof location.state.message === 'string'
+      ? location.state.message
+      : null;
 
   const loginMutation = useMutation({
     mutationFn: loginUser,
@@ -42,6 +48,12 @@ export default function LoginForm() {
           Sign in to your account
         </h2>
       </div>
+
+      {statusMessage && (
+        <p className="bg-primary-50 text-primary rounded-md px-3 py-2 text-center text-sm font-medium">
+          {statusMessage}
+        </p>
+      )}
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="email-input">Email address</Label>

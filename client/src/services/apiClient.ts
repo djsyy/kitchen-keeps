@@ -179,8 +179,8 @@ export const apiClient = {
   patch: <T>(endpoint: string, body?: unknown, options?: ApiClientOptions) =>
     request<T>(endpoint, { ...options, method: 'PATCH', body }),
 
-  delete: <T>(endpoint: string, options?: ApiClientOptions) =>
-    request<T>(endpoint, { ...options, method: 'DELETE' }),
+  delete: <T>(endpoint: string, body?: unknown, options?: ApiClientOptions) =>
+    request<T>(endpoint, { ...options, method: 'DELETE', body }),
 
   request,
 };

@@ -9,6 +9,7 @@ export interface Library {
   description: string | null;
   icon_key: LibraryIconKey;
   color_key: LibraryColorKey;
+  cover_image_url: string | null;
   created_at?: string;
 }
 
@@ -80,6 +81,19 @@ export const updateLibrary = (
 export const deleteLibrary = (libraryId: number) =>
   apiClient.delete<LibraryResponse>(`/libraries/${libraryId}`);
 
+export const uploadLibraryCover = (libraryId: number, cover: File) => {
+  const formData = new FormData();
+  formData.append('image', cover);
+
+  return apiClient.post<LibraryResponse>(
+    `/libraries/${libraryId}/cover`,
+    formData
+  );
+};
+
+export const removeLibraryCover = (libraryId: number) =>
+  apiClient.delete<LibraryResponse>(`/libraries/${libraryId}/cover`);
+
 export const libraryService = {
   createLibrary,
   getLibraries,
@@ -88,4 +102,6 @@ export const libraryService = {
   removeRecipeFromLibrary,
   updateLibrary,
   deleteLibrary,
+  uploadLibraryCover,
+  removeLibraryCover,
 };

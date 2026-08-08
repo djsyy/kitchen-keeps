@@ -24,20 +24,35 @@ function LibraryCard({
   return (
     <button
       type="button"
-      className={`bg-background-50 w-full rounded-lg border p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${colorClass.split(' ')[0]}`}
+      className={`bg-background-50 relative w-full overflow-hidden rounded-lg border p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${colorClass.split(' ')[0]}`}
       onClick={() => onOpen(library.id)}
     >
+      {library.coverImageUrl && (
+        <img
+          src={library.coverImageUrl}
+          alt=""
+          className="absolute inset-x-0 top-0 h-28 w-full object-cover"
+        />
+      )}
       <div className="mb-5 flex items-start justify-between gap-4">
-        <span
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg ${colorClass}`}
-        >
-          <LibraryIcon className="h-5 w-5" />
-        </span>
+        {!library.coverImageUrl && (
+          <span
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg ${colorClass}`}
+          >
+            <LibraryIcon className="h-5 w-5" />
+          </span>
+        )}
         <span className="bg-background-100 text-text-700 rounded-full px-3 py-1 text-sm font-bold">
           {library.recipeCount}
         </span>
       </div>
-      <h3 className="text-text-950 text-xl font-bold">{library.title}</h3>
+      <h3
+        className={`text-text-950 text-xl font-bold ${
+          library.coverImageUrl ? 'mt-32' : ''
+        }`}
+      >
+        {library.title}
+      </h3>
       <p className="text-text-600 mt-2 min-h-10 text-sm">
         {library.description || 'No description yet.'}
       </p>

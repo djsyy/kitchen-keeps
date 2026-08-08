@@ -11,7 +11,10 @@ import {
 } from 'react-icons/lu';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import LibraryDeleteDialog from '../components/library/LibraryDeleteDialog';
-import LibraryFormDialog from '../components/library/LibraryFormDialog';
+import LibraryFormDialog, {
+  type LibraryCoverAction,
+  type LibraryFormSubmission,
+} from '../components/library/LibraryFormDialog';
 import LibraryRecipePickerDialog from '../components/library/LibraryRecipePickerDialog';
 import RecipeImagePlaceholder from '../components/recipes/RecipeImagePlaceholder';
 import Navbar from '../components/layout/Navbar';
@@ -23,9 +26,10 @@ import {
   addRecipeToLibrary,
   deleteLibrary,
   getLibrary,
+  removeLibraryCover,
   removeRecipeFromLibrary,
-  type CreateLibraryPayload,
   updateLibrary,
+  uploadLibraryCover,
 } from '../services/libraryService';
 import type { Recipe } from '../services/recipeService';
 import { getRecipeTotalTime } from '../utils/recipeDisplay';
@@ -43,6 +47,43 @@ function formatCreatedDate(createdAt?: string) {
   }).format(new Date(createdAt))}`;
 }
 
+type PendingCoverAction = {
+  libraryId: number;
+  coverAction: Exclude<LibraryCoverAction, { type: 'unchanged' }>;
+  error: Error;
+};
+
+class LibraryCoverActionError extends Error {
+  pendingCoverAction: PendingCoverAction;
+
+  constructor(
+    pendingCoverAction: Omit<PendingCoverAction, 'error'>,
+    cause: unknown
+  ) {
+    const error =
+      cause instanceof Error
+        ? cause
+        : new Error('Unable to update library cover');
+
+    super(error.message);
+    this.name = 'LibraryCoverActionError';
+    this.pendingCoverAction = { ...pendingCoverAction, error };
+  }
+}
+
+const runLibraryCoverAction = async (
+  libraryId: number,
+  coverAction: LibraryCoverAction
+) => {
+  if (coverAction.type === 'upload') {
+    await uploadLibraryCover(libraryId, coverAction.file);
+  }
+
+  if (coverAction.type === 'remove') {
+    await removeLibraryCover(libraryId);
+  }
+};
+
 export default function LibraryPage() {
   const { id } = useParams();
   const libraryId = Number(id);
@@ -52,6 +93,8 @@ export default function LibraryPage() {
   const [isRecipePickerOpen, setIsRecipePickerOpen] = useState(false);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [pendingCoverAction, setPendingCoverAction] =
+    useState<PendingCoverAction | null>(null);
   const { data, error, isPending } = useQuery({
     queryKey: queryKeys.libraries.detail(libraryId),
     queryFn: () => getLibrary(libraryId),
@@ -77,24 +120,77 @@ export default function LibraryPage() {
       });
     },
   });
-  const updateLibraryMutation = useMutation({
-    mutationFn: (payload: CreateLibraryPayload) =>
-      updateLibrary(libraryId, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.libraries.all });
+  const invalidateLibraryViews = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.libraries.all }),
       queryClient.invalidateQueries({
         queryKey: queryKeys.libraries.detail(libraryId),
-      });
-      setIsEditFormOpen(false);
+      }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.summary }),
+    ]);
+  };
+  const updateLibraryMutation = useMutation({
+    mutationFn: async (submission: LibraryFormSubmission) => {
+      await updateLibrary(libraryId, submission.payload);
+
+      try {
+        await runLibraryCoverAction(libraryId, submission.coverAction);
+      } catch (error) {
+        if (submission.coverAction.type !== 'unchanged') {
+          throw new LibraryCoverActionError(
+            { libraryId, coverAction: submission.coverAction },
+            error
+          );
+        }
+
+        throw error;
+      }
     },
+    onSuccess: () => {
+      invalidateLibraryViews();
+      setIsEditFormOpen(false);
+      setPendingCoverAction(null);
+    },
+    onError: (error) => {
+      if (error instanceof LibraryCoverActionError) {
+        setPendingCoverAction(error.pendingCoverAction);
+      }
+    },
+  });
+  const retryCoverActionMutation = useMutation({
+    mutationFn: ({
+      libraryId: pendingLibraryId,
+      coverAction,
+    }: PendingCoverAction) =>
+      runLibraryCoverAction(pendingLibraryId, coverAction),
   });
   const deleteLibraryMutation = useMutation({
     mutationFn: () => deleteLibrary(libraryId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.libraries.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.summary });
       navigate('/library', { replace: true });
     },
   });
+  const retryPendingCoverAction = () => {
+    if (!pendingCoverAction) {
+      return;
+    }
+
+    retryCoverActionMutation.mutate(pendingCoverAction, {
+      onSuccess: async () => {
+        await invalidateLibraryViews();
+        setIsEditFormOpen(false);
+        setPendingCoverAction(null);
+      },
+    });
+  };
+
+  const continueWithoutCover = async () => {
+    setIsEditFormOpen(false);
+    setPendingCoverAction(null);
+    await invalidateLibraryViews();
+  };
   const LibraryIcon = library ? libraryIcons[library.icon_key] : LuBookOpen;
   const colorClass = library
     ? libraryColorClasses[library.color_key]
@@ -128,11 +224,19 @@ export default function LibraryPage() {
         ) : (
           <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,2fr)]">
             <aside className="border-background-300 bg-background-50 h-fit rounded-3xl border p-6 shadow-sm">
-              <span
-                className={`flex h-14 w-14 items-center justify-center rounded-2xl border ${colorClass}`}
-              >
-                <LibraryIcon className="h-7 w-7" />
-              </span>
+              {library.cover_image_url ? (
+                <img
+                  src={library.cover_image_url}
+                  alt=""
+                  className="h-40 w-full rounded-2xl object-cover"
+                />
+              ) : (
+                <span
+                  className={`flex h-14 w-14 items-center justify-center rounded-2xl border ${colorClass}`}
+                >
+                  <LibraryIcon className="h-7 w-7" />
+                </span>
+              )}
               <h1 className="text-text-950 mt-5 text-3xl font-bold">
                 {library.name}
               </h1>
@@ -248,10 +352,26 @@ export default function LibraryPage() {
         <LibraryFormDialog
           key={library.id}
           library={library}
-          isPending={updateLibraryMutation.isPending}
-          error={updateLibraryMutation.error}
-          onCancel={() => setIsEditFormOpen(false)}
-          onSubmit={(payload) => updateLibraryMutation.mutate(payload)}
+          isPending={
+            updateLibraryMutation.isPending ||
+            retryCoverActionMutation.isPending
+          }
+          error={
+            pendingCoverAction
+              ? (retryCoverActionMutation.error ?? pendingCoverAction.error)
+              : updateLibraryMutation.error
+          }
+          onCancel={() => {
+            setPendingCoverAction(null);
+            setIsEditFormOpen(false);
+          }}
+          onSubmit={(submission) => updateLibraryMutation.mutate(submission)}
+          onRetryCoverAction={
+            pendingCoverAction ? retryPendingCoverAction : undefined
+          }
+          onContinueWithoutCover={
+            pendingCoverAction ? continueWithoutCover : undefined
+          }
         />
       )}
       {isDeleteDialogOpen && library && (

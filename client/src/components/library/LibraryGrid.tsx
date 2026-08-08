@@ -97,18 +97,31 @@ function LibraryCard({
       className={`bg-background-50 relative flex min-h-52 cursor-pointer flex-col justify-between rounded-3xl border p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${colorClass.split(' ')[0]}`}
       onClick={() => onOpen(library)}
     >
-      <div className="flex justify-between">
-        <span
-          className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${colorClass}`}
-        >
-          <Icon className="h-6 w-6" />
-        </span>
+      {library.cover_image_url && (
+        <img
+          src={library.cover_image_url}
+          alt=""
+          className="absolute inset-x-0 top-0 h-32 w-full rounded-t-3xl object-cover"
+        />
+      )}
+      <div
+        className={`flex justify-between ${library.cover_image_url ? 'absolute top-5 right-5 left-5' : ''}`}
+      >
+        {!library.cover_image_url && (
+          <span
+            className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${colorClass}`}
+          >
+            <Icon className="h-6 w-6" />
+          </span>
+        )}
         <button
           type="button"
           aria-label={`Show options for ${library.name}`}
           aria-expanded={isOptionsOpen}
           aria-haspopup="menu"
-          className="text-text-600 hover:bg-background-100 hover:text-text-950 rounded-md p-1 transition"
+          className={`text-text-600 hover:bg-background-100 hover:text-text-950 rounded-md p-1 transition ${
+            library.cover_image_url ? 'bg-background-50/90 shadow-sm' : ''
+          }`}
           onClick={(event) => {
             event.stopPropagation();
             toggleOptions();
@@ -125,7 +138,7 @@ function LibraryCard({
           onDelete={() => onDelete(library)}
         />
       )}
-      <div className="mt-8">
+      <div className={library.cover_image_url ? 'mt-36' : 'mt-8'}>
         <h2 className="text-text-950 text-xl font-bold">{library.name}</h2>
         {library.description && (
           <p className="text-text-600 mt-2 text-sm">{library.description}</p>

@@ -22,6 +22,7 @@ export interface DashboardLibraryPreview {
   description: string | null;
   icon_key: LibraryIconKey;
   color_key: LibraryColorKey;
+  cover_image_url: string | null;
   created_at: string;
   updated_at: string;
   recipe_count: number;

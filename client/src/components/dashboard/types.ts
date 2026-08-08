@@ -35,6 +35,7 @@ export type LibraryPreview = {
   updatedLabel: string;
   iconKey: LibraryIconKey;
   colorKey: LibraryColorKey;
+  coverImageUrl: string | null;
 };
 
 export type ActiveCookList = {

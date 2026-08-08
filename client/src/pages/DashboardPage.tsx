@@ -103,6 +103,7 @@ export default function DashboardPage() {
       updatedLabel: formatUpdatedAt(library.updated_at),
       iconKey: library.icon_key,
       colorKey: library.color_key,
+      coverImageUrl: library.cover_image_url,
     })) ?? [];
   const activeCookList = dashboard?.activeCookSession
     ? {

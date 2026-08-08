@@ -121,6 +121,30 @@ export const getIngredients = async (req, res, next) => {
   }
 };
 
+export const getManagedIngredients = async (req, res, next) => {
+  try {
+    const status = req.query.status ?? 'active';
+    const userId = req.user.userId;
+
+    const result = await query(
+      `
+      SELECT ${ingredientFields}
+      FROM ingredients
+      WHERE created_by_user_id = $1 AND status = $2
+      ORDER BY name, id
+      `,
+      [userId, status]
+    );
+
+    return res.status(StatusCodes.OK).json({
+      data: { ingredients: result.rows },
+      meta: { count: result.rows.length },
+    });
+  } catch (_error) {
+    return next(new InternalServerError('Unable to fetch private ingredients'));
+  }
+};
+
 export const getSingleIngredient = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -159,7 +183,7 @@ export const updateIngredient = async (req, res, next) => {
     // Only user-owned active ingredients can be updated
     const currentIngredientResult = await query(
       `
-      SELECT id
+      SELECT id, name
       FROM ingredients
       WHERE id = $1 AND status = 'active' AND created_by_user_id = $2
       `,
@@ -183,10 +207,26 @@ export const updateIngredient = async (req, res, next) => {
 
     const result = await query(
       `
-      UPDATE ingredients
-      SET name = $1
-      WHERE id = $2 AND status = 'active' AND created_by_user_id = $3
-      RETURNING ${ingredientFields}
+      WITH current_ingredient AS (
+        SELECT id, name
+        FROM ingredients
+        WHERE id = $2 AND status = 'active' AND created_by_user_id = $3
+      ), updated_ingredient AS (
+        UPDATE ingredients
+        SET name = $1
+        FROM current_ingredient
+        WHERE ingredients.id = current_ingredient.id
+        RETURNING ingredients.id, ingredients.name, ingredients.status,
+          ingredients.created_by_user_id
+      ), updated_recipe_ingredients AS (
+        UPDATE recipe_ingredients
+        SET display_name = $1
+        FROM current_ingredient
+        WHERE recipe_ingredients.ingredient_id = current_ingredient.id
+          AND recipe_ingredients.display_name = current_ingredient.name
+      )
+      SELECT ${ingredientFields}
+      FROM updated_ingredient
       `,
       [name, id, userId]
     );
@@ -228,10 +268,19 @@ export const hideIngredient = async (req, res, next) => {
     // Soft delete only user-owned active ingredients
     const result = await query(
       `
-        UPDATE ingredients
-        SET status = 'hidden'
-        WHERE id = $1 AND status = 'active' AND created_by_user_id = $2
-        RETURNING id, name, status, created_by_user_id
+        WITH archived_ingredient AS (
+          UPDATE ingredients
+          SET status = 'hidden'
+          WHERE id = $1 AND status = 'active' AND created_by_user_id = $2
+          RETURNING id, name, status, created_by_user_id
+        ), removed_pantry_item AS (
+          DELETE FROM pantry_items
+          USING archived_ingredient
+          WHERE pantry_items.user_id = $2
+            AND pantry_items.ingredient_id = archived_ingredient.id
+        )
+        SELECT id, name, status, created_by_user_id
+        FROM archived_ingredient
         `,
       [id, userId]
     );

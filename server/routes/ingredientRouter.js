@@ -2,6 +2,7 @@ import express from 'express';
 import {
   createIngredient,
   getIngredients,
+  getManagedIngredients,
   getSingleIngredient,
   updateIngredient,
   hideIngredient,
@@ -11,6 +12,7 @@ import validateRequest from '../middleware/validateRequest.js';
 import {
   createIngredientValidation,
   getIngredientsValidation,
+  getManagedIngredientsValidation,
   getSingleIngredientValidation,
   updateIngredientValidation,
   hideIngredientValidation,
@@ -23,6 +25,13 @@ router
   .route('/')
   .post(createIngredientValidation, validateRequest, createIngredient)
   .get(getIngredientsValidation, validateRequest, getIngredients);
+
+router.get(
+  '/manage',
+  getManagedIngredientsValidation,
+  validateRequest,
+  getManagedIngredients
+);
 
 router
   .route('/:id/reactivate')

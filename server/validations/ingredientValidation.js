@@ -21,6 +21,13 @@ export const getIngredientsValidation = [
     .withMessage('Search must be less than 255 characters'),
 ];
 
+export const getManagedIngredientsValidation = [
+  query('status')
+    .optional()
+    .isIn(['active', 'hidden'])
+    .withMessage('Status must be active or hidden'),
+];
+
 // Get single ingredient validation rules
 export const getSingleIngredientValidation = [ingredientIdParam];
 

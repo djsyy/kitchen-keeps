@@ -50,7 +50,8 @@ export const getDashboard = async (req, res, next) => {
         query(
           `
             SELECT libraries.id, libraries.name, libraries.description,
-              libraries.icon_key, libraries.color_key, libraries.created_at,
+              libraries.icon_key, libraries.color_key, libraries.cover_image_url,
+              libraries.created_at,
               COUNT(library_recipes.recipe_id)::integer AS recipe_count,
               COALESCE(MAX(library_recipes.added_at), libraries.created_at) AS updated_at
             FROM libraries
@@ -58,7 +59,8 @@ export const getDashboard = async (req, res, next) => {
               ON library_recipes.library_id = libraries.id
             WHERE libraries.user_id = $1
             GROUP BY libraries.id, libraries.name, libraries.description,
-              libraries.icon_key, libraries.color_key, libraries.created_at
+              libraries.icon_key, libraries.color_key, libraries.cover_image_url,
+              libraries.created_at
             ORDER BY updated_at DESC, libraries.id DESC
             LIMIT 3
           `,

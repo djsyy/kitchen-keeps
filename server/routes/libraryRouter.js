@@ -7,6 +7,8 @@ import {
   getSingleLibrary,
   updateLibrary,
   deleteLibrary,
+  uploadLibraryCover,
+  removeLibraryCover,
 } from '../controllers/libraryController.js';
 import validateRequest from '../middleware/validateRequest.js';
 import {
@@ -17,6 +19,7 @@ import {
   updateLibraryValidation,
   deleteLibraryValidation,
 } from '../validations/libraryValidation.js';
+import { uploadLibraryCoverFile } from '../middleware/recipeImageUpload.js';
 
 const router = express.Router();
 
@@ -38,6 +41,16 @@ router.delete(
   validateRequest,
   removeRecipeFromLibrary
 );
+
+router
+  .route('/:id/cover')
+  .post(
+    getSingleLibraryValidation,
+    validateRequest,
+    uploadLibraryCoverFile,
+    uploadLibraryCover
+  )
+  .delete(getSingleLibraryValidation, validateRequest, removeLibraryCover);
 
 router
   .route('/:id')

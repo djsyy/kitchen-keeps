@@ -3,7 +3,12 @@ import { StatusCodes } from 'http-status-codes';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import ConflictError from '../errors/ConflictError.js';
+import BadRequestError from '../errors/BadRequestError.js';
 import { buildUpdatedFields } from '../utils/buildUpdatedFields.js';
+import {
+  destroyLibraryCover,
+  uploadLibraryCover as uploadCoverToCloudinary,
+} from '../config/cloudinary.js';
 
 const libraryDBAttributes = ['name', 'description', 'icon_key', 'color_key'];
 
@@ -18,6 +23,33 @@ const checkUserOwnership = async (libraryId, userId) => {
   );
 
   return Boolean(result.rows[0]);
+};
+
+const getOwnedLibraryCover = async (libraryId, userId) => {
+  const result = await query(
+    `
+      SELECT id, cover_image_url, cover_image_public_id
+      FROM libraries
+      WHERE id = $1 AND user_id = $2
+    `,
+    [libraryId, userId]
+  );
+
+  return result.rows[0];
+};
+
+const removeLibraryCoverFromCloudinary = async (publicId) => {
+  if (!publicId) {
+    return;
+  }
+
+  try {
+    await destroyLibraryCover(publicId);
+  } catch (error) {
+    console.error('Unable to remove library cover from Cloudinary', {
+      message: error instanceof Error ? error.message : 'Unknown image error',
+    });
+  }
 };
 
 export const createLibrary = async (req, res, next) => {
@@ -35,7 +67,8 @@ export const createLibrary = async (req, res, next) => {
       `
       INSERT INTO libraries (user_id, name, description, icon_key, color_key)
       VALUES ($1, $2, $3, $4, $5)
-      RETURNING id, user_id, name, description, icon_key, color_key, created_at
+      RETURNING id, user_id, name, description, icon_key, color_key,
+        cover_image_url, created_at
       `,
       [userId, name, normalizedDescription, iconKey, colorKey]
     );
@@ -58,7 +91,9 @@ export const getLibraries = async (req, res, next) => {
 
     const result = await query(
       `
-      SELECT * from libraries
+      SELECT id, user_id, name, description, icon_key, color_key,
+        cover_image_url, created_at
+      FROM libraries
       WHERE user_id = $1
       ORDER BY name
       `,
@@ -81,7 +116,9 @@ export const getSingleLibrary = async (req, res, next) => {
 
     const result = await query(
       `
-      SELECT * from libraries
+      SELECT id, user_id, name, description, icon_key, color_key,
+        cover_image_url, created_at
+      FROM libraries
       WHERE user_id = $1 AND id = $2
       `,
       [userId, id]
@@ -215,7 +252,8 @@ export const updateLibrary = async (req, res, next) => {
       UPDATE libraries
       SET ${updatedFields.join(', ')}
       WHERE user_id = $${updatedValues.length - 1} AND id = $${updatedValues.length}
-      RETURNING name, description, icon_key, color_key, user_id, id, created_at
+      RETURNING name, description, icon_key, color_key, cover_image_url,
+        user_id, id, created_at
       `,
       updatedValues
     );
@@ -248,7 +286,8 @@ export const deleteLibrary = async (req, res, next) => {
       `
       DELETE from libraries
       WHERE user_id = $1 AND id = $2
-      RETURNING id, user_id, name, description, icon_key, color_key, created_at
+      RETURNING id, user_id, name, description, icon_key, color_key,
+        cover_image_url, cover_image_public_id, created_at
       `,
       [userId, id]
     );
@@ -258,12 +297,116 @@ export const deleteLibrary = async (req, res, next) => {
       throw new NotFoundError('Library not found');
     }
 
-    return res.status(StatusCodes.OK).json({ data: { library } });
+    await removeLibraryCoverFromCloudinary(library.cover_image_public_id);
+
+    const { cover_image_public_id: _coverImagePublicId, ...libraryData } =
+      library;
+
+    return res.status(StatusCodes.OK).json({ data: { library: libraryData } });
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(error);
     }
 
     return next(new InternalServerError('Unable to delete library'));
+  }
+};
+
+export const uploadLibraryCover = async (req, res, next) => {
+  let uploadedCover;
+
+  try {
+    if (!req.file) {
+      throw new BadRequestError('Library cover is required');
+    }
+
+    const { id } = req.params;
+    const userId = req.user.userId;
+    const library = await getOwnedLibraryCover(id, userId);
+
+    if (!library) {
+      throw new NotFoundError('Library not found');
+    }
+
+    uploadedCover = await uploadCoverToCloudinary(req.file, {
+      libraryId: library.id,
+      userId,
+    });
+
+    const result = await query(
+      `
+        UPDATE libraries
+        SET cover_image_url = $1, cover_image_public_id = $2
+        WHERE id = $3 AND user_id = $4
+        RETURNING id, user_id, name, description, icon_key, color_key,
+          cover_image_url, created_at
+      `,
+      [uploadedCover.secure_url, uploadedCover.public_id, id, userId]
+    );
+
+    const updatedLibrary = result.rows[0];
+    if (!updatedLibrary) {
+      throw new NotFoundError('Library not found');
+    }
+
+    await removeLibraryCoverFromCloudinary(library.cover_image_public_id);
+
+    return res
+      .status(StatusCodes.OK)
+      .json({ data: { library: updatedLibrary } });
+  } catch (error) {
+    if (uploadedCover?.public_id) {
+      await removeLibraryCoverFromCloudinary(uploadedCover.public_id);
+    }
+
+    if (error instanceof BadRequestError || error instanceof NotFoundError) {
+      return next(error);
+    }
+
+    console.error('Unable to upload library cover to Cloudinary', {
+      message: error instanceof Error ? error.message : 'Unknown image error',
+    });
+
+    return next(new InternalServerError('Unable to upload library cover'));
+  }
+};
+
+export const removeLibraryCover = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+    const library = await getOwnedLibraryCover(id, userId);
+
+    if (!library) {
+      throw new NotFoundError('Library not found');
+    }
+
+    const result = await query(
+      `
+        UPDATE libraries
+        SET cover_image_url = NULL, cover_image_public_id = NULL
+        WHERE id = $1 AND user_id = $2
+        RETURNING id, user_id, name, description, icon_key, color_key,
+          cover_image_url, created_at
+      `,
+      [id, userId]
+    );
+
+    const updatedLibrary = result.rows[0];
+    if (!updatedLibrary) {
+      throw new NotFoundError('Library not found');
+    }
+
+    await removeLibraryCoverFromCloudinary(library.cover_image_public_id);
+
+    return res
+      .status(StatusCodes.OK)
+      .json({ data: { library: updatedLibrary } });
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return next(error);
+    }
+
+    return next(new InternalServerError('Unable to remove library cover'));
   }
 };

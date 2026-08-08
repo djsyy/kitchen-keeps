@@ -11,7 +11,7 @@ const hasCloudinaryConfiguration = () =>
 export const logCloudinaryConfigurationStatus = () => {
   if (!hasCloudinaryConfiguration()) {
     console.warn(
-      'Cloudinary recipe image uploads are unavailable: required configuration is missing'
+      'Cloudinary image uploads are unavailable: required configuration is missing'
     );
   }
 };
@@ -28,14 +28,14 @@ const configureCloudinary = () => {
   });
 };
 
-export const uploadRecipeImage = (file, { recipeId, userId }) => {
+const uploadImage = (file, { folder, publicId }) => {
   configureCloudinary();
 
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
-        folder: `kitchen-keeps/recipes/${userId}`,
-        public_id: `recipe-${recipeId}-${crypto.randomUUID()}`,
+        folder,
+        public_id: publicId,
         resource_type: 'image',
         overwrite: false,
       },
@@ -53,7 +53,7 @@ export const uploadRecipeImage = (file, { recipeId, userId }) => {
   });
 };
 
-export const destroyRecipeImage = async (publicId) => {
+const destroyImage = async (publicId) => {
   if (!publicId) {
     return;
   }
@@ -65,3 +65,18 @@ export const destroyRecipeImage = async (publicId) => {
     invalidate: true,
   });
 };
+
+export const uploadRecipeImage = (file, { recipeId, userId }) =>
+  uploadImage(file, {
+    folder: `kitchen-keeps/recipes/${userId}`,
+    publicId: `recipe-${recipeId}-${crypto.randomUUID()}`,
+  });
+
+export const uploadLibraryCover = (file, { libraryId, userId }) =>
+  uploadImage(file, {
+    folder: `kitchen-keeps/libraries/${userId}`,
+    publicId: `library-${libraryId}-${crypto.randomUUID()}`,
+  });
+
+export const destroyRecipeImage = destroyImage;
+export const destroyLibraryCover = destroyImage;

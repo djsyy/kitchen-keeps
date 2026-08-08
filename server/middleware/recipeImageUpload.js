@@ -6,10 +6,10 @@ const allowedImageFormats = new Set(['jpeg', 'png', 'webp']);
 const maxImageDimension = 8000;
 const maxImagePixels = 20_000_000;
 
-const invalidImageError = () =>
-  new BadRequestError('Recipe images must be JPG, PNG, or WebP files');
+const createInvalidImageError = (label) =>
+  new BadRequestError(`${label} must be JPG, PNG, or WebP files`);
 
-const validateRecipeImage = async (file) => {
+const validateImage = async (file, label) => {
   let metadata;
 
   try {
@@ -18,7 +18,7 @@ const validateRecipeImage = async (file) => {
       limitInputPixels: maxImagePixels,
     }).metadata();
   } catch (_error) {
-    throw invalidImageError();
+    throw createInvalidImageError(label);
   }
 
   if (
@@ -26,7 +26,7 @@ const validateRecipeImage = async (file) => {
     !metadata.width ||
     !metadata.height
   ) {
-    throw invalidImageError();
+    throw createInvalidImageError(label);
   }
 
   if (
@@ -35,7 +35,7 @@ const validateRecipeImage = async (file) => {
     metadata.width * metadata.height > maxImagePixels
   ) {
     throw new BadRequestError(
-      'Recipe images must be 8,000 pixels or less on each side and no more than 20 megapixels'
+      `${label} must be 8,000 pixels or less on each side and no more than 20 megapixels`
     );
   }
 };
@@ -48,16 +48,18 @@ const upload = multer({
   },
 });
 
-export const uploadRecipeImageFile = (req, res, next) => {
+const createImageUploadMiddleware = (label) => (req, res, next) => {
   upload.single('image')(req, res, async (error) => {
     if (error instanceof multer.MulterError) {
       if (error.code === 'LIMIT_FILE_SIZE') {
-        return next(
-          new BadRequestError('Recipe images must be 5 MB or smaller')
-        );
+        return next(new BadRequestError(`${label} must be 5 MB or smaller`));
       }
 
-      return next(new BadRequestError('Upload one recipe image at a time'));
+      return next(
+        new BadRequestError(
+          `Upload one ${label.toLowerCase().replace(/s$/, '')} at a time`
+        )
+      );
     }
 
     if (error) {
@@ -69,7 +71,7 @@ export const uploadRecipeImageFile = (req, res, next) => {
     }
 
     try {
-      await validateRecipeImage(req.file);
+      await validateImage(req.file, label);
     } catch (validationError) {
       if (validationError instanceof BadRequestError) {
         return next(validationError);
@@ -81,3 +83,8 @@ export const uploadRecipeImageFile = (req, res, next) => {
     return next();
   });
 };
+
+export const uploadRecipeImageFile =
+  createImageUploadMiddleware('Recipe images');
+export const uploadLibraryCoverFile =
+  createImageUploadMiddleware('Library covers');

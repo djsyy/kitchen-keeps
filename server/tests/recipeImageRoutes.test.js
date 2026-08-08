@@ -2,16 +2,26 @@ import request from 'supertest';
 import sharp from 'sharp';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { query, uploadRecipeImage, destroyRecipeImage } = vi.hoisted(() => ({
+const {
+  query,
+  uploadRecipeImage,
+  destroyRecipeImage,
+  uploadLibraryCover,
+  destroyLibraryCover,
+} = vi.hoisted(() => ({
   query: vi.fn(),
   uploadRecipeImage: vi.fn(),
   destroyRecipeImage: vi.fn(),
+  uploadLibraryCover: vi.fn(),
+  destroyLibraryCover: vi.fn(),
 }));
 
 vi.mock('../config/db.js', () => ({ query }));
 vi.mock('../config/cloudinary.js', () => ({
   uploadRecipeImage,
   destroyRecipeImage,
+  uploadLibraryCover,
+  destroyLibraryCover,
 }));
 vi.mock('../services/emailService.js', () => ({
   sendPasswordResetEmail: vi.fn(),

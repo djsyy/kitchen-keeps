@@ -24,17 +24,25 @@ function LibraryCard({
   return (
     <button
       type="button"
-      className={`bg-background-50 relative w-full overflow-hidden rounded-lg border p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${colorClass.split(' ')[0]}`}
+      className={`bg-background-50 hover:bg-background-100 relative w-full overflow-hidden rounded-lg border text-left shadow-sm transition hover:shadow-md ${
+        library.coverImageUrl
+          ? 'border-background-300'
+          : colorClass.split(' ')[0]
+      }`}
       onClick={() => onOpen(library.id)}
     >
       {library.coverImageUrl && (
         <img
           src={library.coverImageUrl}
           alt=""
-          className="absolute inset-x-0 top-0 h-28 w-full object-cover"
+          className="h-32 w-full object-cover"
         />
       )}
-      <div className="mb-5 flex items-start justify-between gap-4">
+      <div
+        className={`flex items-start justify-between gap-4 ${
+          library.coverImageUrl ? 'p-5' : 'p-5 pb-0'
+        }`}
+      >
         {!library.coverImageUrl && (
           <span
             className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg ${colorClass}`}
@@ -46,20 +54,16 @@ function LibraryCard({
           {library.recipeCount}
         </span>
       </div>
-      <h3
-        className={`text-text-950 text-xl font-bold ${
-          library.coverImageUrl ? 'mt-32' : ''
-        }`}
-      >
-        {library.title}
-      </h3>
-      <p className="text-text-600 mt-2 min-h-10 text-sm">
-        {library.description || 'No description yet.'}
-      </p>
-      <p className="text-text-500 mt-5 flex items-center gap-2 text-sm font-bold">
-        <LuClock3 className="h-4 w-4" />
-        {library.updatedLabel}
-      </p>
+      <div className={library.coverImageUrl ? 'px-5 pb-5' : 'p-5 pt-4'}>
+        <h3 className="text-text-950 text-xl font-bold">{library.title}</h3>
+        <p className="text-text-600 mt-2 line-clamp-2 min-h-10 text-sm leading-5">
+          {library.description || 'No description yet.'}
+        </p>
+        <p className="text-text-500 mt-5 flex items-center gap-2 text-sm font-bold">
+          <LuClock3 className="h-4 w-4" />
+          {library.updatedLabel}
+        </p>
+      </div>
     </button>
   );
 }

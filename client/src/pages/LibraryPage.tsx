@@ -223,53 +223,57 @@ export default function LibraryPage() {
           </div>
         ) : (
           <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,2fr)]">
-            <aside className="border-background-300 bg-background-50 h-fit rounded-3xl border p-6 shadow-sm">
+            <aside className="border-background-300 bg-background-50 h-fit overflow-hidden rounded-3xl border shadow-sm">
               {library.cover_image_url ? (
                 <img
                   src={library.cover_image_url}
                   alt=""
-                  className="h-40 w-full rounded-2xl object-cover"
+                  className="h-52 w-full object-cover"
                 />
               ) : (
-                <span
-                  className={`flex h-14 w-14 items-center justify-center rounded-2xl border ${colorClass}`}
-                >
-                  <LibraryIcon className="h-7 w-7" />
-                </span>
+                <div className="p-6 pb-0">
+                  <span
+                    className={`flex h-14 w-14 items-center justify-center rounded-2xl border ${colorClass}`}
+                  >
+                    <LibraryIcon className="h-7 w-7" />
+                  </span>
+                </div>
               )}
-              <h1 className="text-text-950 mt-5 text-3xl font-bold">
-                {library.name}
-              </h1>
-              {library.description && (
-                <p className="text-text-600 mt-3 text-sm leading-6">
-                  {library.description}
-                </p>
-              )}
+              <div className="p-6">
+                <h1 className="text-text-950 text-3xl font-bold">
+                  {library.name}
+                </h1>
+                {library.description && (
+                  <p className="text-text-600 mt-3 text-sm leading-6">
+                    {library.description}
+                  </p>
+                )}
 
-              <div className="border-background-200 text-text-500 mt-6 border-t pt-5 text-sm">
-                <p className="flex items-center gap-2">
-                  <LuClock3 className="h-4 w-4" />
-                  {formatCreatedDate(library.created_at)}
-                </p>
-              </div>
+                <div className="border-background-200 text-text-500 mt-6 border-t pt-5 text-sm">
+                  <p className="flex items-center gap-2">
+                    <LuClock3 className="h-4 w-4" />
+                    {formatCreatedDate(library.created_at)}
+                  </p>
+                </div>
 
-              <div className="mt-6 flex gap-2">
-                <button
-                  type="button"
-                  className="border-background-300 text-text-700 hover:bg-background-100 inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-bold"
-                  onClick={() => setIsEditFormOpen(true)}
-                >
-                  <LuPencil className="h-4 w-4" />
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  aria-label="Delete library"
-                  className="border-background-300 text-text-600 hover:bg-background-100 rounded-lg border p-2"
-                  onClick={() => setIsDeleteDialogOpen(true)}
-                >
-                  <LuTrash2 className="h-4 w-4" />
-                </button>
+                <div className="mt-6 flex gap-2">
+                  <button
+                    type="button"
+                    className="border-background-300 text-text-700 hover:bg-background-100 inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-bold"
+                    onClick={() => setIsEditFormOpen(true)}
+                  >
+                    <LuPencil className="h-4 w-4" />
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Delete library"
+                    className="border-background-300 text-text-600 hover:bg-background-100 rounded-lg border p-2"
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                  >
+                    <LuTrash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </aside>
 
@@ -304,7 +308,7 @@ export default function LibraryPage() {
               )}
 
               {recipes.length > 0 ? (
-                <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <div className="mt-8 space-y-3">
                   {recipes.map((recipe) => {
                     const isRemoving =
                       removeRecipeMutation.isPending &&
@@ -407,14 +411,14 @@ function LibraryRecipeCard({
   return (
     <article
       ref={containerRef}
-      className="border-background-300 bg-background-50 relative overflow-hidden rounded-2xl border shadow-sm"
+      className="border-background-300 bg-background-50 hover:bg-background-100 relative rounded-2xl border shadow-sm transition hover:shadow-md"
     >
       <button
         type="button"
         aria-label={`Show options for ${recipe.title}`}
         aria-expanded={isOptionsOpen}
         aria-haspopup="menu"
-        className="bg-background-50/90 text-text-600 hover:bg-background-100 hover:text-text-950 absolute top-3 right-3 z-10 rounded-md p-1 transition"
+        className="bg-background-50/90 text-text-600 hover:bg-background-100 hover:text-text-950 focus-visible:outline-primary absolute top-3 right-3 z-10 rounded-md p-1 transition focus-visible:outline-2 focus-visible:outline-offset-2"
         onClick={toggleOptions}
       >
         <LuEllipsisVertical className="h-5 w-5" />
@@ -444,31 +448,35 @@ function LibraryRecipeCard({
       )}
       <Link
         to={`/recipes/${recipe.id}`}
-        className="hover:bg-background-100 block transition"
+        className="group flex flex-col gap-3 p-3 pr-12 transition sm:flex-row sm:items-center sm:gap-4 sm:pr-14"
       >
         {recipe.image_url ? (
           <img
             src={recipe.image_url}
             alt={recipe.title}
-            className="h-32 w-full object-cover"
+            className="h-28 w-full rounded-xl object-cover sm:h-24 sm:w-36 sm:shrink-0"
           />
         ) : (
           <RecipeImagePlaceholder
-            className="h-32 w-full"
-            iconClassName="h-8 w-8"
+            className="h-28 w-full rounded-xl sm:h-24 sm:w-36 sm:shrink-0"
+            iconClassName="h-7 w-7"
           />
         )}
-        <div className="p-4">
-          <h3 className="text-text-950 text-lg font-bold">{recipe.title}</h3>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-text-950 group-hover:text-primary text-lg font-bold transition">
+            {recipe.title}
+          </h3>
           {recipe.description && (
-            <p className="text-text-600 mt-1 line-clamp-2 text-sm leading-5">
+            <p className="text-text-600 mt-1 line-clamp-2 text-sm leading-5 sm:line-clamp-1">
               {recipe.description}
             </p>
           )}
-          {totalTime > 0 && (
-            <p className="text-text-600 mt-3 text-sm">{totalTime} min</p>
-          )}
         </div>
+        {totalTime > 0 && (
+          <p className="text-text-600 shrink-0 text-sm font-bold sm:text-right">
+            {totalTime} min
+          </p>
+        )}
       </Link>
     </article>
   );

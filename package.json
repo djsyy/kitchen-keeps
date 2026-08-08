@@ -22,9 +22,6 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },
-  "overrides": {
-    "lodash": "4.17.21"
-  },
   "devDependencies": {
     "@eslint/js": "^9.23.0",
     "concurrently": "^9.1.2",

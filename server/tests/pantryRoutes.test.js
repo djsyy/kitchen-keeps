@@ -63,7 +63,14 @@ describe('pantry routes', () => {
     query
       .mockResolvedValueOnce({ rows: [pantryItem] })
       .mockResolvedValueOnce({ rows: [recommendation] })
-      .mockResolvedValueOnce({ rows: [{ unlinked_recipe_count: 1 }] });
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            unlinked_recipe_count: 1,
+            archived_ingredient_recipe_count: 2,
+          },
+        ],
+      });
 
     const response = await request(createTestApp()).get('/api/pantry');
 
@@ -71,7 +78,10 @@ describe('pantry routes', () => {
     expect(response.body.data).toEqual({
       pantryItems: [pantryItem],
       recommendations: [recommendation],
-      recommendationEligibility: { unlinkedRecipeCount: 1 },
+      recommendationEligibility: {
+        unlinkedRecipeCount: 1,
+        archivedIngredientRecipeCount: 2,
+      },
     });
     expect(query).toHaveBeenCalledTimes(3);
     expect(query).toHaveBeenCalledWith(
@@ -83,7 +93,7 @@ describe('pantry routes', () => {
       [1]
     );
     expect(query).toHaveBeenCalledWith(
-      expect.stringContaining('COUNT(DISTINCT recipes.id)::integer'),
+      expect.stringContaining('COUNT(DISTINCT recipes.id) FILTER'),
       [1]
     );
   });

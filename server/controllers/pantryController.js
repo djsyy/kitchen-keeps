@@ -74,12 +74,18 @@ export const getPantry = async (req, res, next) => {
         ),
         query(
           `
-          SELECT COUNT(DISTINCT recipes.id)::integer AS unlinked_recipe_count
+          SELECT
+            COUNT(DISTINCT recipes.id) FILTER (
+              WHERE recipe_ingredients.ingredient_id IS NULL
+            )::integer AS unlinked_recipe_count,
+            COUNT(DISTINCT recipes.id) FILTER (
+              WHERE ingredients.status = 'hidden'
+            )::integer AS archived_ingredient_recipe_count
           FROM recipes
           INNER JOIN recipe_ingredients
             ON recipe_ingredients.recipe_id = recipes.id
+          LEFT JOIN ingredients ON ingredients.id = recipe_ingredients.ingredient_id
           WHERE recipes.created_by_user_id = $1
-            AND recipe_ingredients.ingredient_id IS NULL
         `,
           [userId]
         ),
@@ -92,6 +98,8 @@ export const getPantry = async (req, res, next) => {
         recommendationEligibility: {
           unlinkedRecipeCount:
             eligibilityResult.rows[0]?.unlinked_recipe_count ?? 0,
+          archivedIngredientRecipeCount:
+            eligibilityResult.rows[0]?.archived_ingredient_recipe_count ?? 0,
         },
       },
       meta: { count: pantryResult.rows.length },

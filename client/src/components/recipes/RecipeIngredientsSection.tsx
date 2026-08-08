@@ -190,11 +190,15 @@ export default function RecipeIngredientsSection({
                       {ingredient.preparation_note}
                     </span>
                   )}
-                  {ingredient.ingredient_id === null && (
+                  {ingredient.ingredient_id === null ? (
                     <span className="bg-secondary-100 text-secondary-900 mt-2 inline-flex rounded-full px-2 py-1 text-xs font-bold">
                       Not linked to Pantry
                     </span>
-                  )}
+                  ) : ingredient.ingredient_status === 'hidden' ? (
+                    <span className="bg-secondary-100 text-secondary-900 mt-2 inline-flex rounded-full px-2 py-1 text-xs font-bold">
+                      Archived ingredient
+                    </span>
+                  ) : null}
                 </span>
                 <div className="ml-auto flex shrink-0 items-start gap-2">
                   {quantity && (

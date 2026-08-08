@@ -303,24 +303,62 @@ export default function PantryPage() {
                 These recipes use only ingredients currently in your pantry.
               </p>
 
-              {pantry.recommendationEligibility.unlinkedRecipeCount > 0 && (
+              {(pantry.recommendationEligibility.unlinkedRecipeCount > 0 ||
+                pantry.recommendationEligibility.archivedIngredientRecipeCount >
+                  0) && (
                 <div className="border-secondary-200 bg-secondary-50 text-secondary-900 mt-5 rounded-xl border px-4 py-3 text-sm leading-5">
-                  <p className="font-bold">
-                    {pantry.recommendationEligibility.unlinkedRecipeCount}{' '}
-                    {pantry.recommendationEligibility.unlinkedRecipeCount === 1
-                      ? 'recipe needs an ingredient link'
-                      : 'recipes need ingredient links'}
-                  </p>
-                  <p className="mt-1">
-                    Select or create ingredients while editing those recipes to
-                    include them in verified recommendations.
-                  </p>
-                  <Link
-                    to="/recipes"
-                    className="text-primary mt-2 inline-flex font-bold underline underline-offset-2"
-                  >
-                    Review recipes
-                  </Link>
+                  {pantry.recommendationEligibility.unlinkedRecipeCount > 0 && (
+                    <div>
+                      <p className="font-bold">
+                        {pantry.recommendationEligibility.unlinkedRecipeCount}{' '}
+                        {pantry.recommendationEligibility
+                          .unlinkedRecipeCount === 1
+                          ? 'recipe needs an ingredient link'
+                          : 'recipes need ingredient links'}
+                      </p>
+                      <p className="mt-1">
+                        Select or create ingredients while editing those recipes
+                        to include them in verified recommendations.
+                      </p>
+                      <Link
+                        to="/recipes"
+                        className="text-primary mt-2 inline-flex font-bold underline underline-offset-2"
+                      >
+                        Review recipes
+                      </Link>
+                    </div>
+                  )}
+                  {pantry.recommendationEligibility
+                    .archivedIngredientRecipeCount > 0 && (
+                    <div
+                      className={
+                        pantry.recommendationEligibility.unlinkedRecipeCount > 0
+                          ? 'border-secondary-200 mt-3 border-t pt-3'
+                          : ''
+                      }
+                    >
+                      <p className="font-bold">
+                        {
+                          pantry.recommendationEligibility
+                            .archivedIngredientRecipeCount
+                        }{' '}
+                        {pantry.recommendationEligibility
+                          .archivedIngredientRecipeCount === 1
+                          ? 'recipe uses an archived ingredient'
+                          : 'recipes use archived ingredients'}
+                      </p>
+                      <p className="mt-1">
+                        Restore an ingredient or replace it in the affected
+                        recipe to make it eligible again.
+                      </p>
+                      <Link
+                        to="/ingredients"
+                        className="text-primary mt-2 inline-flex font-bold underline underline-offset-2"
+                      >
+                        Manage ingredients
+                      </Link>
+                    </div>
+                  )}
                 </div>
               )}
 

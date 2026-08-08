@@ -14,6 +14,7 @@ type PantryData = {
   recommendations: Recipe[];
   recommendationEligibility: {
     unlinkedRecipeCount: number;
+    archivedIngredientRecipeCount: number;
   };
 };
 

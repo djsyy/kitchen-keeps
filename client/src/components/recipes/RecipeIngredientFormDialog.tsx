@@ -77,7 +77,8 @@ export default function RecipeIngredientFormDialog({
   );
   const [selectedIngredient, setSelectedIngredient] =
     useState<Ingredient | null>(
-      recipeIngredient?.ingredient_id
+      recipeIngredient?.ingredient_id &&
+        recipeIngredient.ingredient_status !== 'hidden'
         ? {
             id: recipeIngredient.ingredient_id,
             name: recipeIngredient.display_name,
@@ -127,6 +128,8 @@ export default function RecipeIngredientFormDialog({
   );
   const canCreateIngredient = search.length > 0 && search.length <= 100;
   const hasSelectedIngredient = selectedIngredient !== null;
+  const isUnlinkedIngredient = recipeIngredient?.ingredient_id === null;
+  const isArchivedIngredient = recipeIngredient?.ingredient_status === 'hidden';
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -170,11 +173,13 @@ export default function RecipeIngredientFormDialog({
           >
             Add the amount and any preparation details you need while cooking.
           </p>
-          {isEditing && recipeIngredient?.ingredient_id === null && (
+          {isEditing && (isUnlinkedIngredient || isArchivedIngredient) && (
             <p className="border-secondary-200 bg-secondary-50 text-secondary-900 mt-3 rounded-lg border px-3 py-2 text-sm leading-5">
-              This ingredient is not linked to your Pantry. Select an existing
-              ingredient or add it privately to include this recipe in verified
-              Pantry recommendations.
+              {isArchivedIngredient
+                ? 'This ingredient is archived.'
+                : 'This ingredient is not linked to your Pantry.'}{' '}
+              Select an existing ingredient or add it privately to include this
+              recipe in verified Pantry recommendations.
             </p>
           )}
         </div>

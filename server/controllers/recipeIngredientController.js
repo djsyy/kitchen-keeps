@@ -122,10 +122,16 @@ export const getRecipeIngredient = async (req, res, next) => {
 
     const result = await query(
       `
-      SELECT id, recipe_id, ingredient_id, quantity_value, quantity_unit, preparation_note, sort_order, display_name, created_at, updated_at
+      SELECT recipe_ingredients.id, recipe_ingredients.recipe_id,
+        recipe_ingredients.ingredient_id, recipe_ingredients.quantity_value,
+        recipe_ingredients.quantity_unit, recipe_ingredients.preparation_note,
+        recipe_ingredients.sort_order, recipe_ingredients.display_name,
+        recipe_ingredients.created_at, recipe_ingredients.updated_at,
+        ingredients.status AS ingredient_status
       FROM recipe_ingredients
-      WHERE recipe_id = $1
-      ORDER BY sort_order, id
+      LEFT JOIN ingredients ON ingredients.id = recipe_ingredients.ingredient_id
+      WHERE recipe_ingredients.recipe_id = $1
+      ORDER BY recipe_ingredients.sort_order, recipe_ingredients.id
       `,
       [recipeId]
     );

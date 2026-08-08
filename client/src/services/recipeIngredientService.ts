@@ -4,6 +4,7 @@ export interface RecipeIngredient {
   id: number;
   recipe_id: number;
   ingredient_id: number | null;
+  ingredient_status?: 'active' | 'hidden' | null;
   quantity_value: string | null;
   quantity_unit: string | null;
   preparation_note: string | null;

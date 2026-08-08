@@ -78,10 +78,11 @@ export default function DashboardPage() {
           className: 'border-2 border-accent-200 bg-accent-50 text-accent-900',
         },
         {
-          label: 'Ingredients',
-          value: String(dashboard.metrics.ingredient_count),
-          detail: 'Across your recipes',
+          label: 'Pantry',
+          value: String(dashboard.metrics.pantry_count),
+          detail: 'Ingredients you have',
           className: 'border-primary-300 bg-primary-200 text-primary-900',
+          onClick: () => navigate('/pantry'),
         },
       ]
     : [];
@@ -130,11 +131,11 @@ export default function DashboardPage() {
       onClick: () => navigate('/library?create=1'),
     },
     {
-      label: 'Browse Recipes',
+      label: 'Pantry',
       icon: LuSearch,
       className:
         'border border-secondary-300 bg-secondary-50 text-secondary-900 hover:bg-secondary-100',
-      onClick: () => navigate('/recipes'),
+      onClick: () => navigate('/pantry'),
     },
   ];
 

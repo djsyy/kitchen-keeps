@@ -6,17 +6,30 @@ type DashboardHeroProps = {
 };
 
 function DashboardMetricCard({ metric }: { metric: DashboardMetric }) {
-  return (
-    <article
-      className={`rounded-lg border-2 p-4 shadow-md ${metric.className}`}
-    >
+  const content = (
+    <>
       <div className="flex items-baseline justify-between gap-3">
         <p className="text-md font-bold">{metric.label}</p>
         <p className="text-2xl font-bold">{metric.value}</p>
       </div>
       <p className="text-md mt-1">{metric.detail}</p>
-    </article>
+    </>
   );
+  const className = `rounded-lg border-2 p-4 text-left shadow-md ${metric.className}`;
+
+  if (metric.onClick) {
+    return (
+      <button
+        type="button"
+        className={`${className} focus-visible:outline-primary transition hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2`}
+        onClick={metric.onClick}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return <article className={className}>{content}</article>;
 }
 
 export default function DashboardHero({ metrics }: DashboardHeroProps) {

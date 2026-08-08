@@ -9,6 +9,7 @@ export type DashboardMetric = {
   value: string;
   detail: string;
   className: string;
+  onClick?: () => void;
 };
 
 export type QuickAction = {

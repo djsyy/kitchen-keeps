@@ -15,10 +15,7 @@ export const getDashboard = async (req, res, next) => {
           `
             SELECT
               (SELECT COUNT(*)::integer FROM recipes WHERE created_by_user_id = $1) AS recipe_count,
-              (SELECT COUNT(*)::integer
-                FROM recipe_ingredients
-                INNER JOIN recipes ON recipes.id = recipe_ingredients.recipe_id
-                WHERE recipes.created_by_user_id = $1) AS ingredient_count,
+              (SELECT COUNT(*)::integer FROM pantry_items WHERE user_id = $1) AS pantry_count,
               (SELECT COUNT(*)::integer FROM libraries WHERE user_id = $1) AS library_count
           `,
           [userId]

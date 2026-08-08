@@ -4,7 +4,7 @@ import { apiClient } from './apiClient';
 export interface DashboardMetrics {
   recipe_count: number;
   library_count: number;
-  ingredient_count: number;
+  pantry_count: number;
 }
 
 export interface DashboardRecipePreview {

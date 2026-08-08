@@ -3,6 +3,10 @@ import { query, getClient } from '../config/db.js';
 import { StatusCodes } from 'http-status-codes';
 import { hashPassword, comparePasswords } from '../utils/password.js';
 import { sendPasswordResetEmail } from '../services/emailService.js';
+import {
+  destroyLibraryCover,
+  destroyRecipeImage,
+} from '../config/cloudinary.js';
 import UnauthorizedError from '../errors/UnauthorizedError.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
@@ -16,6 +20,23 @@ const createResetToken = () => crypto.randomBytes(32).toString('hex');
 
 const hashResetToken = (token) =>
   crypto.createHash('sha256').update(token).digest('hex');
+
+const clearAuthCookie = (res) => {
+  res.clearCookie('sid', {
+    path: '/',
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+  });
+};
+
+const deleteUserSessions = (client, userId) =>
+  client.query(
+    `
+      DELETE FROM user_sessions
+      WHERE sess ->> 'userId' = $1
+    `,
+    [String(userId)]
+  );
 
 export const register = async (req, res, next) => {
   try {
@@ -109,11 +130,7 @@ export const logout = (req, res, next) => {
       return next(new InternalServerError('Unable to log out user'));
     }
 
-    res.clearCookie('sid', {
-      path: '/',
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-    });
+    clearAuthCookie(res);
 
     return res.status(StatusCodes.OK).json({
       message: 'Logged out successfully',
@@ -161,10 +178,65 @@ export const updateUser = async (req, res, next) => {
 };
 
 export const deleteUser = async (req, res, next) => {
+  let client;
+
   try {
     const userId = req.user.userId;
+    const { currentPassword } = req.body;
 
-    const result = await query(
+    client = await getClient();
+    await client.query('BEGIN');
+
+    const userResult = await client.query(
+      `
+        SELECT id, password_hash
+        FROM users
+        WHERE id = $1
+        FOR UPDATE
+      `,
+      [userId]
+    );
+
+    const user = userResult.rows[0];
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    const passwordMatch = await comparePasswords(
+      currentPassword,
+      user.password_hash
+    );
+
+    if (!passwordMatch) {
+      throw new UnauthorizedError('Current password is incorrect');
+    }
+
+    const imageResult = await client.query(
+      `
+        SELECT image_public_id AS public_id, 'recipe' AS asset_type
+        FROM recipes
+        WHERE created_by_user_id = $1
+          AND image_public_id IS NOT NULL
+        UNION ALL
+        SELECT cover_image_public_id AS public_id, 'library' AS asset_type
+        FROM libraries
+        WHERE user_id = $1
+          AND cover_image_public_id IS NOT NULL
+      `,
+      [userId]
+    );
+
+    for (const image of imageResult.rows) {
+      if (image.asset_type === 'recipe') {
+        await destroyRecipeImage(image.public_id);
+      } else {
+        await destroyLibraryCover(image.public_id);
+      }
+    }
+
+    await deleteUserSessions(client, userId);
+
+    const result = await client.query(
       `
       DELETE FROM users
       WHERE id = $1
@@ -173,43 +245,54 @@ export const deleteUser = async (req, res, next) => {
       [userId]
     );
 
-    const user = result.rows[0];
-    if (!user) {
+    const deletedUser = result.rows[0];
+    if (!deletedUser) {
       throw new NotFoundError('User not found');
     }
 
-    req.session.destroy((sessionError) => {
-      if (sessionError) {
-        return next(new InternalServerError('Unable to delete user session'));
-      }
+    await client.query('COMMIT');
+    clearAuthCookie(res);
 
-      res.clearCookie('sid', {
-        path: '/',
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-      });
-
-      return res.status(StatusCodes.OK).json({ data: { user } });
+    return res.status(StatusCodes.OK).json({
+      message: 'Account deleted successfully',
     });
   } catch (error) {
+    if (client) {
+      await client.query('ROLLBACK');
+    }
+
     if (error instanceof NotFoundError) {
       return next(error);
     }
 
+    if (error instanceof UnauthorizedError) {
+      return next(error);
+    }
+
     return next(new InternalServerError('Unable to delete user'));
+  } finally {
+    if (client) {
+      client.release();
+    }
   }
 };
 
 export const updatePassword = async (req, res, next) => {
+  let client;
+
   try {
     const userId = req.user.userId;
     const { currentPassword, newPassword } = req.body;
 
-    const result = await query(
+    client = await getClient();
+    await client.query('BEGIN');
+
+    const result = await client.query(
       `
       SELECT id, password_hash
       FROM users
       WHERE id = $1
+      FOR UPDATE
       `,
       [userId]
     );
@@ -241,7 +324,7 @@ export const updatePassword = async (req, res, next) => {
 
     const hashedNewPassword = await hashPassword(newPassword);
 
-    await query(
+    await client.query(
       `
       UPDATE users
       SET password_hash = $1
@@ -250,10 +333,18 @@ export const updatePassword = async (req, res, next) => {
       [hashedNewPassword, userId]
     );
 
+    await deleteUserSessions(client, userId);
+    await client.query('COMMIT');
+    clearAuthCookie(res);
+
     return res.status(StatusCodes.OK).json({
-      message: 'Password updated successfully',
+      message: 'Password updated. Please sign in again.',
     });
   } catch (error) {
+    if (client) {
+      await client.query('ROLLBACK');
+    }
+
     if (
       error instanceof NotFoundError ||
       error instanceof UnauthorizedError ||
@@ -263,6 +354,10 @@ export const updatePassword = async (req, res, next) => {
     }
 
     return next(new InternalServerError('Unable to update password'));
+  } finally {
+    if (client) {
+      client.release();
+    }
   }
 };
 
@@ -385,6 +480,8 @@ export const resetPassword = async (req, res, next) => {
       `,
       [resetToken.user_id]
     );
+
+    await deleteUserSessions(client, resetToken.user_id);
 
     await client.query('COMMIT');
 

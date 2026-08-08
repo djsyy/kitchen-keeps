@@ -5,6 +5,7 @@ import {
   loginValidation,
   updateUserValidation,
   updatePasswordValidation,
+  deleteUserValidation,
   forgotPasswordValidation,
   resetPasswordValidation,
 } from '../validations/authValidation.js';
@@ -54,6 +55,12 @@ router.post(
   resetPassword
 );
 router.get('/me', authenticateUser, getUser);
-router.delete('/me', authenticateUser, deleteUser);
+router.delete(
+  '/me',
+  authenticateUser,
+  deleteUserValidation,
+  validateRequest,
+  deleteUser
+);
 
 export default router;

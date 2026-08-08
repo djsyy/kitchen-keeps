@@ -1,3 +1,4 @@
+import { body } from 'express-validator';
 import {
   confirmMatchesField,
   optionalEmail,
@@ -79,6 +80,23 @@ export const updatePasswordValidation = [
     typeMessage: 'New password confirmation must be a string',
     mismatchMessage: 'New passwords do not match',
   }),
+];
+
+// Account deletion validation rules
+export const deleteUserValidation = [
+  requiredTextWithoutLength('currentPassword', {
+    requiredMessage: 'Current password is required',
+    typeMessage: 'Current password must be a string',
+  }),
+  body('confirmation')
+    .exists()
+    .withMessage('Type DELETE to confirm account deletion')
+    .bail()
+    .isString()
+    .withMessage('Deletion confirmation must be a string')
+    .bail()
+    .equals('DELETE')
+    .withMessage('Type DELETE to confirm account deletion'),
 ];
 
 // Forgot password validation rules

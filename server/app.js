@@ -6,6 +6,7 @@ import ingredientRouter from './routes/ingredientRouter.js';
 import recipeRouter from './routes/recipeRouter.js';
 import cookSessionRouter from './routes/cookSessionRouter.js';
 import dashboardRouter from './routes/dashboardRouter.js';
+import pantryRouter from './routes/pantryRouter.js';
 import { authenticateUser } from './middleware/authentication.js';
 import errorHandler from './middleware/errorHandler.js';
 
@@ -46,6 +47,7 @@ export const createApp = ({ sessionMiddleware } = {}) => {
   app.use('/api/recipes', authenticateUser, recipeRouter);
   app.use('/api/cook-sessions', authenticateUser, cookSessionRouter);
   app.use('/api/dashboard', authenticateUser, dashboardRouter);
+  app.use('/api/pantry', authenticateUser, pantryRouter);
   app.use(errorHandler);
 
   return app;

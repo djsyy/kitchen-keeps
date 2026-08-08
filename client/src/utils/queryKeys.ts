@@ -24,4 +24,7 @@ export const queryKeys = {
   ingredients: {
     search: (search: string) => ['ingredients', 'search', search] as const,
   },
+  pantry: {
+    all: ['pantry'] as const,
+  },
 };

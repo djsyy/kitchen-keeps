@@ -167,6 +167,37 @@ export function LibraryListSkeleton() {
   );
 }
 
+export function PantrySkeleton() {
+  return (
+    <main className="bg-background min-h-screen">
+      <Navbar />
+      <LoadingRegion
+        label="Loading pantry"
+        className="mx-auto max-w-7xl px-4 py-8 sm:px-6"
+      >
+        <HeaderSkeleton />
+        <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)]">
+          <section className="border-background-300 bg-background-50 rounded-2xl border p-6 shadow-sm">
+            <Skeleton className="h-12 w-full rounded-lg" />
+            <div className="mt-6 space-y-3">
+              <Skeleton className="h-14 w-full" />
+              <Skeleton className="h-14 w-full" />
+              <Skeleton className="h-14 w-full" />
+            </div>
+          </section>
+          <section className="border-background-300 bg-background-50 rounded-2xl border p-6 shadow-sm">
+            <Skeleton className="h-6 w-2/3" />
+            <div className="mt-6 space-y-3">
+              <RecipeRowSkeleton />
+              <RecipeRowSkeleton />
+            </div>
+          </section>
+        </div>
+      </LoadingRegion>
+    </main>
+  );
+}
+
 function DetailShell({
   label,
   children,

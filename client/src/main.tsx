@@ -20,6 +20,7 @@ import LibraryPage from './pages/LibraryPage';
 import RecipePage from './pages/RecipePage';
 import RecipeListPage from './pages/RecipeListPage';
 import CookSessionPage from './pages/CookSessionPage';
+import PantryPage from './pages/PantryPage';
 import { RequireAuth } from './components/auth/RequireAuth';
 import { GuestOnly } from './components/auth/GuestOnly';
 
@@ -71,6 +72,10 @@ const router = createBrowserRouter([
           {
             path: '/library/:id',
             element: <LibraryPage />,
+          },
+          {
+            path: '/pantry',
+            element: <PantryPage />,
           },
         ],
       },

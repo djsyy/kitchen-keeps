@@ -170,6 +170,13 @@ export default function RecipeIngredientFormDialog({
           >
             Add the amount and any preparation details you need while cooking.
           </p>
+          {isEditing && recipeIngredient?.ingredient_id === null && (
+            <p className="border-secondary-200 bg-secondary-50 text-secondary-900 mt-3 rounded-lg border px-3 py-2 text-sm leading-5">
+              This ingredient is not linked to your Pantry. Select an existing
+              ingredient or add it privately to include this recipe in verified
+              Pantry recommendations.
+            </p>
+          )}
         </div>
 
         <div className="text-text-800 relative flex flex-col gap-2 text-sm font-bold">

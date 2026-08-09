@@ -1,9 +1,9 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const getResendClient = () => new Resend(process.env.RESEND_API_KEY);
 
 export const sendPasswordResetEmail = async ({ to, resetUrl }) => {
-  const { data, error } = await resend.emails.send({
+  const { data, error } = await getResendClient().emails.send({
     from: process.env.EMAIL_FROM,
     to,
     subject: 'Reset your Kitchen Keeps password',

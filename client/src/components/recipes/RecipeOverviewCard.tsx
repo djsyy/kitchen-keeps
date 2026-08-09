@@ -11,7 +11,13 @@ function formatCreatedDate(createdAt: string) {
   }).format(new Date(createdAt))}`;
 }
 
-export default function RecipeOverviewCard({ recipe }: { recipe: Recipe }) {
+export default function RecipeOverviewCard({
+  recipe,
+  onEdit,
+}: {
+  recipe: Recipe;
+  onEdit: () => void;
+}) {
   const totalTime = getRecipeTotalTime(recipe);
 
   return (
@@ -34,6 +40,7 @@ export default function RecipeOverviewCard({ recipe }: { recipe: Recipe }) {
             type="button"
             aria-label="Edit recipe"
             className="border-background-300 bg-background-50 text-text-700 hover:bg-background-100 hover:text-primary focus-visible:outline-primary absolute top-5 right-5 inline-flex h-10 w-10 items-center justify-center rounded-lg border shadow-sm transition focus-visible:outline-2 focus-visible:outline-offset-2"
+            onClick={onEdit}
           >
             <LuPencil className="h-4 w-4" />
           </button>

@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { LuArrowLeft } from 'react-icons/lu';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import RecipeIngredientsSection from '../components/recipes/RecipeIngredientsSection';
+import RecipeEditDialog from '../components/recipes/RecipeEditDialog';
 import RecipeOverviewCard from '../components/recipes/RecipeOverviewCard';
 import RecipeStepsSection from '../components/recipes/RecipeStepsSection';
 import ErrorMessage from '../components/ui/ErrorMessage';
@@ -14,6 +16,7 @@ export default function RecipePage() {
   const { id } = useParams();
   const recipeId = Number(id);
   const isValidRecipeId = Number.isInteger(recipeId) && recipeId > 0;
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
   const { data, error, isPending } = useQuery({
     queryKey: queryKeys.recipes.detail(recipeId),
     queryFn: () => getRecipe(recipeId),
@@ -48,10 +51,19 @@ export default function RecipePage() {
           </div>
         ) : (
           <div className="mt-6 space-y-10">
-            <RecipeOverviewCard recipe={recipe} />
+            <RecipeOverviewCard
+              recipe={recipe}
+              onEdit={() => setIsEditFormOpen(true)}
+            />
             <RecipeIngredientsSection recipeId={recipeId} />
             <RecipeStepsSection recipeId={recipeId} />
           </div>
+        )}
+        {recipe && isEditFormOpen && (
+          <RecipeEditDialog
+            recipe={recipe}
+            onClose={() => setIsEditFormOpen(false)}
+          />
         )}
       </div>
     </main>

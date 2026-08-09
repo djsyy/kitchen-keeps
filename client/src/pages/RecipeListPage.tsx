@@ -9,11 +9,11 @@ import {
   getRecipes,
   removeRecipeImage,
   uploadRecipeImage,
-  updateRecipe,
 } from '../services/recipeService';
 import Navbar from '../components/layout/Navbar';
 import EmptyPage from '../components/ui/EmptyPage';
 import RecipeGridPage from '../components/recipes/RecipeGridPage';
+import RecipeEditDialog from '../components/recipes/RecipeEditDialog';
 import RecipeFormDialog, {
   type RecipeFormSubmission,
   type RecipeImageAction,
@@ -128,45 +128,6 @@ export default function RecipeListPage() {
       }
     },
   });
-  const updateRecipeMutation = useMutation({
-    mutationFn: ({
-      recipeId,
-      submission,
-    }: {
-      recipeId: number;
-      submission: RecipeFormSubmission;
-    }) =>
-      (async () => {
-        await updateRecipe(recipeId, submission.payload);
-
-        try {
-          await runRecipeImageAction(recipeId, submission.imageAction);
-        } catch (error) {
-          if (submission.imageAction.type !== 'unchanged') {
-            throw new RecipeImageActionError(
-              {
-                recipeId,
-                imageAction: submission.imageAction,
-                form: 'edit',
-              },
-              error
-            );
-          }
-
-          throw error;
-        }
-      })(),
-    onSuccess: async () => {
-      await invalidateRecipeViews();
-      setEditingRecipe(null);
-      setPendingImageAction(null);
-    },
-    onError: (error) => {
-      if (error instanceof RecipeImageActionError) {
-        setPendingImageAction(error.pendingImageAction);
-      }
-    },
-  });
   const retryImageActionMutation = useMutation({
     mutationFn: ({ recipeId, imageAction }: PendingImageAction) =>
       runRecipeImageAction(recipeId, imageAction),
@@ -188,12 +149,7 @@ export default function RecipeListPage() {
       onSuccess: async () => {
         await invalidateRecipeViews();
 
-        if (pendingImageAction.form === 'create') {
-          setIsCreateFormOpen(false);
-        } else {
-          setEditingRecipe(null);
-        }
-
+        setIsCreateFormOpen(false);
         setPendingImageAction(null);
       },
     });
@@ -204,21 +160,13 @@ export default function RecipeListPage() {
       return;
     }
 
-    if (pendingImageAction.form === 'create') {
-      setIsCreateFormOpen(false);
-    } else {
-      setEditingRecipe(null);
-    }
-
+    setIsCreateFormOpen(false);
     setPendingImageAction(null);
     await invalidateRecipeViews();
   };
 
-  const getFormError = (
-    form: PendingImageAction['form'],
-    error: Error | null
-  ) =>
-    pendingImageAction?.form === form
+  const getCreateFormError = (error: Error | null) =>
+    pendingImageAction?.form === 'create'
       ? (retryImageActionMutation.error ?? pendingImageAction.error)
       : error;
 
@@ -232,7 +180,7 @@ export default function RecipeListPage() {
 
       {isCreateFormOpen && (
         <RecipeFormDialog
-          error={getFormError('create', createRecipeMutation.error)}
+          error={getCreateFormError(createRecipeMutation.error)}
           isPending={
             createRecipeMutation.isPending || retryImageActionMutation.isPending
           }
@@ -254,33 +202,9 @@ export default function RecipeListPage() {
         />
       )}
       {editingRecipe && (
-        <RecipeFormDialog
-          key={editingRecipe.id}
+        <RecipeEditDialog
           recipe={editingRecipe}
-          error={getFormError('edit', updateRecipeMutation.error)}
-          isPending={
-            updateRecipeMutation.isPending || retryImageActionMutation.isPending
-          }
-          onCancel={() => {
-            setPendingImageAction(null);
-            setEditingRecipe(null);
-          }}
-          onSubmit={(submission) =>
-            updateRecipeMutation.mutate({
-              recipeId: editingRecipe.id,
-              submission,
-            })
-          }
-          onRetryImageAction={
-            pendingImageAction?.form === 'edit'
-              ? retryPendingImageAction
-              : undefined
-          }
-          onContinueWithoutImage={
-            pendingImageAction?.form === 'edit'
-              ? continueWithoutImage
-              : undefined
-          }
+          onClose={() => setEditingRecipe(null)}
         />
       )}
       {deletingRecipe && (

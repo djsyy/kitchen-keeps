@@ -16,6 +16,7 @@ if (process.env.NODE_ENV === 'production') {
     'CLOUDINARY_CLOUD_NAME',
     'CLOUDINARY_API_KEY',
     'CLOUDINARY_API_SECRET',
+    'TRUST_PROXY',
   ];
   const missingVariables = requiredVariables.filter(
     (variable) => !process.env[variable]
@@ -30,6 +31,12 @@ if (process.env.NODE_ENV === 'production') {
   if (process.env.SESSION_SECRET.length < 32) {
     throw new Error(
       'SESSION_SECRET must be at least 32 characters in production'
+    );
+  }
+
+  if (!/^[1-9]\d*$/.test(process.env.TRUST_PROXY)) {
+    throw new Error(
+      'TRUST_PROXY must be a positive proxy-hop count in production'
     );
   }
 }

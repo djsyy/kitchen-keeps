@@ -395,8 +395,7 @@ describe('recipe image routes', () => {
 
     expect(response.status).toBe(200);
     expect(errorSpy).toHaveBeenCalledWith(
-      'Unable to remove recipe image from Cloudinary',
-      { message: 'Cleanup failed' }
+      expect.stringContaining('cloudinary.recipe_image_removal_failed')
     );
     errorSpy.mockRestore();
   });

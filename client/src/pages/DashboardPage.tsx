@@ -1,5 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { LuBookOpen, LuFolderPlus, LuSearch } from 'react-icons/lu';
+import {
+  LuBookOpen,
+  LuCookingPot,
+  LuFolderPlus,
+  LuList,
+  LuPackageCheck,
+} from 'react-icons/lu';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import DashboardHero from '../components/dashboard/DashboardHero';
@@ -69,19 +75,27 @@ export default function DashboardPage() {
           label: 'Recipes',
           value: String(dashboard.metrics.recipe_count),
           detail: 'Recipes you created',
-          className: 'border-secondary-300 bg-secondary-200 text-secondary-900',
+          icon: LuCookingPot,
+          className:
+            'border-secondary-300 from-secondary-100 via-secondary-50 to-secondary-200/80 text-secondary-950 bg-gradient-to-br',
+          onClick: () => navigate('/recipes'),
         },
         {
           label: 'Libraries',
           value: String(dashboard.metrics.library_count),
           detail: 'Recipe collections',
-          className: 'border-2 border-accent-200 bg-accent-50 text-accent-900',
+          icon: LuBookOpen,
+          className:
+            'border-accent-300 from-accent-100 via-accent-50 to-accent-200/80 text-accent-950 bg-gradient-to-br',
+          onClick: () => navigate('/library'),
         },
         {
           label: 'Pantry',
           value: String(dashboard.metrics.pantry_count),
           detail: 'Ingredients you have',
-          className: 'border-primary-300 bg-primary-200 text-primary-900',
+          icon: LuPackageCheck,
+          className:
+            'border-primary-300 from-primary-100 via-primary-50 to-primary-200/80 text-primary-950 bg-gradient-to-br',
           onClick: () => navigate('/pantry'),
         },
       ]
@@ -120,22 +134,34 @@ export default function DashboardPage() {
     {
       label: 'New Recipe',
       icon: LuBookOpen,
-      className: 'bg-primary text-text-100 hover:bg-primary-700',
+      description: 'Add a recipe to your collection',
+      className:
+        'border-primary-300 bg-primary-100 text-primary-950 hover:border-primary-400 hover:bg-primary-200',
       onClick: () => navigate('/recipes?create=1'),
     },
     {
       label: 'Create Library',
       icon: LuFolderPlus,
+      description: 'Group recipes for later',
       className:
-        'border border-accent-300 bg-accent-50 text-accent-900 hover:bg-accent-100',
+        'border-accent-300 bg-accent-100 text-accent-950 hover:border-accent-400 hover:bg-accent-200',
       onClick: () => navigate('/library?create=1'),
     },
     {
       label: 'Pantry',
-      icon: LuSearch,
+      icon: LuPackageCheck,
+      description: 'Update what you have',
       className:
-        'border border-secondary-300 bg-secondary-50 text-secondary-900 hover:bg-secondary-100',
+        'border-secondary-300 bg-secondary-100 text-secondary-950 hover:border-secondary-400 hover:bg-secondary-200',
       onClick: () => navigate('/pantry'),
+    },
+    {
+      label: 'Ingredients',
+      icon: LuList,
+      description: 'Manage private ingredients',
+      className:
+        'border-background-300 bg-background-50 text-text-900 hover:border-background-400 hover:bg-background-100',
+      onClick: () => navigate('/ingredients'),
     },
   ];
 

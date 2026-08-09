@@ -84,18 +84,19 @@ export function DashboardSkeleton() {
         label="Loading your dashboard"
         className="mx-auto max-w-7xl px-4 py-8 sm:px-6"
       >
-        <div className="mb-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(360px,420px)]">
+        <div className="mb-8">
           <HeaderSkeleton />
-          <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            <Skeleton className="h-38 w-full rounded-2xl" />
+            <Skeleton className="h-38 w-full rounded-2xl" />
+            <Skeleton className="h-38 w-full rounded-2xl" />
           </div>
         </div>
-        <div className="mb-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
+        <div className="mb-10 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <Skeleton className="h-24 w-full rounded-2xl" />
+          <Skeleton className="h-24 w-full rounded-2xl" />
+          <Skeleton className="h-24 w-full rounded-2xl" />
+          <Skeleton className="h-24 w-full rounded-2xl" />
         </div>
         <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(320px,360px)]">
           <div className="space-y-10">

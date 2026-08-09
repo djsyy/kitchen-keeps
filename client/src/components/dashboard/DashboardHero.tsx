@@ -6,37 +6,36 @@ type DashboardHeroProps = {
 };
 
 function DashboardMetricCard({ metric }: { metric: DashboardMetric }) {
-  const content = (
-    <>
-      <div className="flex items-baseline justify-between gap-3">
-        <p className="text-md font-bold">{metric.label}</p>
-        <p className="text-2xl font-bold">{metric.value}</p>
+  const MetricIcon = metric.icon;
+
+  return (
+    <button
+      type="button"
+      className={`focus-visible:outline-primary group relative overflow-hidden rounded-2xl border p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 ${metric.className}`}
+      onClick={metric.onClick}
+    >
+      <span className="bg-background-50/60 absolute -top-8 -right-8 h-24 w-24 rounded-full blur-2xl transition group-hover:scale-125" />
+      <div className="relative flex items-start justify-between gap-4">
+        <span className="bg-background-50/80 flex h-11 w-11 items-center justify-center rounded-xl shadow-sm">
+          <MetricIcon aria-hidden="true" className="h-5 w-5" />
+        </span>
+        <span className="text-3xl font-bold tracking-tight">
+          {metric.value}
+        </span>
       </div>
-      <p className="text-md mt-1">{metric.detail}</p>
-    </>
+      <div className="relative mt-5">
+        <p className="font-bold">{metric.label}</p>
+        <p className="mt-1 text-sm opacity-80">{metric.detail}</p>
+      </div>
+    </button>
   );
-  const className = `rounded-lg border-2 p-4 text-left shadow-md ${metric.className}`;
-
-  if (metric.onClick) {
-    return (
-      <button
-        type="button"
-        className={`${className} focus-visible:outline-primary transition hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2`}
-        onClick={metric.onClick}
-      >
-        {content}
-      </button>
-    );
-  }
-
-  return <article className={className}>{content}</article>;
 }
 
 export default function DashboardHero({ metrics }: DashboardHeroProps) {
   return (
-    <section className="mb-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(360px,420px)] xl:items-end">
-      <div>
-        <p className="bg-secondary-300 text-secondary-800 mb-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-bold">
+    <section className="mb-8">
+      <div className="max-w-3xl">
+        <p className="border-secondary-300 bg-secondary-100 text-secondary-900 mb-3 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-bold">
           <LuUtensils className="h-4 w-4" />
           Dashboard
         </p>
@@ -48,7 +47,7 @@ export default function DashboardHero({ metrics }: DashboardHeroProps) {
         </p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+      <div className="mt-6 grid gap-3 sm:grid-cols-3">
         {metrics.map((metric) => (
           <DashboardMetricCard key={metric.label} metric={metric} />
         ))}

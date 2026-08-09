@@ -8,12 +8,14 @@ export type DashboardMetric = {
   label: string;
   value: string;
   detail: string;
+  icon: IconType;
   className: string;
-  onClick?: () => void;
+  onClick: () => void;
 };
 
 export type QuickAction = {
   label: string;
+  description: string;
   icon: IconType;
   className: string;
   onClick: () => void;

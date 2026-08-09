@@ -26,7 +26,7 @@ export default function Navbar() {
           </button>
           <div>
             <span className="text-text-950 block text-2xl font-bold">
-              What&apos;s Cooking?
+              Kitchen Keeps
             </span>
           </div>
         </div>

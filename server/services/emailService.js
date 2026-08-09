@@ -6,11 +6,12 @@ export const sendPasswordResetEmail = async ({ to, resetUrl }) => {
   const { data, error } = await resend.emails.send({
     from: process.env.EMAIL_FROM,
     to,
-    subject: 'Reset your password',
+    subject: 'Reset your Kitchen Keeps password',
     html: `
-      <p>You requested a password reset.</p>
+      <p>We received a request to reset your Kitchen Keeps password.</p>
       <p><a href="${resetUrl}">Reset your password</a></p>
-      <p>This link expires soon.</p>
+      <p>This link expires in 15 minutes.</p>
+      <p>If you did not request this, you can safely ignore this email.</p>
     `,
   });
 

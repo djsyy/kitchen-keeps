@@ -42,7 +42,7 @@ export default function Navbar() {
             <Skeleton className="hidden h-6 w-24 rounded-md sm:block" />
           )}
 
-          <ProfileDropdown />
+          <ProfileDropdown user={user} />
         </div>
       </div>
     </header>

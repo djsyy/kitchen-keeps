@@ -25,7 +25,7 @@ export default function Navbar() {
             <LuChefHat className="h-7 w-7" />
           </button>
           <div>
-            <span className="text-text-950 block text-2xl font-bold">
+            <span className="text-text-950 block text-xl font-bold sm:text-2xl">
               Kitchen Keeps
             </span>
           </div>

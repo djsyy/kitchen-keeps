@@ -121,7 +121,7 @@ export const requiredPassword = (
     minLength,
     lengthMessage,
     maxByteLength = BCRYPT_MAX_PASSWORD_BYTES,
-    byteLengthMessage = `Password must be ${maxByteLength} bytes or fewer`,
+    byteLengthMessage = 'Password is too long',
   }
 ) =>
   body(field)

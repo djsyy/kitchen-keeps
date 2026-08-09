@@ -20,10 +20,9 @@ export default function PasswordRequirements({
         isMet={meetsMinimumLength}
         label={`At least ${minimumPasswordLength} characters`}
       />
-      <PasswordRequirement
-        isMet={isWithinByteLimit}
-        label={`${maximumPasswordBytes} bytes or fewer`}
-      />
+      {!isWithinByteLimit && (
+        <PasswordRequirement isMet={false} label="Password is too long" />
+      )}
     </div>
   );
 }

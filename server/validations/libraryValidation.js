@@ -1,4 +1,5 @@
 import {
+  MAX_POSTGRES_INTEGER,
   optionalRequiredText,
   optionalText,
   positiveIntegerParam,
@@ -42,7 +43,7 @@ export const addRecipeToLibraryValidation = [
     .exists()
     .withMessage('Recipe id is required')
     .bail()
-    .isInt({ min: 1 })
+    .isInt({ min: 1, max: MAX_POSTGRES_INTEGER })
     .withMessage('Recipe id must be a valid positive integer'),
 ];
 

@@ -1,11 +1,15 @@
 import { body } from 'express-validator';
-import { positiveIntegerParam, requiredText } from './validationHelpers.js';
+import {
+  MAX_POSTGRES_INTEGER,
+  positiveIntegerParam,
+  requiredText,
+} from './validationHelpers.js';
 
 const ingredientId = body('ingredient_id')
   .exists()
   .withMessage('Ingredient id is required')
   .bail()
-  .isInt({ min: 1 })
+  .isInt({ min: 1, max: MAX_POSTGRES_INTEGER })
   .withMessage('Ingredient id must be a valid positive integer')
   .toInt();
 

@@ -1,5 +1,6 @@
 import { body } from 'express-validator';
 import {
+  MAX_POSTGRES_INTEGER,
   optionalRequiredText,
   positiveIntegerParam,
   requiredText,
@@ -59,7 +60,7 @@ export const reorderRecipeStepsValidation = [
       return true;
     }),
   body('recipeStepIds.*')
-    .isInt({ min: 1 })
+    .isInt({ min: 1, max: MAX_POSTGRES_INTEGER })
     .withMessage('Must be a valid positive integer')
     .bail()
     .toInt(),

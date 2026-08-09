@@ -1,5 +1,6 @@
 import { body } from 'express-validator';
 import {
+  MAX_POSTGRES_INTEGER,
   optionalRequiredText,
   optionalPositiveInteger,
   optionalText,
@@ -24,14 +25,9 @@ const recipeIngredientIdParam = positiveIntegerParam(
 
 const recipeIngredientBodyValidation = [
   optionalPositiveInteger('ingredient_id', 'Ingredient id'),
-  optionalText('quantity_value', 'Quantity value', 100),
+  optionalText('quantity_value', 'Quantity value', 50),
   optionalText('quantity_unit', 'Quantity unit', 50),
-  optionalText('preparation_note', 'Preparation note', 255),
-];
-
-const createRecipeIngredientBodyValidation = [
-  ...recipeIngredientBodyValidation,
-  optionalPositiveInteger('sort_order', 'Sort order'),
+  optionalText('preparation_note', 'Preparation note', 100),
 ];
 
 // Get recipe ingredients validation rules
@@ -41,10 +37,15 @@ export const getRecipeIngredientValidation = [recipeIdParam];
 export const createRecipeIngredientValidation = [
   recipeIdParam,
 
+  body('sort_order')
+    .not()
+    .exists()
+    .withMessage('New ingredients are appended automatically'),
+
   // Display name is required so the recipe line can be shown even without a linked ingredient
   requiredText('display_name', { label: 'Display name', maxLength: 255 }),
 
-  ...createRecipeIngredientBodyValidation,
+  ...recipeIngredientBodyValidation,
 ];
 
 // Update recipe ingredient validation rules
@@ -92,7 +93,7 @@ export const reorderRecipeIngredientsValidation = [
     }),
 
   body('recipeIngredientIds.*')
-    .isInt({ min: 1 })
+    .isInt({ min: 1, max: MAX_POSTGRES_INTEGER })
     .withMessage('Must be a valid positive integer')
     .bail()
     .toInt(),

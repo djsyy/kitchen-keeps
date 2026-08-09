@@ -22,9 +22,9 @@ export const createRecipeValidation = [
   requiredText('title', { label: 'Title', maxLength: 255 }),
 
   optionalText('description', 'Description', 1000),
-  optionalPositiveInteger('prep_time_minutes', 'Prep time'),
-  optionalPositiveInteger('cook_time_minutes', 'Cook time'),
-  optionalPositiveInteger('servings', 'Servings'),
+  optionalPositiveInteger('prep_time_minutes', 'Prep time', { max: 1440 }),
+  optionalPositiveInteger('cook_time_minutes', 'Cook time', { max: 1440 }),
+  optionalPositiveInteger('servings', 'Servings', { max: 100 }),
 ];
 
 // Get recipes validation rules
@@ -41,9 +41,9 @@ export const updateRecipeValidation = [
   optionalRequiredText('title', { label: 'Title', maxLength: 255 }),
 
   optionalText('description', 'Description', 1000),
-  optionalPositiveInteger('prep_time_minutes', 'Prep time'),
-  optionalPositiveInteger('cook_time_minutes', 'Cook time'),
-  optionalPositiveInteger('servings', 'Servings'),
+  optionalPositiveInteger('prep_time_minutes', 'Prep time', { max: 1440 }),
+  optionalPositiveInteger('cook_time_minutes', 'Cook time', { max: 1440 }),
+  optionalPositiveInteger('servings', 'Servings', { max: 100 }),
 ];
 
 // Delete recipe validation rules

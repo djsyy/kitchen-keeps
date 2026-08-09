@@ -1,12 +1,12 @@
 import { body } from 'express-validator';
 import {
-  confirmMatchesField,
+  confirmRawMatchesField,
   optionalEmail,
   optionalRequiredText,
   requiredEmail,
   requiredPassword,
+  requiredRawText,
   requiredText,
-  requiredTextWithoutLength,
   requireAtLeastOneBodyField,
 } from './validationHelpers.js';
 
@@ -19,10 +19,10 @@ export const registerValidation = [
   requiredPassword('password', {
     requiredMessage: 'Password is required',
     typeMessage: 'Password must be a string',
-    minLength: 4,
-    lengthMessage: 'Password must be at least 4 characters',
+    minLength: 8,
+    lengthMessage: 'Password must be at least 8 characters',
   }),
-  confirmMatchesField('confirmPassword', {
+  confirmRawMatchesField('confirmPassword', {
     targetField: 'password',
     requiredMessage: 'Password confirmation is required',
     typeMessage: 'Password confirmation must be a string',
@@ -33,7 +33,7 @@ export const registerValidation = [
 // Login validation rules
 export const loginValidation = [
   requiredEmail('email'),
-  requiredTextWithoutLength('password', {
+  requiredRawText('password', {
     requiredMessage: 'Password is required',
     typeMessage: 'Password must be a string',
   }),
@@ -64,17 +64,17 @@ export const updateUserValidation = [
 
 // Update password validation rules
 export const updatePasswordValidation = [
-  requiredTextWithoutLength('currentPassword', {
+  requiredRawText('currentPassword', {
     requiredMessage: 'Current password is required',
     typeMessage: 'Current password must be a string',
   }),
   requiredPassword('newPassword', {
     requiredMessage: 'New password is required',
     typeMessage: 'New password must be a string',
-    minLength: 4,
-    lengthMessage: 'New password must be at least 4 characters',
+    minLength: 8,
+    lengthMessage: 'New password must be at least 8 characters',
   }),
-  confirmMatchesField('confirmNewPassword', {
+  confirmRawMatchesField('confirmNewPassword', {
     targetField: 'newPassword',
     requiredMessage: 'New password confirmation is required',
     typeMessage: 'New password confirmation must be a string',
@@ -84,7 +84,7 @@ export const updatePasswordValidation = [
 
 // Account deletion validation rules
 export const deleteUserValidation = [
-  requiredTextWithoutLength('currentPassword', {
+  requiredRawText('currentPassword', {
     requiredMessage: 'Current password is required',
     typeMessage: 'Current password must be a string',
   }),
@@ -109,17 +109,17 @@ export const forgotPasswordValidation = [
 
 // Reset password validation rules
 export const resetPasswordValidation = [
-  requiredTextWithoutLength('token', {
+  requiredRawText('token', {
     requiredMessage: 'Password reset token is required',
     typeMessage: 'Password reset token must be text',
   }),
   requiredPassword('newPassword', {
     requiredMessage: 'New password is required',
     typeMessage: 'New password must be text',
-    minLength: 4,
-    lengthMessage: 'New password must be at least 4 characters',
+    minLength: 8,
+    lengthMessage: 'New password must be at least 8 characters',
   }),
-  confirmMatchesField('confirmNewPassword', {
+  confirmRawMatchesField('confirmNewPassword', {
     targetField: 'newPassword',
     requiredMessage: 'Please confirm your new password',
     typeMessage: 'New password confirmation must be text',

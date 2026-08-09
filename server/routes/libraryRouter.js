@@ -20,6 +20,7 @@ import {
   deleteLibraryValidation,
 } from '../validations/libraryValidation.js';
 import { uploadLibraryCoverFile } from '../middleware/recipeImageUpload.js';
+import { imageUploadRateLimiter } from '../middleware/rateLimiters.js';
 
 const router = express.Router();
 
@@ -47,6 +48,7 @@ router
   .post(
     getSingleLibraryValidation,
     validateRequest,
+    imageUploadRateLimiter,
     uploadLibraryCoverFile,
     uploadLibraryCover
   )

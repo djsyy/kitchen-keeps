@@ -11,6 +11,11 @@ import {
 } from '../validations/authValidation.js';
 import validateRequest from '../middleware/validateRequest.js';
 import {
+  loginRateLimiter,
+  passwordRecoveryRateLimiter,
+  registrationRateLimiter,
+} from '../middleware/rateLimiters.js';
+import {
   register,
   login,
   logout,
@@ -24,8 +29,20 @@ import {
 
 const router = express.Router();
 
-router.post('/register', registerValidation, validateRequest, register);
-router.post('/login', loginValidation, validateRequest, login);
+router.post(
+  '/register',
+  registrationRateLimiter,
+  registerValidation,
+  validateRequest,
+  register
+);
+router.post(
+  '/login',
+  loginRateLimiter,
+  loginValidation,
+  validateRequest,
+  login
+);
 router.post('/logout', logout);
 router.patch(
   '/me',
@@ -43,6 +60,7 @@ router.patch(
 );
 router.post(
   '/forgot-password',
+  passwordRecoveryRateLimiter,
   forgotPasswordValidation,
   validateRequest,
   forgotPassword
@@ -50,6 +68,7 @@ router.post(
 
 router.post(
   '/reset-password',
+  passwordRecoveryRateLimiter,
   resetPasswordValidation,
   validateRequest,
   resetPassword

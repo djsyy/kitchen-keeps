@@ -1,6 +1,7 @@
 import multer from 'multer';
 import sharp from 'sharp';
 import BadRequestError from '../errors/BadRequestError.js';
+import { logSecurityEvent } from '../utils/logger.js';
 
 const allowedImageFormats = new Set(['jpeg', 'png', 'webp']);
 const maxImageDimension = 8000;
@@ -51,6 +52,10 @@ const upload = multer({
 const createImageUploadMiddleware = (label) => (req, res, next) => {
   upload.single('image')(req, res, async (error) => {
     if (error instanceof multer.MulterError) {
+      logSecurityEvent('security.upload_rejected', req, {
+        reason: error.code,
+      });
+
       if (error.code === 'LIMIT_FILE_SIZE') {
         return next(new BadRequestError(`${label} must be 5 MB or smaller`));
       }
@@ -63,6 +68,9 @@ const createImageUploadMiddleware = (label) => (req, res, next) => {
     }
 
     if (error) {
+      logSecurityEvent('security.upload_rejected', req, {
+        reason: 'multipart_processing_failed',
+      });
       return next(new BadRequestError('Unable to process recipe image'));
     }
 
@@ -74,9 +82,15 @@ const createImageUploadMiddleware = (label) => (req, res, next) => {
       await validateImage(req.file, label);
     } catch (validationError) {
       if (validationError instanceof BadRequestError) {
+        logSecurityEvent('security.upload_rejected', req, {
+          reason: 'image_validation_failed',
+        });
         return next(validationError);
       }
 
+      logSecurityEvent('security.upload_rejected', req, {
+        reason: 'image_processing_failed',
+      });
       return next(new BadRequestError('Unable to process recipe image'));
     }
 

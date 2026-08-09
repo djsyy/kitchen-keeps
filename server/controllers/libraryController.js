@@ -9,6 +9,7 @@ import {
   destroyLibraryCover,
   uploadLibraryCover as uploadCoverToCloudinary,
 } from '../config/cloudinary.js';
+import { logError } from '../utils/logger.js';
 
 const libraryDBAttributes = ['name', 'description', 'icon_key', 'color_key'];
 
@@ -38,7 +39,7 @@ const getOwnedLibraryCover = async (libraryId, userId) => {
   return result.rows[0];
 };
 
-const removeLibraryCoverFromCloudinary = async (publicId) => {
+const removeLibraryCoverFromCloudinary = async (publicId, req) => {
   if (!publicId) {
     return;
   }
@@ -46,8 +47,10 @@ const removeLibraryCoverFromCloudinary = async (publicId) => {
   try {
     await destroyLibraryCover(publicId);
   } catch (error) {
-    console.error('Unable to remove library cover from Cloudinary', {
-      message: error instanceof Error ? error.message : 'Unknown image error',
+    logError('cloudinary.library_cover_removal_failed', {
+      requestId: req?.requestId,
+      userId: req?.user?.userId,
+      errorName: error instanceof Error ? error.name : 'UnknownError',
     });
   }
 };
@@ -297,7 +300,7 @@ export const deleteLibrary = async (req, res, next) => {
       throw new NotFoundError('Library not found');
     }
 
-    await removeLibraryCoverFromCloudinary(library.cover_image_public_id);
+    await removeLibraryCoverFromCloudinary(library.cover_image_public_id, req);
 
     const { cover_image_public_id: _coverImagePublicId, ...libraryData } =
       library;
@@ -349,22 +352,24 @@ export const uploadLibraryCover = async (req, res, next) => {
       throw new NotFoundError('Library not found');
     }
 
-    await removeLibraryCoverFromCloudinary(library.cover_image_public_id);
+    await removeLibraryCoverFromCloudinary(library.cover_image_public_id, req);
 
     return res
       .status(StatusCodes.OK)
       .json({ data: { library: updatedLibrary } });
   } catch (error) {
     if (uploadedCover?.public_id) {
-      await removeLibraryCoverFromCloudinary(uploadedCover.public_id);
+      await removeLibraryCoverFromCloudinary(uploadedCover.public_id, req);
     }
 
     if (error instanceof BadRequestError || error instanceof NotFoundError) {
       return next(error);
     }
 
-    console.error('Unable to upload library cover to Cloudinary', {
-      message: error instanceof Error ? error.message : 'Unknown image error',
+    logError('cloudinary.library_cover_upload_failed', {
+      requestId: req.requestId,
+      userId: req.user?.userId,
+      errorName: error instanceof Error ? error.name : 'UnknownError',
     });
 
     return next(new InternalServerError('Unable to upload library cover'));
@@ -397,7 +402,7 @@ export const removeLibraryCover = async (req, res, next) => {
       throw new NotFoundError('Library not found');
     }
 
-    await removeLibraryCoverFromCloudinary(library.cover_image_public_id);
+    await removeLibraryCoverFromCloudinary(library.cover_image_public_id, req);
 
     return res
       .status(StatusCodes.OK)

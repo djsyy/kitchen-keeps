@@ -13,6 +13,7 @@ import InternalServerError from '../errors/InternalServerError.js';
 import ConflictError from '../errors/ConflictError.js';
 import BadRequestError from '../errors/BadRequestError.js';
 import { buildUpdatedFields } from '../utils/buildUpdatedFields.js';
+import { logError, logSecurityEvent } from '../utils/logger.js';
 
 const authDBAttributes = ['name', 'email'];
 
@@ -90,11 +91,13 @@ export const login = async (req, res, next) => {
 
     const user = result.rows[0];
     if (!user) {
+      logSecurityEvent('security.login_failed', req);
       throw new UnauthorizedError('Invalid credentials');
     }
 
     const isMatch = await comparePasswords(password, user.password_hash);
     if (!isMatch) {
+      logSecurityEvent('security.login_failed', req);
       throw new UnauthorizedError('Invalid credentials');
     }
 
@@ -404,8 +407,11 @@ export const forgotPassword = async (req, res, next) => {
         resetUrl: resetUrl.toString(),
       });
     } catch (error) {
-      console.error('Password reset email delivery failed', {
-        message: error instanceof Error ? error.message : 'Unknown email error',
+      logError('auth.password_reset_email_failed', {
+        requestId: req.requestId,
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        errorMessage:
+          error instanceof Error ? error.message : 'Unknown email error',
       });
     }
 

@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import { v2 as cloudinary } from 'cloudinary';
+import { logWarn } from '../utils/logger.js';
 
 const hasCloudinaryConfiguration = () =>
   Boolean(
@@ -10,9 +11,7 @@ const hasCloudinaryConfiguration = () =>
 
 export const logCloudinaryConfigurationStatus = () => {
   if (!hasCloudinaryConfiguration()) {
-    console.warn(
-      'Cloudinary image uploads are unavailable: required configuration is missing'
-    );
+    logWarn('cloudinary.configuration_missing');
   }
 };
 

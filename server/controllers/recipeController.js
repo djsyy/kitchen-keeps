@@ -9,6 +9,7 @@ import {
   destroyRecipeImage,
   uploadRecipeImage as uploadToCloudinary,
 } from '../config/cloudinary.js';
+import { logError } from '../utils/logger.js';
 
 const recipeDBAttributes = [
   'title',
@@ -31,7 +32,7 @@ const getOwnedRecipeImage = async (recipeId, userId) => {
   return result.rows[0];
 };
 
-const removeCloudinaryImage = async (publicId) => {
+const removeCloudinaryImage = async (publicId, req) => {
   if (!publicId) {
     return;
   }
@@ -39,8 +40,10 @@ const removeCloudinaryImage = async (publicId) => {
   try {
     await destroyRecipeImage(publicId);
   } catch (error) {
-    console.error('Unable to remove recipe image from Cloudinary', {
-      message: error instanceof Error ? error.message : 'Unknown image error',
+    logError('cloudinary.recipe_image_removal_failed', {
+      requestId: req?.requestId,
+      userId: req?.user?.userId,
+      errorName: error instanceof Error ? error.name : 'UnknownError',
     });
   }
 };
@@ -197,7 +200,7 @@ export const deleteRecipe = async (req, res, next) => {
       throw new NotFoundError('Recipe not found');
     }
 
-    await removeCloudinaryImage(recipe.image_public_id);
+    await removeCloudinaryImage(recipe.image_public_id, req);
 
     const { image_public_id: _imagePublicId, ...recipeData } = recipe;
 
@@ -247,20 +250,22 @@ export const uploadRecipeImage = async (req, res, next) => {
       throw new NotFoundError('Recipe not found');
     }
 
-    await removeCloudinaryImage(recipe.image_public_id);
+    await removeCloudinaryImage(recipe.image_public_id, req);
 
     return res.status(StatusCodes.OK).json({ data: { recipe: updatedRecipe } });
   } catch (error) {
     if (uploadedImage?.public_id) {
-      await removeCloudinaryImage(uploadedImage.public_id);
+      await removeCloudinaryImage(uploadedImage.public_id, req);
     }
 
     if (error instanceof BadRequestError || error instanceof NotFoundError) {
       return next(error);
     }
 
-    console.error('Unable to upload recipe image to Cloudinary', {
-      message: error instanceof Error ? error.message : 'Unknown image error',
+    logError('cloudinary.recipe_image_upload_failed', {
+      requestId: req.requestId,
+      userId: req.user?.userId,
+      errorName: error instanceof Error ? error.name : 'UnknownError',
     });
 
     return next(new InternalServerError('Unable to upload recipe image'));
@@ -292,7 +297,7 @@ export const removeRecipeImage = async (req, res, next) => {
       throw new NotFoundError('Recipe not found');
     }
 
-    await removeCloudinaryImage(recipe.image_public_id);
+    await removeCloudinaryImage(recipe.image_public_id, req);
 
     return res.status(StatusCodes.OK).json({ data: { recipe: updatedRecipe } });
   } catch (error) {

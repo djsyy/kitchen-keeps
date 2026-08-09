@@ -20,6 +20,7 @@ import recipeIngredientRouter from './recipeIngredientRouter.js';
 import recipeStepRouter from './recipeStepRouter.js';
 import { recipeCookSessionRouter } from './cookSessionRouter.js';
 import { uploadRecipeImageFile } from '../middleware/recipeImageUpload.js';
+import { imageUploadRateLimiter } from '../middleware/rateLimiters.js';
 
 const router = express.Router();
 
@@ -37,6 +38,7 @@ router
   .post(
     getSingleRecipeValidation,
     validateRequest,
+    imageUploadRateLimiter,
     uploadRecipeImageFile,
     uploadRecipeImage
   )

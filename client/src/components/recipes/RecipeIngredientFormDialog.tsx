@@ -290,7 +290,7 @@ export default function RecipeIngredientFormDialog({
               Amount{' '}
               <span className="text-text-500 font-normal">(optional)</span>
               <input
-                maxLength={100}
+                maxLength={50}
                 className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
                 placeholder="2"
                 value={quantityValue}
@@ -315,7 +315,7 @@ export default function RecipeIngredientFormDialog({
             Preparation note{' '}
             <span className="text-text-500 font-normal">(optional)</span>
             <input
-              maxLength={255}
+              maxLength={100}
               className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
               placeholder="Finely chopped"
               value={preparationNote}

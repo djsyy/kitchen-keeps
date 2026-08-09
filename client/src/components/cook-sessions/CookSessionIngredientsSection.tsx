@@ -63,6 +63,8 @@ export default function CookSessionIngredientsSection({
 }: CookSessionIngredientsSectionProps) {
   const isClosing = isCompleting || isCancelling;
   const areActionsPending = isClosing || isUpdatingItem;
+  const uncheckedCount = items.filter((item) => item.status === null).length;
+  const hasUncheckedItems = uncheckedCount > 0;
 
   return (
     <section className="border-background-300 bg-background-50 rounded-2xl border p-6 shadow-lg sm:p-8">
@@ -133,7 +135,7 @@ export default function CookSessionIngredientsSection({
           <button
             type="button"
             className="bg-primary text-text-50 hover:bg-primary-700 inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
-            disabled={areActionsPending}
+            disabled={areActionsPending || hasUncheckedItems}
             onClick={onComplete}
           >
             <LuCheck className="h-4 w-4" />
@@ -149,6 +151,13 @@ export default function CookSessionIngredientsSection({
             {isCancelling ? 'Cancelling...' : 'Cancel'}
           </button>
         </div>
+        {hasUncheckedItems && (
+          <p className="text-text-600 mt-3 text-sm">
+            Mark all {uncheckedCount} remaining{' '}
+            {uncheckedCount === 1 ? 'ingredient' : 'ingredients'} before
+            finishing.
+          </p>
+        )}
       </div>
     </section>
   );

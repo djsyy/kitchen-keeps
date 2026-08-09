@@ -61,6 +61,7 @@ export default function LoginForm() {
           id="email-input"
           type="email"
           autoComplete="email"
+          maxLength={255}
           value={email}
           onChange={(e) => {
             setEmail(e.currentTarget.value);

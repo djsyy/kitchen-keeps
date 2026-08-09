@@ -113,7 +113,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             resetPasswordMutation.reset();
           }}
           required
-          minLength={4}
+          minLength={8}
         />
         <PasswordRequirements password={newPassword} />
       </div>
@@ -129,7 +129,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             resetPasswordMutation.reset();
           }}
           required
-          minLength={4}
+          minLength={8}
         />
         <PasswordConfirmationStatus
           password={newPassword}

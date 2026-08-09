@@ -257,18 +257,21 @@ export default function RecipeFormDialog({
             value={prepTimeMinutes}
             onChange={setPrepTimeMinutes}
             disabled={isAwaitingImageRetry}
+            max={1440}
           />
           <NumberField
             label="Cook time (minutes)"
             value={cookTimeMinutes}
             onChange={setCookTimeMinutes}
             disabled={isAwaitingImageRetry}
+            max={1440}
           />
           <NumberField
             label="Servings"
             value={servings}
             onChange={setServings}
             disabled={isAwaitingImageRetry}
+            max={100}
           />
         </div>
 
@@ -324,11 +327,13 @@ function NumberField({
   value,
   onChange,
   disabled,
+  max,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   disabled: boolean;
+  max: number;
 }) {
   return (
     <label className="text-text-800 flex flex-col gap-2 text-sm font-bold">
@@ -336,6 +341,7 @@ function NumberField({
       <input
         type="number"
         min="1"
+        max={max}
         step="1"
         className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
         value={value}

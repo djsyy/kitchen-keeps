@@ -63,6 +63,7 @@ export default function ForgotPasswordForm() {
           id="forgot-password-email"
           type="email"
           autoComplete="email"
+          maxLength={255}
           value={email}
           onChange={(event) => {
             setEmail(event.currentTarget.value);

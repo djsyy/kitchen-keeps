@@ -66,6 +66,7 @@ export default function RegisterForm() {
           id="email-input"
           type="email"
           autoComplete="email"
+          maxLength={255}
           value={email}
           onChange={(e) => {
             setEmail(e.currentTarget.value);
@@ -79,7 +80,7 @@ export default function RegisterForm() {
           id="password-input"
           type="password"
           autoComplete="new-password"
-          minLength={4}
+          minLength={8}
           value={password}
           onChange={(e) => {
             setPassword(e.currentTarget.value);
@@ -94,7 +95,7 @@ export default function RegisterForm() {
           id="confirm-password-input"
           type="password"
           autoComplete="new-password"
-          minLength={4}
+          minLength={8}
           value={confirmPassword}
           onChange={(e) => {
             setConfirmPassword(e.currentTarget.value);

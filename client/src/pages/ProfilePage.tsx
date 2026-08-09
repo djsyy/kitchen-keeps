@@ -359,7 +359,7 @@ export default function ProfilePage() {
                     id="new-password"
                     type="password"
                     autoComplete="new-password"
-                    minLength={4}
+                    minLength={8}
                     value={newPassword}
                     onChange={(event) => {
                       setNewPassword(event.currentTarget.value);
@@ -382,7 +382,7 @@ export default function ProfilePage() {
                     id="confirm-new-password"
                     type="password"
                     autoComplete="new-password"
-                    minLength={4}
+                    minLength={8}
                     value={confirmNewPassword}
                     onChange={(event) => {
                       setConfirmNewPassword(event.currentTarget.value);
@@ -458,6 +458,7 @@ export default function ProfilePage() {
                   <Input
                     id="edit-email"
                     type="email"
+                    maxLength={255}
                     value={email}
                     onChange={(event) => {
                       setEmail(event.currentTarget.value);

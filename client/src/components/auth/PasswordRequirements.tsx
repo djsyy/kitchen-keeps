@@ -1,5 +1,8 @@
 import { LuCircleCheck, LuCircleX } from 'react-icons/lu';
 
+const minimumPasswordLength = 8;
+const maximumPasswordBytes = 72;
+
 type PasswordRequirementsProps = {
   password: string;
 };
@@ -7,20 +10,43 @@ type PasswordRequirementsProps = {
 export default function PasswordRequirements({
   password,
 }: PasswordRequirementsProps) {
-  const meetsMinimumLength = password.length >= 4;
-  const StatusIcon = meetsMinimumLength ? LuCircleCheck : LuCircleX;
+  const meetsMinimumLength = password.length >= minimumPasswordLength;
+  const passwordByteLength = new TextEncoder().encode(password).length;
+  const isWithinByteLimit = passwordByteLength <= maximumPasswordBytes;
+
+  return (
+    <div className="space-y-1" aria-live="polite">
+      <PasswordRequirement
+        isMet={meetsMinimumLength}
+        label={`At least ${minimumPasswordLength} characters`}
+      />
+      <PasswordRequirement
+        isMet={isWithinByteLimit}
+        label={`${maximumPasswordBytes} bytes or fewer`}
+      />
+    </div>
+  );
+}
+
+function PasswordRequirement({
+  isMet,
+  label,
+}: {
+  isMet: boolean;
+  label: string;
+}) {
+  const StatusIcon = isMet ? LuCircleCheck : LuCircleX;
 
   return (
     <p
-      aria-live="polite"
       className={`flex items-center gap-1.5 text-sm font-bold ${
-        meetsMinimumLength ? 'text-secondary-800' : 'text-text-600'
+        isMet ? 'text-secondary-800' : 'text-text-600'
       }`}
     >
       <StatusIcon aria-hidden="true" className="h-4 w-4 shrink-0" />
-      At least 4 characters
+      {label}
       <span className="sr-only">
-        {meetsMinimumLength ? ' requirement met' : ' requirement not met'}
+        {isMet ? ' requirement met' : ' requirement not met'}
       </span>
     </p>
   );

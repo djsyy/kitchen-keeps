@@ -4,7 +4,7 @@ import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import BadRequestError from '../errors/BadRequestError.js';
 import { buildUpdatedFields } from '../utils/buildUpdatedFields.js';
-import { userOwnsRecipe } from '../utils/recipeOwnership.js';
+import { lockOwnedRecipe, userOwnsRecipe } from '../utils/recipeOwnership.js';
 
 const recipeIngredientDBAttributes = [
   'ingredient_id',
@@ -13,6 +13,9 @@ const recipeIngredientDBAttributes = [
   'preparation_note',
   'display_name',
 ];
+
+const recipeIngredientFields =
+  'id, recipe_id, ingredient_id, quantity_value, quantity_unit, preparation_note, sort_order, display_name, created_at, updated_at';
 
 // Helper function to make sure the recipe ingredient ids match
 const hasSameIds = (currentIds, submittedIds) => {
@@ -31,26 +34,26 @@ const hasSameIds = (currentIds, submittedIds) => {
 };
 
 export const createRecipeIngredient = async (req, res, next) => {
+  let client;
+
   try {
     const {
       ingredient_id,
       quantity_value,
       quantity_unit,
       preparation_note,
-      sort_order,
       display_name,
     } = req.body;
     const { recipeId } = req.params;
     const userId = req.user.userId;
-    const ownsRecipe = await userOwnsRecipe(recipeId, userId);
 
-    if (!ownsRecipe) {
-      throw new NotFoundError('Recipe not found');
-    }
+    client = await getClient();
+    await client.query('BEGIN');
+    await lockOwnedRecipe(client, recipeId, userId);
 
     // If ingredient id is provided, ensure it exists and can be accessed by the user
     if (ingredient_id) {
-      const ingredient = await query(
+      const ingredient = await client.query(
         `
         SELECT id, name, status, created_by_user_id
         FROM ingredients
@@ -64,28 +67,20 @@ export const createRecipeIngredient = async (req, res, next) => {
       }
     }
 
-    let normalizedSortOrder = sort_order;
-
-    // If user did not provide a sort order, automatically provide the correct value
-    if (normalizedSortOrder === undefined || normalizedSortOrder === null) {
-      // COALESCE checks for the first value that isn't null
-      const sortOrderResult = await query(
-        `
+    const sortOrderResult = await client.query(
+      `
         SELECT COALESCE(MAX(sort_order), 0) + 1 AS next_sort_order
         FROM recipe_ingredients
         WHERE recipe_id = $1
-        `,
-        [recipeId]
-      );
+      `,
+      [recipeId]
+    );
 
-      normalizedSortOrder = sortOrderResult.rows[0].next_sort_order;
-    }
-
-    const result = await query(
+    const result = await client.query(
       `
       INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity_value, quantity_unit, preparation_note, sort_order, display_name)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
-      RETURNING id, recipe_id, ingredient_id, quantity_value, quantity_unit, preparation_note, sort_order, display_name, created_at, updated_at
+      RETURNING ${recipeIngredientFields}
       `,
       [
         recipeId,
@@ -93,20 +88,29 @@ export const createRecipeIngredient = async (req, res, next) => {
         quantity_value ?? null,
         quantity_unit ?? null,
         preparation_note ?? null,
-        normalizedSortOrder,
+        sortOrderResult.rows[0].next_sort_order,
         display_name,
       ]
     );
 
     const recipeIngredient = result.rows[0];
+    await client.query('COMMIT');
 
     return res.status(StatusCodes.CREATED).json({ data: { recipeIngredient } });
   } catch (error) {
+    if (client) {
+      await client.query('ROLLBACK');
+    }
+
     if (error instanceof NotFoundError) {
       return next(error);
     }
 
     return next(new InternalServerError('Unable to create recipe ingredient'));
+  } finally {
+    if (client) {
+      client.release();
+    }
   }
 };
 
@@ -191,7 +195,7 @@ export const updateRecipeIngredient = async (req, res, next) => {
       UPDATE recipe_ingredients
       SET ${updatedFields.join(', ')}
       WHERE id = $${updatedValues.length - 1} AND recipe_id = $${updatedValues.length}
-      RETURNING id, recipe_id, ingredient_id, quantity_value, quantity_unit, preparation_note, sort_order, display_name, created_at, updated_at
+      RETURNING ${recipeIngredientFields}
       `,
       updatedValues
     );
@@ -216,21 +220,15 @@ export const deleteRecipeIngredient = async (req, res, next) => {
 
   try {
     const { recipeId, recipeIngredientId } = req.params;
-    const userId = req.user.userId;
-    const ownsRecipe = await userOwnsRecipe(recipeId, userId);
-
-    if (!ownsRecipe) {
-      throw new NotFoundError('Recipe not found');
-    }
-
     client = await getClient();
     await client.query('BEGIN');
+    await lockOwnedRecipe(client, recipeId, req.user.userId);
 
     const result = await client.query(
       `
       DELETE from recipe_ingredients
       WHERE id = $1 AND recipe_id = $2
-      RETURNING id, recipe_id, ingredient_id, quantity_value, quantity_unit, preparation_note, sort_order, display_name, created_at, updated_at
+      RETURNING ${recipeIngredientFields}
       `,
       [recipeIngredientId, recipeId]
     );
@@ -276,15 +274,9 @@ export const reorderRecipeIngredients = async (req, res, next) => {
   try {
     const { recipeId } = req.params;
     const { recipeIngredientIds } = req.body;
-    const userId = req.user.userId;
-    const ownsRecipe = await userOwnsRecipe(recipeId, userId);
-
-    if (!ownsRecipe) {
-      throw new NotFoundError('Recipe not found');
-    }
-
     client = await getClient();
     await client.query('BEGIN');
+    await lockOwnedRecipe(client, recipeId, req.user.userId);
 
     const currentRecipeIngredients = await client.query(
       `
@@ -317,7 +309,7 @@ export const reorderRecipeIngredients = async (req, res, next) => {
 
     const updatedRecipeIngredients = await client.query(
       `
-      SELECT id, recipe_id, ingredient_id, quantity_value, quantity_unit, preparation_note, sort_order, display_name, created_at, updated_at
+      SELECT ${recipeIngredientFields}
       FROM recipe_ingredients
       WHERE recipe_id = $1
       ORDER BY sort_order, id

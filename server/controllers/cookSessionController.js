@@ -1,5 +1,6 @@
 import { getClient, query } from '../config/db.js';
 import { StatusCodes } from 'http-status-codes';
+import BadRequestError from '../errors/BadRequestError.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import InternalServerError from '../errors/InternalServerError.js';
 import { lockOwnedRecipe } from '../utils/recipeOwnership.js';
@@ -233,12 +234,47 @@ export const updateCookSessionItem = async (req, res, next) => {
 };
 
 export const completeCookSession = async (req, res, next) => {
+  let client;
+
   try {
     const { cookSessionId } = req.params;
     const userId = req.user.userId;
+
     await expireStaleCookSessions({ query }, userId, { cookSessionId });
 
-    const result = await query(
+    client = await getClient();
+    await client.query('BEGIN');
+
+    const activeCookSessionResult = await client.query(
+      `
+        SELECT id
+        FROM cook_sessions
+        WHERE id = $1 AND user_id = $2 AND status = 'active'
+        FOR UPDATE
+      `,
+      [cookSessionId, userId]
+    );
+
+    if (!activeCookSessionResult.rows[0]) {
+      throw new NotFoundError('Active cook session not found');
+    }
+
+    const uncheckedItemsResult = await client.query(
+      `
+        SELECT COUNT(*)::integer AS unchecked_count
+        FROM cook_session_items
+        WHERE cook_session_id = $1 AND status IS NULL
+      `,
+      [cookSessionId]
+    );
+
+    if (uncheckedItemsResult.rows[0].unchecked_count > 0) {
+      throw new BadRequestError(
+        'Mark every ingredient before finishing this prep list'
+      );
+    }
+
+    const result = await client.query(
       `
         UPDATE cook_sessions
         SET status = 'completed', completed_at = NOW()
@@ -253,13 +289,23 @@ export const completeCookSession = async (req, res, next) => {
       throw new NotFoundError('Active cook session not found');
     }
 
+    await client.query('COMMIT');
+
     return res.status(StatusCodes.OK).json({ data: { cookSession } });
   } catch (error) {
-    if (error instanceof NotFoundError) {
+    if (client) {
+      await client.query('ROLLBACK');
+    }
+
+    if (error instanceof NotFoundError || error instanceof BadRequestError) {
       return next(error);
     }
 
     return next(new InternalServerError('Unable to complete cook session'));
+  } finally {
+    if (client) {
+      client.release();
+    }
   }
 };
 

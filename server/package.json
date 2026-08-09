@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "node --watch index.js",
     "db:migration:create": "node-pg-migrate create --migrations-dir db/migrations --migration-file-language sql",
-    "db:baseline": "node-pg-migrate up --migrations-dir db/migrations --envPath ../.env --fake",
-    "db:migrate": "node-pg-migrate up --migrations-dir db/migrations --envPath ../.env",
-    "db:rollback": "node-pg-migrate down --migrations-dir db/migrations --envPath ../.env",
+    "db:baseline": "node-pg-migrate up --migrations-dir db/migrations --envPath ../.env.migrations --database-url-var MIGRATION_DATABASE_URL --fake",
+    "db:migrate": "node-pg-migrate up --migrations-dir db/migrations --envPath ../.env.migrations --database-url-var MIGRATION_DATABASE_URL",
+    "db:rollback": "node-pg-migrate down --migrations-dir db/migrations --envPath ../.env.migrations --database-url-var MIGRATION_DATABASE_URL",
     "db:seed:ingredients": "node scripts/seedGlobalIngredients.js",
     "ingredients:review": "node scripts/generateFoundationIngredientReview.js",
     "test": "vitest run",

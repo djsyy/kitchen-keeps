@@ -165,7 +165,7 @@ export default function PantryPage() {
                   <button
                     type="submit"
                     disabled={!selectedIngredient || addItemMutation.isPending}
-                    className="bg-primary text-text-50 hover:bg-primary-700 absolute top-1.5 right-1.5 inline-flex h-10 items-center gap-1 rounded-md px-3 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
+                    className="bg-primary text-text-50 hover:bg-primary-700 absolute top-1/2 right-1.5 inline-flex h-10 -translate-y-1/2 items-center gap-1 rounded-md px-3 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <LuPlus className="h-4 w-4" />
                     {addItemMutation.isPending ? 'Adding...' : 'Add'}

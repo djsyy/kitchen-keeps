@@ -10,8 +10,12 @@
     "db:migrate": "node-pg-migrate up --migrations-dir db/migrations --envPath ../.env.migrations --database-url-var MIGRATION_DATABASE_URL",
     "db:rollback": "node-pg-migrate down --migrations-dir db/migrations --envPath ../.env.migrations --database-url-var MIGRATION_DATABASE_URL",
     "db:seed:ingredients": "node scripts/seedGlobalIngredients.js",
+    "db:test:migrate": "NODE_ENV=test node-pg-migrate up --migrations-dir db/migrations --envPath ../.env.test --database-url-var TEST_DATABASE_URL",
+    "db:test:seed": "NODE_ENV=test node scripts/seedGlobalIngredients.js",
+    "db:test:verify": "npm run db:test:migrate && npm run db:test:seed && npm run db:test:seed",
     "ingredients:review": "node scripts/generateFoundationIngredientReview.js",
-    "test": "vitest run",
+    "test": "vitest run --config vitest.unit.config.js",
+    "test:integration": "npm run db:test:migrate && NODE_ENV=test vitest run --config vitest.integration.config.js",
     "start": "node index.js"
   },
   "dependencies": {

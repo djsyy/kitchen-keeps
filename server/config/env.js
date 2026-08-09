@@ -2,7 +2,12 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 
 dotenv.config({
-  path: fileURLToPath(new URL('../../.env', import.meta.url)),
+  path: fileURLToPath(
+    new URL(
+      process.env.NODE_ENV === 'test' ? '../../.env.test' : '../../.env',
+      import.meta.url
+    )
+  ),
 });
 
 if (process.env.NODE_ENV === 'production') {

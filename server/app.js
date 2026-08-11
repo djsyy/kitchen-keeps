@@ -43,6 +43,10 @@ export const createApp = ({ sessionMiddleware } = {}) => {
   app.use(express.json({ limit: '100kb' }));
   app.use('/api', createGeneralApiRateLimiter());
 
+  app.get('/api/health', (_req, res) => {
+    res.status(200).json({ status: 'ok' });
+  });
+
   if (sessionMiddleware) {
     app.use(sessionMiddleware);
   }

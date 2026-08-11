@@ -8,6 +8,7 @@
     "db:migration:create": "node-pg-migrate create --migrations-dir db/migrations --migration-file-language sql",
     "db:baseline": "node-pg-migrate up --migrations-dir db/migrations --envPath ../.env.migrations --database-url-var MIGRATION_DATABASE_URL --fake",
     "db:migrate": "node-pg-migrate up --migrations-dir db/migrations --envPath ../.env.migrations --database-url-var MIGRATION_DATABASE_URL",
+    "db:migrate:production": "node-pg-migrate up --migrations-dir db/migrations --database-url-var DATABASE_URL",
     "db:rollback": "node-pg-migrate down --migrations-dir db/migrations --envPath ../.env.migrations --database-url-var MIGRATION_DATABASE_URL",
     "db:seed:ingredients": "node scripts/seedGlobalIngredients.js",
     "db:test:migrate": "NODE_ENV=test node-pg-migrate up --migrations-dir db/migrations --envPath ../.env.test --database-url-var TEST_DATABASE_URL",
@@ -31,12 +32,12 @@
     "helmet": "^8.3.0",
     "http-status-codes": "^2.3.0",
     "multer": "^2.2.0",
+    "node-pg-migrate": "^8.0.4",
     "pg": "^8.20.0",
     "resend": "^6.12.4",
     "sharp": "^0.35.3"
   },
   "devDependencies": {
-    "node-pg-migrate": "^8.0.4",
     "supertest": "^7.2.2",
     "vitest": "^4.1.10"
   }

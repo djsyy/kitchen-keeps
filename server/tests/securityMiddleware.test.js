@@ -58,6 +58,13 @@ afterEach(() => {
 });
 
 describe('security middleware', () => {
+  it('returns a minimal public health response', async () => {
+    const response = await request(createTestApp()).get('/api/health');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ status: 'ok' });
+  });
+
   it('adds security and request-id headers to JSON API 404 responses', async () => {
     const response = await request(createTestApp()).get('/api/unknown-route');
 

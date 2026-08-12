@@ -35,7 +35,7 @@ export default function DashboardHero({ metrics }: DashboardHeroProps) {
   return (
     <section className="mb-8">
       <div className="max-w-3xl">
-        <p className="border-secondary-300 bg-secondary-100 text-secondary-900 mb-3 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-bold">
+        <p className="border-brick-red-400 bg-brick-red-200 text-brick-red-900 mb-3 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-bold">
           <LuUtensils className="h-4 w-4" />
           Dashboard
         </p>

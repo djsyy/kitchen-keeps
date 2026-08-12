@@ -77,7 +77,7 @@ export default function DashboardPage() {
           detail: 'Recipes you created',
           icon: LuCookingPot,
           className:
-            'border-secondary-300 from-secondary-100 via-secondary-50 to-secondary-200/80 text-secondary-950 bg-gradient-to-br',
+            'border-burnt-umber-400/70 from-burnt-umber-300/80 via-burnt-umber-400/80 to-burnt-umber-500/80 text-burnt-umber-950 bg-gradient-to-br',
           onClick: () => navigate('/recipes'),
         },
         {
@@ -86,7 +86,7 @@ export default function DashboardPage() {
           detail: 'Recipe collections',
           icon: LuBookOpen,
           className:
-            'border-accent-300 from-accent-100 via-accent-50 to-accent-200/80 text-accent-950 bg-gradient-to-br',
+            'border-burnt-orange-400 from-burnt-orange-300 via-burnt-orange-400 to-burnt-orange-500 text-burnt-orange-950 bg-gradient-to-br',
           onClick: () => navigate('/library'),
         },
         {
@@ -95,7 +95,7 @@ export default function DashboardPage() {
           detail: 'Ingredients you have',
           icon: LuPackageCheck,
           className:
-            'border-primary-300 from-primary-100 via-primary-50 to-primary-200/80 text-primary-950 bg-gradient-to-br',
+            'border-golden-orange-400 from-golden-orange-200 via-golden-orange-300 to-golden-orange-400 text-burnt-umber-950 bg-gradient-to-br',
           onClick: () => navigate('/pantry'),
         },
       ]
@@ -136,7 +136,7 @@ export default function DashboardPage() {
       icon: LuBookOpen,
       description: 'Add a recipe to your collection',
       className:
-        'border-primary-300 bg-primary-100 text-primary-950 hover:border-primary-400 hover:bg-primary-200',
+        'border-olive-green-600 bg-olive-green-500 text-text-900 hover:border-olive-green-700 hover:bg-olive-green-600',
       onClick: () => navigate('/recipes?create=1'),
     },
     {
@@ -144,7 +144,7 @@ export default function DashboardPage() {
       icon: LuFolderPlus,
       description: 'Group recipes for later',
       className:
-        'border-accent-300 bg-accent-100 text-accent-950 hover:border-accent-400 hover:bg-accent-200',
+        'border-olive-green-500 bg-olive-green-400 text-text-900 hover:border-olive-green-600 hover:bg-olive-green-500',
       onClick: () => navigate('/library?create=1'),
     },
     {
@@ -152,7 +152,7 @@ export default function DashboardPage() {
       icon: LuPackageCheck,
       description: 'Update what you have',
       className:
-        'border-secondary-300 bg-secondary-100 text-secondary-950 hover:border-secondary-400 hover:bg-secondary-200',
+        'border-olive-green-400 bg-olive-green-300 text-text-900 hover:border-olive-green-500 hover:bg-olive-green-400',
       onClick: () => navigate('/pantry'),
     },
     {
@@ -160,7 +160,7 @@ export default function DashboardPage() {
       icon: LuList,
       description: 'Manage private ingredients',
       className:
-        'border-background-300 bg-background-50 text-text-900 hover:border-background-400 hover:bg-background-100',
+        'border-olive-400 bg-olive-200 text-text-900 hover:border-olive-500 hover:bg-olive-300',
       onClick: () => navigate('/ingredients'),
     },
   ];

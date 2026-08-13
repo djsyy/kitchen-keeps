@@ -10,3 +10,5 @@ test-results
 !**/.env.example
 !.env.test.example
 !**/.env.test.example
+!.env.demo.example
+!**/.env.demo.example

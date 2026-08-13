@@ -12,6 +12,7 @@ import {
 import validateRequest from '../middleware/validateRequest.js';
 import {
   loginRateLimiter,
+  passwordRecoveryEmailRateLimiter,
   passwordRecoveryRateLimiter,
   registrationRateLimiter,
 } from '../middleware/rateLimiters.js';
@@ -63,6 +64,7 @@ router.post(
   passwordRecoveryRateLimiter,
   forgotPasswordValidation,
   validateRequest,
+  passwordRecoveryEmailRateLimiter,
   forgotPassword
 );
 

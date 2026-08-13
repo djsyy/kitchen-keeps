@@ -30,7 +30,8 @@ vi.mock('../config/cloudinary.js', () => ({
 vi.mock('../services/emailService.js', () => ({ sendPasswordResetEmail }));
 
 const { createApp } = await import('../app.js');
-const { createRateLimiter } = await import('../middleware/rateLimiters.js');
+const { createPasswordRecoveryEmailRateLimiter, createRateLimiter } =
+  await import('../middleware/rateLimiters.js');
 const { requestLogger } = await import('../utils/logger.js');
 
 const originalNodeEnv = process.env.NODE_ENV;
@@ -144,6 +145,46 @@ describe('security middleware', () => {
       message: 'Too many requests. Please try again later.',
       errors: [],
     });
+  });
+
+  it('limits reset-email delivery by recipient instead of IP address', async () => {
+    const app = express();
+    app.use(express.json());
+    app.post(
+      '/forgot-password',
+      createPasswordRecoveryEmailRateLimiter({
+        windowMs: 60_000,
+        limit: 3,
+      }),
+      (_req, res) =>
+        res.status(200).json({
+          message:
+            'If an account exists for that email, a password reset link has been sent.',
+        })
+    );
+
+    for (const ip of ['198.51.100.1', '198.51.100.2', '198.51.100.3']) {
+      const response = await request(app)
+        .post('/forgot-password')
+        .set('X-Forwarded-For', ip)
+        .send({ email: 'person@example.com' });
+
+      expect(response.status).toBe(200);
+    }
+
+    const limitedResponse = await request(app)
+      .post('/forgot-password')
+      .set('X-Forwarded-For', '198.51.100.4')
+      .send({ email: 'person@example.com' });
+    const differentEmailResponse = await request(app)
+      .post('/forgot-password')
+      .send({ email: 'other@example.com' });
+
+    expect(limitedResponse.status).toBe(429);
+    expect(limitedResponse.body.message).toBe(
+      'Too many requests. Please try again later.'
+    );
+    expect(differentEmailResponse.status).toBe(200);
   });
 
   it('logs request paths without sensitive query parameters', async () => {

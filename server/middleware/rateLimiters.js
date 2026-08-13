@@ -53,6 +53,20 @@ export const passwordRecoveryRateLimiter = createRateLimiter({
   scope: 'auth.password_recovery',
 });
 
+export const createPasswordRecoveryEmailRateLimiter = ({
+  windowMs = 60 * 60 * 1000,
+  limit = 3,
+} = {}) =>
+  createRateLimiter({
+    windowMs,
+    limit,
+    scope: 'auth.password_recovery_email',
+    keyGenerator: (req) => `email:${req.body.email}`,
+  });
+
+export const passwordRecoveryEmailRateLimiter =
+  createPasswordRecoveryEmailRateLimiter();
+
 export const imageUploadRateLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000,
   limit: 20,

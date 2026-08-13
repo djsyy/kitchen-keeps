@@ -123,7 +123,7 @@ function RecipeCard({
           aria-label={`Show options for ${recipe.title}`}
           aria-expanded={isOptionsOpen}
           aria-haspopup="menu"
-          className="bg-background-50/90 text-text-600 hover:bg-background-100 hover:text-text-950 absolute top-3 right-3 rounded-md p-1 transition"
+          className="bg-background-50/90 text-text-600 hover:bg-background-100 hover:text-text-950 focus-visible:outline-primary absolute top-3 right-3 rounded-md p-1 shadow-sm transition focus-visible:outline-2 focus-visible:outline-offset-2"
           onClick={(event) => {
             event.stopPropagation();
             toggleOptions();

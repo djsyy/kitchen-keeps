@@ -29,11 +29,11 @@ export default function LibraryGrid({
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div className="mb-5 flex items-center justify-between gap-4">
+      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-text-950 text-2xl font-bold">Your libraries</h1>
         <button
           type="button"
-          className="bg-primary text-text-50 hover:bg-primary-700 inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition"
+          className="bg-primary text-text-50 hover:bg-primary-700 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition"
           onClick={onCreate}
         >
           <LuPlus className="h-4 w-4" />
@@ -55,7 +55,7 @@ export default function LibraryGrid({
         />
       </div>
       {visibleLibraries.length > 0 ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visibleLibraries.map((library) => (
             <LibraryCard
               key={library.id}
@@ -171,7 +171,7 @@ function LibraryCardOptions({
   return (
     <div
       role="menu"
-      className="border-background-300 bg-background-50 absolute top-14 right-5 z-10 my-2 w-32 rounded-lg border p-1 shadow-md"
+      className="border-background-300 bg-background-50 absolute top-12 right-3 z-10 w-32 rounded-lg border p-1 shadow-md"
       onClick={onClick}
     >
       <button

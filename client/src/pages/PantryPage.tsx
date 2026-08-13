@@ -306,7 +306,7 @@ export default function PantryPage() {
               {(pantry.recommendationEligibility.unlinkedRecipeCount > 0 ||
                 pantry.recommendationEligibility.archivedIngredientRecipeCount >
                   0) && (
-                <div className="border-olive-green-200 bg-olive-green-50 text-olive-green-900 mt-5 rounded-xl border px-4 py-3 text-sm leading-5">
+                <div className="border-olive-green-200 bg-olive-green-100 text-olive-green-900 mt-5 rounded-xl border px-4 py-3 text-sm leading-5">
                   {pantry.recommendationEligibility.unlinkedRecipeCount > 0 && (
                     <div>
                       <p className="font-bold">

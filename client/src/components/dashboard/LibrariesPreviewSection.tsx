@@ -21,34 +21,30 @@ function LibraryCard({
   return (
     <button
       type="button"
-      className="border-background-300 bg-background-50 hover:bg-background-100 relative w-full overflow-hidden rounded-lg border text-left shadow-sm transition hover:shadow-md"
+      className="border-background-300 bg-background-50 focus-visible:outline-primary relative w-full overflow-hidden rounded-lg border text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2"
       onClick={() => onOpen(library.id)}
     >
       {library.coverImageUrl ? (
         <img
           src={library.coverImageUrl}
           alt=""
-          className="h-32 w-full object-cover"
+          className="h-24 w-full object-cover"
         />
       ) : (
         <LibraryImagePlaceholder
-          className="h-32 w-full"
-          iconClassName="h-8 w-8"
+          className="h-24 w-full"
+          iconClassName="h-7 w-7"
         />
       )}
-      <div
-        className="flex items-start justify-between gap-4 p-5"
-      >
-        <span className="bg-background-100 text-text-700 rounded-full px-3 py-1 text-sm font-bold">
-          {library.recipeCount}
-        </span>
-      </div>
-      <div className="px-5 pb-5">
-        <h3 className="text-text-950 text-xl font-bold">{library.title}</h3>
-        <p className="text-text-600 mt-2 line-clamp-2 min-h-10 text-sm leading-5">
+      <span className="bg-background-50/95 text-text-700 absolute top-3 left-3 rounded-full px-2.5 py-1 text-sm font-bold shadow-sm">
+        {library.recipeCount}
+      </span>
+      <div className="p-4">
+        <h3 className="text-text-950 text-lg font-bold">{library.title}</h3>
+        <p className="text-text-600 mt-1 line-clamp-2 text-sm leading-5">
           {library.description || 'No description yet.'}
         </p>
-        <p className="text-text-500 mt-5 flex items-center gap-2 text-sm font-bold">
+        <p className="text-text-500 mt-3 flex items-center gap-2 text-sm font-bold">
           <LuClock3 className="h-4 w-4" />
           {library.updatedLabel}
         </p>

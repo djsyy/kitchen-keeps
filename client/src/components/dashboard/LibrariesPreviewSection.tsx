@@ -61,7 +61,7 @@ function SectionActions({
     <div className="flex gap-2">
       <button
         type="button"
-        className="border-golden-orange-300 bg-golden-orange-100 text-golden-orange-900 hover:border-golden-orange-300 hover:bg-golden-orange-200 inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-bold shadow-sm transition"
+        className="border-golden-orange-300 bg-golden-orange-100 text-golden-orange-900 hover:border-golden-orange-400 hover:bg-golden-orange-200 inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-bold shadow-sm transition"
         onClick={onCreate}
       >
         <LuPlus className="h-4 w-4" />

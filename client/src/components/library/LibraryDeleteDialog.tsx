@@ -57,7 +57,7 @@ export default function LibraryDeleteDialog({
           </button>
           <button
             type="button"
-            className="bg-primary-700 text-text-50 hover:bg-primary-600 rounded-md px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
+            className="bg-brick-red-600 text-text-50 hover:bg-brick-red-700 rounded-md px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isPending}
             onClick={onConfirm}
           >

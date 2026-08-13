@@ -218,7 +218,7 @@ export default function LibraryPage() {
           </div>
         ) : (
           <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,2fr)]">
-            <aside className="border-background-300 bg-background-50 h-fit overflow-hidden rounded-3xl border shadow-sm">
+            <aside className="border-background-300 bg-background-50 h-fit overflow-hidden rounded-2xl border shadow-sm">
               {library.cover_image_url ? (
                 <img
                   src={library.cover_image_url}
@@ -269,7 +269,7 @@ export default function LibraryPage() {
               </div>
             </aside>
 
-            <section className="border-background-300 bg-background-50 rounded-3xl border p-6 shadow-sm">
+            <section className="border-background-300 bg-background-50 rounded-2xl border p-6 shadow-sm">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p className="text-text-500 text-sm font-bold tracking-wide uppercase">

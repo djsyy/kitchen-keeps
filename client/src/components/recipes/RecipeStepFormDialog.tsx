@@ -68,7 +68,7 @@ export default function RecipeStepFormDialog({
             autoFocus
             maxLength={5000}
             rows={5}
-            className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 min-h-32 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
+            className="border-background-300 bg-background-50 text-text-950 focus:border-primary focus:ring-primary-100 min-h-32 rounded-lg border px-3 py-2 outline-none focus:ring"
             value={instruction}
             onChange={(event) => setInstruction(event.currentTarget.value)}
           />

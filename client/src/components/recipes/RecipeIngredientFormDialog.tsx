@@ -194,7 +194,7 @@ export default function RecipeIngredientFormDialog({
             aria-autocomplete="list"
             aria-controls="ingredient-search-results"
             aria-expanded={isIngredientMenuOpen && search.length >= 2}
-            className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
+            className="border-background-300 bg-background-50 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border px-3 py-2 outline-none focus:ring"
             value={displayName}
             onFocus={() => setIsIngredientMenuOpen(true)}
             onBlur={() => setIsIngredientMenuOpen(false)}
@@ -209,7 +209,7 @@ export default function RecipeIngredientFormDialog({
             <div
               id="ingredient-search-results"
               role="listbox"
-              className="border-background-300 absolute top-full z-10 mt-1 w-full overflow-hidden rounded-lg border bg-white py-1 shadow-lg"
+              className="border-background-300 bg-background-50 absolute top-full z-10 mt-1 w-full overflow-hidden rounded-lg border py-1 shadow-lg"
             >
               {ingredientQuery.isFetching ? (
                 <IngredientSearchSkeleton />
@@ -291,7 +291,7 @@ export default function RecipeIngredientFormDialog({
               <span className="text-text-500 font-normal">(optional)</span>
               <input
                 maxLength={50}
-                className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
+                className="border-background-300 bg-background-50 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border px-3 py-2 outline-none focus:ring"
                 placeholder="2"
                 value={quantityValue}
                 onChange={(event) =>
@@ -303,7 +303,7 @@ export default function RecipeIngredientFormDialog({
               Unit <span className="text-text-500 font-normal">(optional)</span>
               <input
                 maxLength={50}
-                className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
+                className="border-background-300 bg-background-50 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border px-3 py-2 outline-none focus:ring"
                 placeholder="tbsp"
                 value={quantityUnit}
                 onChange={(event) => setQuantityUnit(event.currentTarget.value)}
@@ -316,7 +316,7 @@ export default function RecipeIngredientFormDialog({
             <span className="text-text-500 font-normal">(optional)</span>
             <input
               maxLength={100}
-              className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
+              className="border-background-300 bg-background-50 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border px-3 py-2 outline-none focus:ring"
               placeholder="Finely chopped"
               value={preparationNote}
               onChange={(event) =>

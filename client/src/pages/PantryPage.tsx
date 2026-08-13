@@ -149,7 +149,7 @@ export default function PantryPage() {
                     aria-autocomplete="list"
                     aria-controls="pantry-ingredient-results"
                     aria-expanded={isSearchOpen && normalizedSearch.length >= 2}
-                    className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 w-full rounded-lg border bg-white py-3 pr-32 pl-10 outline-none focus:ring"
+                    className="border-background-300 bg-background-50 text-text-950 focus:border-primary focus:ring-primary-100 w-full rounded-lg border py-3 pr-32 pl-10 outline-none focus:ring"
                     placeholder="Search ingredients..."
                     value={search}
                     onFocus={() => setIsSearchOpen(true)}

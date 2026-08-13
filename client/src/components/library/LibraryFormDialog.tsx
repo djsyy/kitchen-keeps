@@ -149,7 +149,7 @@ export default function LibraryFormDialog({
         <label className="text-text-800 flex flex-col gap-2 text-sm font-bold">
           Name
           <input
-            className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
+            className="border-background-300 bg-background-50 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border px-3 py-2 outline-none focus:ring"
             maxLength={100}
             required
             value={name}
@@ -226,7 +226,7 @@ export default function LibraryFormDialog({
           Description{' '}
           <span className="text-text-500 font-normal">(optional)</span>
           <textarea
-            className="border-background-300 text-text-950 focus:border-primary focus:ring-primary-100 min-h-24 rounded-lg border bg-white px-3 py-2 outline-none focus:ring"
+            className="border-background-300 bg-background-50 text-text-950 focus:border-primary focus:ring-primary-100 min-h-24 rounded-lg border px-3 py-2 outline-none focus:ring"
             maxLength={1000}
             value={description}
             disabled={isAwaitingCoverRetry}

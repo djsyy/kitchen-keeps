@@ -261,7 +261,7 @@ export default function PantryPage() {
                         className="flex items-center justify-between gap-4 px-4 py-3"
                       >
                         <div className="min-w-0 flex-1">
-                          <p className="text-text-950 font-bold break-words">
+                          <p className="text-text-950 wrap-break-words font-bold">
                             {item.name}
                           </p>
                           {item.created_by_user_id !== null && (

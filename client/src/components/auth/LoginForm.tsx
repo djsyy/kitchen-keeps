@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { loginUser } from '../../services/authService';
 import { queryKeys } from '../../utils/queryKeys';
 import { getPostAuthDestination } from '../../utils/authRedirect';
+import { getApiFieldError } from '../../services/apiClient';
 
 export default function LoginForm() {
   const queryClient = useQueryClient();
@@ -29,6 +30,9 @@ export default function LoginForm() {
       navigate(getPostAuthDestination(location.state), { replace: true });
     },
   });
+  const emailError = getApiFieldError(loginMutation.error, 'email');
+  const passwordError = getApiFieldError(loginMutation.error, 'password');
+  const hasFieldErrors = Boolean(emailError || passwordError);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -62,12 +66,15 @@ export default function LoginForm() {
           type="email"
           autoComplete="email"
           maxLength={255}
+          required
+          aria-invalid={Boolean(emailError)}
           value={email}
           onChange={(e) => {
             setEmail(e.currentTarget.value);
             loginMutation.reset();
           }}
         />
+        {emailError && <ErrorMessage message={emailError} />}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -76,12 +83,15 @@ export default function LoginForm() {
           id="password-input"
           type="password"
           autoComplete="current-password"
+          required
+          aria-invalid={Boolean(passwordError)}
           value={password}
           onChange={(e) => {
             setPassword(e.currentTarget.value);
             loginMutation.reset();
           }}
         />
+        {passwordError && <ErrorMessage message={passwordError} />}
         <div className="flex justify-end">
           <Link
             to="/forgot-password"
@@ -92,7 +102,7 @@ export default function LoginForm() {
         </div>
       </div>
 
-      {loginMutation.isError && (
+      {loginMutation.isError && !hasFieldErrors && (
         <ErrorMessage message={loginMutation.error.message} />
       )}
 

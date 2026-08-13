@@ -232,11 +232,11 @@ export default function LibraryPage() {
                 />
               )}
               <div className="p-6">
-                <h1 className="text-text-950 text-3xl font-bold">
+                <h1 className="text-text-950 text-3xl font-bold break-words">
                   {library.name}
                 </h1>
                 {library.description && (
-                  <p className="text-text-600 mt-3 text-sm leading-6">
+                  <p className="text-text-600 mt-3 text-sm leading-6 break-words">
                     {library.description}
                   </p>
                 )}
@@ -312,7 +312,10 @@ export default function LibraryPage() {
                         recipe={recipe}
                         isRemoving={isRemoving}
                         isRemovalPending={removeRecipeMutation.isPending}
-                        onRemove={() => removeRecipeMutation.mutate(recipe.id)}
+                        onRemove={() => {
+                          removeRecipeMutation.reset();
+                          removeRecipeMutation.mutate(recipe.id);
+                        }}
                       />
                     );
                   })}
@@ -340,8 +343,14 @@ export default function LibraryPage() {
           memberRecipeIds={recipes.map((recipe) => recipe.id)}
           isPending={addRecipeMutation.isPending}
           error={addRecipeMutation.error}
-          onAdd={(recipeId) => addRecipeMutation.mutate(recipeId)}
-          onClose={() => setIsRecipePickerOpen(false)}
+          onAdd={(recipeId) => {
+            addRecipeMutation.reset();
+            addRecipeMutation.mutate(recipeId);
+          }}
+          onClose={() => {
+            addRecipeMutation.reset();
+            setIsRecipePickerOpen(false);
+          }}
         />
       )}
       {isEditFormOpen && library && (
@@ -358,8 +367,14 @@ export default function LibraryPage() {
               : updateLibraryMutation.error
           }
           onCancel={() => {
+            updateLibraryMutation.reset();
+            retryCoverActionMutation.reset();
             setPendingCoverAction(null);
             setIsEditFormOpen(false);
+          }}
+          onChange={() => {
+            updateLibraryMutation.reset();
+            retryCoverActionMutation.reset();
           }}
           onSubmit={(submission) => updateLibraryMutation.mutate(submission)}
           onRetryCoverAction={
@@ -375,7 +390,10 @@ export default function LibraryPage() {
           library={library}
           isPending={deleteLibraryMutation.isPending}
           error={deleteLibraryMutation.error}
-          onCancel={() => setIsDeleteDialogOpen(false)}
+          onCancel={() => {
+            deleteLibraryMutation.reset();
+            setIsDeleteDialogOpen(false);
+          }}
           onConfirm={() => deleteLibraryMutation.mutate()}
         />
       )}
@@ -455,11 +473,11 @@ function LibraryRecipeCard({
           />
         )}
         <div className="min-w-0 flex-1">
-          <h3 className="text-text-950 group-hover:text-primary text-lg font-bold transition">
+          <h3 className="text-text-950 group-hover:text-primary text-lg font-bold break-words transition">
             {recipe.title}
           </h3>
           {recipe.description && (
-            <p className="text-text-600 mt-1 line-clamp-2 text-sm leading-5 sm:line-clamp-1">
+            <p className="text-text-600 mt-1 line-clamp-2 text-sm leading-5 break-words sm:line-clamp-1">
               {recipe.description}
             </p>
           )}

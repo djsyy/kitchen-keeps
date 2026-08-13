@@ -18,6 +18,7 @@ type RecipeIngredientFormDialogProps = {
   recipeIngredient?: RecipeIngredient;
   isPending: boolean;
   error: Error | null;
+  onChange: () => void;
   onCancel: () => void;
   onSubmit: (payload: CreateRecipeIngredientPayload) => void;
 };
@@ -59,6 +60,7 @@ export default function RecipeIngredientFormDialog({
   recipeIngredient,
   isPending,
   error,
+  onChange,
   onCancel,
   onSubmit,
 }: RecipeIngredientFormDialogProps) {
@@ -116,6 +118,7 @@ export default function RecipeIngredientFormDialog({
     setSelectedIngredient(ingredient);
     setDisplayName(ingredient.name);
     setIsIngredientMenuOpen(false);
+    onChange();
   };
 
   const matchingIngredients = ingredientQuery.data?.data.ingredients ?? [];
@@ -203,6 +206,7 @@ export default function RecipeIngredientFormDialog({
               setSelectedIngredient(null);
               setIsIngredientMenuOpen(true);
               createIngredientMutation.reset();
+              onChange();
             }}
           />
           {isIngredientMenuOpen && search.length >= 2 && (
@@ -294,9 +298,10 @@ export default function RecipeIngredientFormDialog({
                 className="border-background-300 bg-background-50 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border px-3 py-2 outline-none focus:ring"
                 placeholder="2"
                 value={quantityValue}
-                onChange={(event) =>
-                  setQuantityValue(event.currentTarget.value)
-                }
+                onChange={(event) => {
+                  setQuantityValue(event.currentTarget.value);
+                  onChange();
+                }}
               />
             </label>
             <label className="text-text-800 flex flex-col gap-2 text-sm font-bold">
@@ -306,7 +311,10 @@ export default function RecipeIngredientFormDialog({
                 className="border-background-300 bg-background-50 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border px-3 py-2 outline-none focus:ring"
                 placeholder="tbsp"
                 value={quantityUnit}
-                onChange={(event) => setQuantityUnit(event.currentTarget.value)}
+                onChange={(event) => {
+                  setQuantityUnit(event.currentTarget.value);
+                  onChange();
+                }}
               />
             </label>
           </div>
@@ -319,9 +327,10 @@ export default function RecipeIngredientFormDialog({
               className="border-background-300 bg-background-50 text-text-950 focus:border-primary focus:ring-primary-100 rounded-lg border px-3 py-2 outline-none focus:ring"
               placeholder="Finely chopped"
               value={preparationNote}
-              onChange={(event) =>
-                setPreparationNote(event.currentTarget.value)
-              }
+              onChange={(event) => {
+                setPreparationNote(event.currentTarget.value);
+                onChange();
+              }}
             />
           </label>
         </fieldset>

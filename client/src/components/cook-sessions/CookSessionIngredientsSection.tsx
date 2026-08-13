@@ -83,8 +83,10 @@ export default function CookSessionIngredientsSection({
                 key={item.id}
                 className="flex flex-col gap-3 py-4 first:pt-5 last:pb-5 sm:flex-row sm:items-center sm:justify-between"
               >
-                <div>
-                  <p className="text-text-800 font-bold">{item.display_name}</p>
+                <div className="min-w-0">
+                  <p className="text-text-800 font-bold break-words">
+                    {item.display_name}
+                  </p>
                   {quantity && (
                     <p className="text-text-600 mt-1 text-sm">{quantity}</p>
                   )}

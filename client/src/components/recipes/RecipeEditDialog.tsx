@@ -135,8 +135,14 @@ export default function RecipeEditDialog({
         updateRecipeMutation.isPending || retryImageActionMutation.isPending
       }
       onCancel={() => {
+        updateRecipeMutation.reset();
+        retryImageActionMutation.reset();
         setPendingImageAction(null);
         onClose();
+      }}
+      onChange={() => {
+        updateRecipeMutation.reset();
+        retryImageActionMutation.reset();
       }}
       onSubmit={(submission) => updateRecipeMutation.mutate(submission)}
       onRetryImageAction={

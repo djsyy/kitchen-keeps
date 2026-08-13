@@ -88,6 +88,7 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
       reorderedSteps[nextIndex],
       reorderedSteps[currentIndex],
     ];
+    reorderMutation.reset();
     reorderMutation.mutate(reorderedSteps.map((step) => step.id));
   };
 
@@ -146,7 +147,7 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
                 <span className="bg-olive-green-100 text-olive-green-800 relative z-10 mt-2.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-bold">
                   {index + 1}
                 </span>
-                <p className="bg-background-100/60 text-text-700 min-w-0 flex-1 rounded-lg px-3 py-2.5">
+                <p className="bg-background-100/60 text-text-700 min-w-0 flex-1 rounded-lg px-3 py-2.5 break-words">
                   {step.instruction}
                 </p>
               </div>
@@ -207,7 +208,11 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
         <RecipeStepFormDialog
           isPending={createMutation.isPending}
           error={createMutation.error}
-          onCancel={() => setIsAdding(false)}
+          onCancel={() => {
+            createMutation.reset();
+            setIsAdding(false);
+          }}
+          onChange={createMutation.reset}
           onSubmit={(payload) => createMutation.mutate(payload)}
         />
       )}
@@ -216,7 +221,11 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
           recipeStep={editingStep}
           isPending={updateMutation.isPending}
           error={updateMutation.error}
-          onCancel={() => setEditingStep(null)}
+          onCancel={() => {
+            updateMutation.reset();
+            setEditingStep(null);
+          }}
+          onChange={updateMutation.reset}
           onSubmit={(payload) =>
             updateMutation.mutate({ recipeStepId: editingStep.id, payload })
           }
@@ -227,7 +236,10 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
           recipeStep={deletingStep}
           isPending={deleteMutation.isPending}
           error={deleteMutation.error}
-          onCancel={() => setDeletingStep(null)}
+          onCancel={() => {
+            deleteMutation.reset();
+            setDeletingStep(null);
+          }}
           onConfirm={() => deleteMutation.mutate(deletingStep.id)}
         />
       )}

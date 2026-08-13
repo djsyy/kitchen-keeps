@@ -173,11 +173,20 @@ export default function CookSessionPage() {
                 updateError={updateItemMutation.error}
                 completeError={completeMutation.error}
                 cancelError={cancelMutation.error}
-                onUpdateItem={(cookSessionItemId, status) =>
-                  updateItemMutation.mutate({ cookSessionItemId, status })
-                }
-                onComplete={() => completeMutation.mutate()}
-                onCancel={() => cancelMutation.mutate()}
+                onUpdateItem={(cookSessionItemId, status) => {
+                  updateItemMutation.reset();
+                  updateItemMutation.mutate({ cookSessionItemId, status });
+                }}
+                onComplete={() => {
+                  completeMutation.reset();
+                  cancelMutation.reset();
+                  completeMutation.mutate();
+                }}
+                onCancel={() => {
+                  cancelMutation.reset();
+                  completeMutation.reset();
+                  cancelMutation.mutate();
+                }}
               />
             )}
           </div>

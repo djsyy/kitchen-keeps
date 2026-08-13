@@ -36,7 +36,7 @@ export default function IngredientArchiveDialog({
         <div className="space-y-3">
           <h1
             id="archive-ingredient-title"
-            className="text-text-950 text-xl font-bold"
+            className="text-text-950 text-xl font-bold break-words"
           >
             Archive {ingredient.name}?
           </h1>

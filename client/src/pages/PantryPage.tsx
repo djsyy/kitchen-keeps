@@ -93,6 +93,8 @@ export default function PantryPage() {
     removeItemMutation.error;
 
   const selectIngredient = (ingredient: Ingredient) => {
+    addItemMutation.reset();
+    createPrivateItemMutation.reset();
     setSelectedIngredient(ingredient);
     setSearch(ingredient.name);
     setIsSearchOpen(false);
@@ -100,6 +102,7 @@ export default function PantryPage() {
   const handleAdd = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedIngredient) {
+      addItemMutation.reset();
       addItemMutation.mutate(selectedIngredient.id);
     }
   };
@@ -213,11 +216,12 @@ export default function PantryPage() {
                               }
                               className="border-background-200 text-primary hover:bg-primary-50 w-full border-t px-3 py-2 text-left text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
                               onMouseDown={(event) => event.preventDefault()}
-                              onClick={() =>
+                              onClick={() => {
+                                createPrivateItemMutation.reset();
                                 createPrivateItemMutation.mutate(
                                   normalizedSearch
-                                )
-                              }
+                                );
+                              }}
                             >
                               {createPrivateItemMutation.isPending
                                 ? 'Adding private ingredient…'
@@ -256,8 +260,10 @@ export default function PantryPage() {
                         key={item.id}
                         className="flex items-center justify-between gap-4 px-4 py-3"
                       >
-                        <div>
-                          <p className="text-text-950 font-bold">{item.name}</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-text-950 font-bold break-words">
+                            {item.name}
+                          </p>
                           {item.created_by_user_id !== null && (
                             <p className="text-text-500 mt-0.5 text-xs">
                               Private ingredient
@@ -269,9 +275,10 @@ export default function PantryPage() {
                           aria-label={`Remove ${item.name} from pantry`}
                           disabled={removeItemMutation.isPending}
                           className="text-text-500 hover:bg-background-100 hover:text-primary rounded-md p-2 transition disabled:cursor-not-allowed disabled:opacity-60"
-                          onClick={() =>
-                            removeItemMutation.mutate(item.ingredient_id)
-                          }
+                          onClick={() => {
+                            removeItemMutation.reset();
+                            removeItemMutation.mutate(item.ingredient_id);
+                          }}
                         >
                           <LuX className="h-5 w-5" />
                           <span className="sr-only">

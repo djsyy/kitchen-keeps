@@ -241,8 +241,14 @@ export default function LibraryList() {
             retryCoverActionMutation.isPending
           }
           onCancel={() => {
+            createLibraryMutation.reset();
+            retryCoverActionMutation.reset();
             setPendingCoverAction(null);
             setIsCreateFormOpen(false);
+          }}
+          onChange={() => {
+            createLibraryMutation.reset();
+            retryCoverActionMutation.reset();
           }}
           onSubmit={(submission) => createLibraryMutation.mutate(submission)}
           onRetryCoverAction={
@@ -267,8 +273,14 @@ export default function LibraryList() {
             retryCoverActionMutation.isPending
           }
           onCancel={() => {
+            updateLibraryMutation.reset();
+            retryCoverActionMutation.reset();
             setPendingCoverAction(null);
             setEditingLibrary(null);
+          }}
+          onChange={() => {
+            updateLibraryMutation.reset();
+            retryCoverActionMutation.reset();
           }}
           onSubmit={(submission) =>
             updateLibraryMutation.mutate({
@@ -293,7 +305,10 @@ export default function LibraryList() {
           library={deletingLibrary}
           error={deleteLibraryMutation.error}
           isPending={deleteLibraryMutation.isPending}
-          onCancel={() => setDeletingLibrary(null)}
+          onCancel={() => {
+            deleteLibraryMutation.reset();
+            setDeletingLibrary(null);
+          }}
           onConfirm={() => deleteLibraryMutation.mutate(deletingLibrary.id)}
         />
       )}

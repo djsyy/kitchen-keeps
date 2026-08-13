@@ -108,6 +108,7 @@ export default function RecipeIngredientsSection({
       reorderedIngredients[nextIndex],
       reorderedIngredients[currentIndex],
     ];
+    reorderMutation.reset();
     reorderMutation.mutate(
       reorderedIngredients.map((ingredient) => ingredient.id)
     );
@@ -142,7 +143,10 @@ export default function RecipeIngredientsSection({
             type="button"
             className="bg-primary text-text-50 hover:bg-primary-700 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
             disabled={createCookSessionMutation.isPending}
-            onClick={() => createCookSessionMutation.mutate()}
+            onClick={() => {
+              createCookSessionMutation.reset();
+              createCookSessionMutation.mutate();
+            }}
           >
             <LuListChecks className="h-4 w-4" />
             {createCookSessionMutation.isPending
@@ -182,11 +186,11 @@ export default function RecipeIngredientsSection({
                 className="flex flex-col gap-3 py-4 text-sm first:pt-5 last:pb-5 sm:flex-row sm:gap-4"
               >
                 <span className="min-w-0 flex-1">
-                  <span className="text-text-800 block font-bold">
+                  <span className="text-text-800 block font-bold break-words">
                     {ingredient.display_name}
                   </span>
                   {ingredient.preparation_note && (
-                    <span className="text-text-600 mt-1 block">
+                    <span className="text-text-600 mt-1 block break-words">
                       {ingredient.preparation_note}
                     </span>
                   )}
@@ -261,7 +265,11 @@ export default function RecipeIngredientsSection({
         <RecipeIngredientFormDialog
           isPending={createMutation.isPending}
           error={createMutation.error}
-          onCancel={() => setIsAdding(false)}
+          onCancel={() => {
+            createMutation.reset();
+            setIsAdding(false);
+          }}
+          onChange={createMutation.reset}
           onSubmit={(payload) => createMutation.mutate(payload)}
         />
       )}
@@ -270,7 +278,11 @@ export default function RecipeIngredientsSection({
           recipeIngredient={editingIngredient}
           isPending={updateMutation.isPending}
           error={updateMutation.error}
-          onCancel={() => setEditingIngredient(null)}
+          onCancel={() => {
+            updateMutation.reset();
+            setEditingIngredient(null);
+          }}
+          onChange={updateMutation.reset}
           onSubmit={(payload) =>
             updateMutation.mutate({
               recipeIngredientId: editingIngredient.id,
@@ -284,7 +296,10 @@ export default function RecipeIngredientsSection({
           recipeIngredient={deletingIngredient}
           isPending={deleteMutation.isPending}
           error={deleteMutation.error}
-          onCancel={() => setDeletingIngredient(null)}
+          onCancel={() => {
+            deleteMutation.reset();
+            setDeletingIngredient(null);
+          }}
           onConfirm={() => deleteMutation.mutate(deletingIngredient.id)}
         />
       )}

@@ -17,6 +17,7 @@ type RecipeFormDialogProps = {
   recipe?: Recipe;
   isPending: boolean;
   error: Error | null;
+  onChange: () => void;
   onCancel: () => void;
   onSubmit: (submission: RecipeFormSubmission) => void;
   onRetryImageAction?: () => void;
@@ -30,6 +31,7 @@ export default function RecipeFormDialog({
   recipe,
   isPending,
   error,
+  onChange,
   onCancel,
   onSubmit,
   onRetryImageAction,
@@ -71,6 +73,8 @@ export default function RecipeFormDialog({
     if (!file) {
       return;
     }
+
+    onChange();
 
     const isSupportedType = ['image/jpeg', 'image/png', 'image/webp'].includes(
       file.type
@@ -166,7 +170,10 @@ export default function RecipeFormDialog({
             required
             value={title}
             disabled={isAwaitingImageRetry}
-            onChange={(event) => setTitle(event.currentTarget.value)}
+            onChange={(event) => {
+              setTitle(event.currentTarget.value);
+              onChange();
+            }}
           />
         </label>
 
@@ -178,7 +185,10 @@ export default function RecipeFormDialog({
             maxLength={1000}
             value={description}
             disabled={isAwaitingImageRetry}
-            onChange={(event) => setDescription(event.currentTarget.value)}
+            onChange={(event) => {
+              setDescription(event.currentTarget.value);
+              onChange();
+            }}
           />
         </label>
 
@@ -232,6 +242,7 @@ export default function RecipeFormDialog({
                   setImageFile(null);
                   setImageError(null);
                   setIsImageRemoved(Boolean(recipe?.image_url));
+                  onChange();
                 }}
               >
                 <LuTrash2 className="h-4 w-4" aria-hidden="true" />
@@ -255,21 +266,30 @@ export default function RecipeFormDialog({
           <NumberField
             label="Prep time (minutes)"
             value={prepTimeMinutes}
-            onChange={setPrepTimeMinutes}
+            onChange={(value) => {
+              setPrepTimeMinutes(value);
+              onChange();
+            }}
             disabled={isAwaitingImageRetry}
             max={1440}
           />
           <NumberField
             label="Cook time (minutes)"
             value={cookTimeMinutes}
-            onChange={setCookTimeMinutes}
+            onChange={(value) => {
+              setCookTimeMinutes(value);
+              onChange();
+            }}
             disabled={isAwaitingImageRetry}
             max={1440}
           />
           <NumberField
             label="Servings"
             value={servings}
-            onChange={setServings}
+            onChange={(value) => {
+              setServings(value);
+              onChange();
+            }}
             disabled={isAwaitingImageRetry}
             max={100}
           />

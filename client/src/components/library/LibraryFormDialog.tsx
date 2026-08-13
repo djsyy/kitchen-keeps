@@ -20,6 +20,7 @@ type LibraryFormDialogProps = {
   library?: Library;
   isPending: boolean;
   error: Error | null;
+  onChange: () => void;
   onCancel: () => void;
   onSubmit: (submission: LibraryFormSubmission) => void;
   onRetryCoverAction?: () => void;
@@ -30,6 +31,7 @@ export default function LibraryFormDialog({
   library,
   isPending,
   error,
+  onChange,
   onCancel,
   onSubmit,
   onRetryCoverAction,
@@ -64,6 +66,8 @@ export default function LibraryFormDialog({
     if (!file) {
       return;
     }
+
+    onChange();
 
     const isSupportedType = ['image/jpeg', 'image/png', 'image/webp'].includes(
       file.type
@@ -154,7 +158,10 @@ export default function LibraryFormDialog({
             required
             value={name}
             disabled={isAwaitingCoverRetry}
-            onChange={(event) => setName(event.currentTarget.value)}
+            onChange={(event) => {
+              setName(event.currentTarget.value);
+              onChange();
+            }}
           />
         </label>
         <div className="flex flex-col gap-3">
@@ -204,6 +211,7 @@ export default function LibraryFormDialog({
                   setCoverFile(null);
                   setCoverError(null);
                   setIsCoverRemoved(Boolean(library?.cover_image_url));
+                  onChange();
                 }}
               >
                 <LuTrash2 className="h-4 w-4" aria-hidden="true" />
@@ -230,7 +238,10 @@ export default function LibraryFormDialog({
             maxLength={1000}
             value={description}
             disabled={isAwaitingCoverRetry}
-            onChange={(event) => setDescription(event.currentTarget.value)}
+            onChange={(event) => {
+              setDescription(event.currentTarget.value);
+              onChange();
+            }}
           />
         </label>
         {(error || coverError) && (

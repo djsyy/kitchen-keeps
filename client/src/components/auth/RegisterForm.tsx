@@ -56,6 +56,7 @@ export default function RegisterForm() {
           value={name}
           onChange={(e) => {
             setName(e.currentTarget.value);
+            registerMutation.reset();
           }}
         />
       </div>
@@ -70,6 +71,7 @@ export default function RegisterForm() {
           value={email}
           onChange={(e) => {
             setEmail(e.currentTarget.value);
+            registerMutation.reset();
           }}
         />
       </div>
@@ -84,6 +86,7 @@ export default function RegisterForm() {
           value={password}
           onChange={(e) => {
             setPassword(e.currentTarget.value);
+            registerMutation.reset();
           }}
         />
         <PasswordRequirements password={password} />
@@ -99,6 +102,7 @@ export default function RegisterForm() {
           value={confirmPassword}
           onChange={(e) => {
             setConfirmPassword(e.currentTarget.value);
+            registerMutation.reset();
           }}
         />
         <PasswordConfirmationStatus

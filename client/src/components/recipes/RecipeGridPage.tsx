@@ -137,9 +137,11 @@ function RecipeCard({
             onDelete={() => onDelete(recipe)}
           />
         )}
-        <h2 className="text-text-950 text-xl font-bold">{recipe.title}</h2>
+        <h2 className="text-text-950 text-xl font-bold break-words">
+          {recipe.title}
+        </h2>
         {recipe.description && (
-          <p className="text-text-600 mt-2 text-sm leading-5">
+          <p className="text-text-600 mt-2 text-sm leading-5 break-words">
             {recipe.description}
           </p>
         )}

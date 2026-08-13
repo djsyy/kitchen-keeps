@@ -65,6 +65,7 @@ export default function LoginForm() {
           value={email}
           onChange={(e) => {
             setEmail(e.currentTarget.value);
+            loginMutation.reset();
           }}
         />
       </div>
@@ -78,6 +79,7 @@ export default function LoginForm() {
           value={password}
           onChange={(e) => {
             setPassword(e.currentTarget.value);
+            loginMutation.reset();
           }}
         />
         <div className="flex justify-end">

@@ -47,11 +47,11 @@ export default function RecipeOverviewCard({
           <p className="text-primary-700 text-sm font-bold tracking-[0.16em] uppercase">
             Your recipe
           </p>
-          <h1 className="text-text-950 mt-1 pr-12 text-3xl font-bold sm:text-4xl">
+          <h1 className="text-text-950 mt-1 pr-12 text-3xl font-bold break-words sm:text-4xl">
             {recipe.title}
           </h1>
           {recipe.description && (
-            <p className="text-text-600 mt-3 max-w-xl text-sm leading-6">
+            <p className="text-text-600 mt-3 max-w-xl text-sm leading-6 break-words">
               {recipe.description}
             </p>
           )}

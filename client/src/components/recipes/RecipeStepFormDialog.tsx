@@ -9,6 +9,7 @@ type RecipeStepFormDialogProps = {
   recipeStep?: RecipeStep;
   isPending: boolean;
   error: Error | null;
+  onChange: () => void;
   onCancel: () => void;
   onSubmit: (payload: CreateRecipeStepPayload) => void;
 };
@@ -17,6 +18,7 @@ export default function RecipeStepFormDialog({
   recipeStep,
   isPending,
   error,
+  onChange,
   onCancel,
   onSubmit,
 }: RecipeStepFormDialogProps) {
@@ -70,7 +72,10 @@ export default function RecipeStepFormDialog({
             rows={5}
             className="border-background-300 bg-background-50 text-text-950 focus:border-primary focus:ring-primary-100 min-h-32 rounded-lg border px-3 py-2 outline-none focus:ring"
             value={instruction}
-            onChange={(event) => setInstruction(event.currentTarget.value)}
+            onChange={(event) => {
+              setInstruction(event.currentTarget.value);
+              onChange();
+            }}
           />
         </label>
 

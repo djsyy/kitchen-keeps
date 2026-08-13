@@ -138,7 +138,12 @@ export default function IngredientManagementPage() {
                       ? 'bg-primary text-text-50'
                       : 'text-text-700 hover:bg-background-100'
                   }`}
-                  onClick={() => setStatus('active')}
+                  onClick={() => {
+                    renameMutation.reset();
+                    archiveMutation.reset();
+                    restoreMutation.reset();
+                    setStatus('active');
+                  }}
                 >
                   Active
                 </button>
@@ -150,7 +155,12 @@ export default function IngredientManagementPage() {
                       ? 'bg-primary text-text-50'
                       : 'text-text-700 hover:bg-background-100'
                   }`}
-                  onClick={() => setStatus('hidden')}
+                  onClick={() => {
+                    renameMutation.reset();
+                    archiveMutation.reset();
+                    restoreMutation.reset();
+                    setStatus('hidden');
+                  }}
                 >
                   Archived
                 </button>
@@ -202,9 +212,10 @@ export default function IngredientManagementPage() {
                             required
                             maxLength={100}
                             value={renameValue}
-                            onChange={(event) =>
-                              setRenameValue(event.currentTarget.value)
-                            }
+                            onChange={(event) => {
+                              setRenameValue(event.currentTarget.value);
+                              renameMutation.reset();
+                            }}
                             className="border-background-300 bg-background-50 text-text-950 focus:border-primary focus:ring-primary-100 min-w-0 flex-1 rounded-lg border px-3 py-2 outline-none focus:ring"
                           />
                           <div className="flex gap-2">
@@ -221,7 +232,10 @@ export default function IngredientManagementPage() {
                               type="button"
                               disabled={renameMutation.isPending}
                               className="text-text-700 hover:bg-background-100 rounded-lg px-3 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
-                              onClick={() => setEditingIngredient(null)}
+                              onClick={() => {
+                                renameMutation.reset();
+                                setEditingIngredient(null);
+                              }}
                             >
                               Cancel
                             </button>
@@ -246,9 +260,10 @@ export default function IngredientManagementPage() {
                                 type="button"
                                 className="text-text-600 hover:bg-background-100 hover:text-primary rounded-md p-2 transition"
                                 aria-label={`Archive ${ingredient.name}`}
-                                onClick={() =>
-                                  setArchivingIngredient(ingredient)
-                                }
+                                onClick={() => {
+                                  archiveMutation.reset();
+                                  setArchivingIngredient(ingredient);
+                                }}
                               >
                                 <LuArchive className="h-4 w-4" />
                               </button>
@@ -258,9 +273,10 @@ export default function IngredientManagementPage() {
                               type="button"
                               disabled={restoreMutation.isPending}
                               className="text-primary hover:bg-primary-50 inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
-                              onClick={() =>
-                                restoreMutation.mutate(ingredient.id)
-                              }
+                              onClick={() => {
+                                restoreMutation.reset();
+                                restoreMutation.mutate(ingredient.id);
+                              }}
                             >
                               <LuRotateCcw className="h-4 w-4" />
                               {isRestoring ? 'Restoring...' : 'Restore'}
@@ -294,7 +310,10 @@ export default function IngredientManagementPage() {
           ingredient={archivingIngredient}
           isPending={archiveMutation.isPending}
           error={archiveMutation.error}
-          onCancel={() => setArchivingIngredient(null)}
+          onCancel={() => {
+            archiveMutation.reset();
+            setArchivingIngredient(null);
+          }}
           onConfirm={() => archiveMutation.mutate(archivingIngredient.id)}
         />
       )}

@@ -185,8 +185,14 @@ export default function RecipeListPage() {
             createRecipeMutation.isPending || retryImageActionMutation.isPending
           }
           onCancel={() => {
+            createRecipeMutation.reset();
+            retryImageActionMutation.reset();
             setPendingImageAction(null);
             setIsCreateFormOpen(false);
+          }}
+          onChange={() => {
+            createRecipeMutation.reset();
+            retryImageActionMutation.reset();
           }}
           onSubmit={(submission) => createRecipeMutation.mutate(submission)}
           onRetryImageAction={
@@ -212,7 +218,10 @@ export default function RecipeListPage() {
           recipe={deletingRecipe}
           error={deleteRecipeMutation.error}
           isPending={deleteRecipeMutation.isPending}
-          onCancel={() => setDeletingRecipe(null)}
+          onCancel={() => {
+            deleteRecipeMutation.reset();
+            setDeletingRecipe(null);
+          }}
           onConfirm={() => deleteRecipeMutation.mutate(deletingRecipe.id)}
         />
       )}

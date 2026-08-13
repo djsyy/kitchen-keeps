@@ -123,9 +123,11 @@ function LibraryCard({
         />
       )}
       <div className="p-5">
-        <h2 className="text-text-950 text-xl font-bold">{library.name}</h2>
+        <h2 className="text-text-950 text-xl font-bold break-words">
+          {library.name}
+        </h2>
         {library.description && (
-          <p className="text-text-600 mt-2 line-clamp-2 text-sm leading-5">
+          <p className="text-text-600 mt-2 line-clamp-2 text-sm leading-5 break-words">
             {library.description}
           </p>
         )}

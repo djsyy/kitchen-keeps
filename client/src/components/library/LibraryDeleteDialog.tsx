@@ -36,7 +36,7 @@ export default function LibraryDeleteDialog({
         <div className="space-y-3">
           <h1
             id="delete-library-title"
-            className="text-text-950 text-xl font-bold"
+            className="text-text-950 text-xl font-bold break-words"
           >
             Delete {library.name}?
           </h1>

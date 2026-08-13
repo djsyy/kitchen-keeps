@@ -40,8 +40,10 @@ function LibraryCard({
         {library.recipeCount}
       </span>
       <div className="p-4">
-        <h3 className="text-text-950 text-lg font-bold">{library.title}</h3>
-        <p className="text-text-600 mt-1 line-clamp-2 text-sm leading-5">
+        <h3 className="text-text-950 text-lg font-bold break-words">
+          {library.title}
+        </h3>
+        <p className="text-text-600 mt-1 line-clamp-2 text-sm leading-5 break-words">
           {library.description || 'No description yet.'}
         </p>
         <p className="text-text-500 mt-3 flex items-center gap-2 text-sm font-bold">

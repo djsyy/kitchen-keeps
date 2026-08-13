@@ -69,8 +69,8 @@ export default function IngredientManagementPage() {
     onSuccess: invalidateIngredientViews,
   });
 
-  const ingredients = ingredientsQuery.data?.data.ingredients ?? [];
   const visibleIngredients = useMemo(() => {
+    const ingredients = ingredientsQuery.data?.data.ingredients ?? [];
     const normalizedSearch = search.trim().toLocaleLowerCase();
     if (!normalizedSearch) {
       return ingredients;
@@ -79,7 +79,7 @@ export default function IngredientManagementPage() {
     return ingredients.filter((ingredient) =>
       ingredient.name.toLocaleLowerCase().includes(normalizedSearch)
     );
-  }, [ingredients, search]);
+  }, [ingredientsQuery.data, search]);
   const mutationError =
     renameMutation.error || archiveMutation.error || restoreMutation.error;
 

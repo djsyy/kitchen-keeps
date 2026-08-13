@@ -39,7 +39,7 @@ function PasswordRequirement({
   return (
     <p
       className={`flex items-center gap-1.5 text-sm font-bold ${
-        isMet ? 'text-secondary-800' : 'text-text-600'
+        isMet ? 'text-olive-green-800' : 'text-text-600'
       }`}
     >
       <StatusIcon aria-hidden="true" className="h-4 w-4 shrink-0" />
@@ -69,7 +69,7 @@ export function PasswordConfirmationStatus({
     <p
       aria-live="polite"
       className={`flex items-center gap-1.5 text-sm font-bold ${
-        passwordsMatch ? 'text-secondary-800' : 'text-text-600'
+        passwordsMatch ? 'text-olive-green-800' : 'text-text-600'
       }`}
     >
       <StatusIcon aria-hidden="true" className="h-4 w-4 shrink-0" />

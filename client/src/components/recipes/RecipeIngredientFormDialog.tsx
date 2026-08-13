@@ -174,7 +174,7 @@ export default function RecipeIngredientFormDialog({
             Add the amount and any preparation details you need while cooking.
           </p>
           {isEditing && (isUnlinkedIngredient || isArchivedIngredient) && (
-            <p className="border-secondary-200 bg-secondary-50 text-secondary-900 mt-3 rounded-lg border px-3 py-2 text-sm leading-5">
+            <p className="border-olive-green-200 bg-olive-green-50 text-olive-green-900 mt-3 rounded-lg border px-3 py-2 text-sm leading-5">
               {isArchivedIngredient
                 ? 'This ingredient is archived.'
                 : 'This ingredient is not linked to your Pantry.'}{' '}

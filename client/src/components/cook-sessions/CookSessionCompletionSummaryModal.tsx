@@ -52,8 +52,8 @@ export default function CookSessionCompletionSummaryModal({
 
         <dl className="divide-background-200 border-background-200 bg-background-100/70 mt-6 divide-y rounded-xl border px-4">
           <div className="flex items-center justify-between py-3 text-sm">
-            <dt className="text-secondary-900 font-bold">Have it</dt>
-            <dd className="text-secondary-950 text-lg font-bold">
+            <dt className="text-olive-green-900 font-bold">Have it</dt>
+            <dd className="text-olive-green-950 text-lg font-bold">
               {availableItems.length}
             </dd>
           </div>

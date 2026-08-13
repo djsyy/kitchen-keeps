@@ -191,11 +191,11 @@ export default function RecipeIngredientsSection({
                     </span>
                   )}
                   {ingredient.ingredient_id === null ? (
-                    <span className="bg-secondary-100 text-secondary-900 mt-2 inline-flex rounded-full px-2 py-1 text-xs font-bold">
+                    <span className="bg-olive-green-100 text-olive-green-900 mt-2 inline-flex rounded-full px-2 py-1 text-xs font-bold">
                       Not linked to Pantry
                     </span>
                   ) : ingredient.ingredient_status === 'hidden' ? (
-                    <span className="bg-secondary-100 text-secondary-900 mt-2 inline-flex rounded-full px-2 py-1 text-xs font-bold">
+                    <span className="bg-olive-green-100 text-olive-green-900 mt-2 inline-flex rounded-full px-2 py-1 text-xs font-bold">
                       Archived ingredient
                     </span>
                   ) : null}

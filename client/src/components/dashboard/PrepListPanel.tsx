@@ -21,25 +21,25 @@ export default function PrepListPanel({
         </div>
 
         {activeCookList ? (
-          <article className="border-secondary-200 bg-secondary-50 rounded-lg border p-5 shadow-sm">
+          <article className="border-olive-green-200 bg-olive-green-50 rounded-lg border p-5 shadow-sm">
             <div className="mb-5 flex items-start justify-between gap-4">
-              <span className="bg-secondary-100 text-secondary-800 flex h-11 w-11 items-center justify-center rounded-lg">
+              <span className="bg-olive-green-100 text-olive-green-800 flex h-11 w-11 items-center justify-center rounded-lg">
                 <LuCarrot className="h-5 w-5" />
               </span>
-              <span className="bg-background-50 text-secondary-900 rounded-full px-3 py-1 text-sm font-bold">
+              <span className="bg-background-50 text-olive-green-900 rounded-full px-3 py-1 text-sm font-bold">
                 {activeCookList.remainingCount} left
               </span>
             </div>
-            <h3 className="text-secondary-950 text-xl font-bold">
+            <h3 className="text-olive-green-950 text-xl font-bold">
               {activeCookList.recipeTitle}
             </h3>
-            <p className="text-secondary-900 mt-2 text-sm">
+            <p className="text-olive-green-900 mt-2 text-sm">
               {activeCookList.checkedCount} of {activeCookList.totalCount}{' '}
               checked
             </p>
             <button
               type="button"
-              className="bg-secondary text-background-50 hover:bg-secondary-700 mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold shadow-sm transition"
+              className="bg-olive-green text-background-50 hover:bg-olive-green-700 mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold shadow-sm transition"
               onClick={() => onContinue(activeCookList.id)}
             >
               Continue

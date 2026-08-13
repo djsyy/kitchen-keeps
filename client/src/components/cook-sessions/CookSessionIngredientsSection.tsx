@@ -21,9 +21,9 @@ const itemStatusOptions: {
   {
     label: 'Have it',
     status: 'have',
-    className: 'border-secondary-300 bg-secondary-100 text-secondary-900',
+    className: 'border-olive-green-300 bg-olive-green-100 text-olive-green-900',
     selectedClassName:
-      'border-secondary-500 bg-secondary-300 text-secondary-950',
+      'border-olive-green-500 bg-olive-green-300 text-olive-green-950',
   },
   {
     label: 'Need it',

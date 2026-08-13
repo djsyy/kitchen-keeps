@@ -95,7 +95,7 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
     <section className="border-background-300 bg-background-50 relative overflow-hidden rounded-2xl border-2 border-t-0 p-6 shadow-lg sm:p-8">
       <div
         aria-hidden="true"
-        className="bg-secondary absolute inset-x-0 top-0 h-1.5"
+        className="bg-olive-green absolute inset-x-0 top-0 h-1.5"
       />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
@@ -109,7 +109,7 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
         </div>
         <button
           type="button"
-          className="bg-secondary text-background-50 hover:bg-secondary-700 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition"
+          className="bg-olive-green text-background-50 hover:bg-olive-green-600 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition"
           onClick={() => setIsAdding(true)}
         >
           <LuPlus className="h-4 w-4" />
@@ -142,7 +142,7 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
                   className="bg-background-300 absolute top-9 left-3.5 h-[calc(100%-0.5rem)] w-px"
                 />
               )}
-              <span className="bg-secondary-100 text-secondary-800 relative z-10 mt-2.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-bold">
+              <span className="bg-olive-green-100 text-olive-green-800 relative z-10 mt-2.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-bold">
                 {index + 1}
               </span>
               <p className="bg-background-100/60 text-text-700 min-w-0 flex-1 rounded-lg px-3 py-2.5">

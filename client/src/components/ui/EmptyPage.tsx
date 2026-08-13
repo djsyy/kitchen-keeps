@@ -20,7 +20,7 @@ export default function EmptyPage({
   return (
     <section className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6">
       <article className="border-background-300 bg-background-50 mx-auto flex w-full max-w-2xl flex-col items-center rounded-3xl border border-dashed px-6 py-12 text-center shadow-sm sm:px-10">
-        <span className="bg-secondary-100 text-secondary-800 mb-5 flex h-14 w-14 items-center justify-center rounded-2xl">
+        <span className="bg-olive-green-100 text-olive-green-800 mb-5 flex h-14 w-14 items-center justify-center rounded-2xl">
           <Icon className="h-7 w-7" />
         </span>
         <h1 className="text-text-950 text-2xl font-bold">{title}</h1>

@@ -22,7 +22,7 @@ export default function ForgotPasswordForm() {
     return (
       <div className="flex flex-col gap-5 text-center" role="status">
         <div className="flex justify-center">
-          <div className="bg-secondary-100 text-secondary-800 flex h-12 w-12 items-center justify-center rounded-full">
+          <div className="bg-olive-green-100 text-olive-green-800 flex h-12 w-12 items-center justify-center rounded-full">
             <LuKeyRound className="h-6 w-6" />
           </div>
         </div>

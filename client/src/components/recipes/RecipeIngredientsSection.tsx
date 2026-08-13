@@ -114,7 +114,7 @@ export default function RecipeIngredientsSection({
   };
 
   return (
-    <section className="border-background-300 bg-background-50 relative overflow-hidden rounded-2xl border-2 border-t-0 p-6 shadow-lg sm:p-8">
+    <section className="border-background-300 bg-background-50 relative overflow-hidden rounded-2xl border p-6 shadow-lg sm:p-8">
       <div
         aria-hidden="true"
         className="bg-primary absolute inset-x-0 top-0 h-1.5"
@@ -179,9 +179,9 @@ export default function RecipeIngredientsSection({
             return (
               <li
                 key={ingredient.id}
-                className="flex gap-4 py-4 text-sm first:pt-5 last:pb-5"
+                className="flex flex-col gap-3 py-4 text-sm first:pt-5 last:pb-5 sm:flex-row sm:gap-4"
               >
-                <span>
+                <span className="min-w-0 flex-1">
                   <span className="text-text-800 block font-bold">
                     {ingredient.display_name}
                   </span>
@@ -200,7 +200,7 @@ export default function RecipeIngredientsSection({
                     </span>
                   ) : null}
                 </span>
-                <div className="ml-auto flex shrink-0 items-start gap-2">
+                <div className="flex flex-wrap items-center gap-2 sm:ml-auto sm:shrink-0 sm:items-start">
                   {quantity && (
                     <span className="text-text-600 pt-2">{quantity}</span>
                   )}

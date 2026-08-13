@@ -92,7 +92,7 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
   };
 
   return (
-    <section className="border-background-300 bg-background-50 relative overflow-hidden rounded-2xl border-2 border-t-0 p-6 shadow-lg sm:p-8">
+    <section className="border-background-300 bg-background-50 relative overflow-hidden rounded-2xl border p-6 shadow-lg sm:p-8">
       <div
         aria-hidden="true"
         className="bg-olive-green absolute inset-x-0 top-0 h-1.5"
@@ -109,7 +109,7 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
         </div>
         <button
           type="button"
-          className="bg-olive-green text-background-50 hover:bg-olive-green-600 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition"
+          className="bg-olive-green text-background-50 hover:bg-olive-green-700 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition"
           onClick={() => setIsAdding(true)}
         >
           <LuPlus className="h-4 w-4" />
@@ -134,7 +134,7 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
           recipeSteps.map((step, index) => (
             <li
               key={step.id}
-              className="text-text-700 relative flex items-start gap-4 py-3 text-sm leading-6"
+              className="text-text-700 relative py-3 text-sm leading-6 sm:flex sm:items-start sm:gap-4"
             >
               {index < recipeSteps.length - 1 && (
                 <span
@@ -142,13 +142,15 @@ export default function RecipeStepsSection({ recipeId }: { recipeId: number }) {
                   className="bg-background-300 absolute top-9 left-3.5 h-[calc(100%-0.5rem)] w-px"
                 />
               )}
-              <span className="bg-olive-green-100 text-olive-green-800 relative z-10 mt-2.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-bold">
-                {index + 1}
-              </span>
-              <p className="bg-background-100/60 text-text-700 min-w-0 flex-1 rounded-lg px-3 py-2.5">
-                {step.instruction}
-              </p>
-              <div className="flex shrink-0 items-start gap-2">
+              <div className="flex min-w-0 items-start gap-4 sm:contents">
+                <span className="bg-olive-green-100 text-olive-green-800 relative z-10 mt-2.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-bold">
+                  {index + 1}
+                </span>
+                <p className="bg-background-100/60 text-text-700 min-w-0 flex-1 rounded-lg px-3 py-2.5">
+                  {step.instruction}
+                </p>
+              </div>
+              <div className="mt-3 ml-11 flex flex-wrap items-start gap-2 sm:mt-0 sm:ml-0 sm:shrink-0">
                 <div className="border-background-200 bg-background-50 flex rounded-md border">
                   <button
                     type="button"

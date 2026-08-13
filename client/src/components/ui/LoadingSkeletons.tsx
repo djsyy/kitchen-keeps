@@ -130,7 +130,7 @@ export function RecipeListSkeleton() {
         label="Loading recipes"
         className="mx-auto max-w-7xl px-4 py-8 sm:px-6"
       >
-        <div className="mb-5 flex items-center justify-between gap-4">
+        <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <Skeleton className="h-8 w-40" />
           <ActionSkeleton className="w-36" />
         </div>
@@ -153,7 +153,7 @@ export function LibraryListSkeleton() {
         label="Loading libraries"
         className="mx-auto max-w-7xl px-4 py-8 sm:px-6"
       >
-        <div className="mb-5 flex items-center justify-between gap-4">
+        <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <Skeleton className="h-8 w-40" />
           <ActionSkeleton className="w-40" />
         </div>

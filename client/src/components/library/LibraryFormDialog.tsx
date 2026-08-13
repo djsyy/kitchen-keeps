@@ -1,13 +1,5 @@
 import { LuImagePlus, LuTrash2 } from 'react-icons/lu';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
-import {
-  libraryColorClasses,
-  libraryColorOptions,
-  libraryIconOptions,
-  libraryIcons,
-  type LibraryColorKey,
-  type LibraryIconKey,
-} from '../../config/libraryIcons';
 import type {
   CreateLibraryPayload,
   Library,
@@ -46,12 +38,6 @@ export default function LibraryFormDialog({
   const isEditing = Boolean(library);
   const [name, setName] = useState(library?.name ?? '');
   const [description, setDescription] = useState(library?.description ?? '');
-  const [iconKey, setIconKey] = useState<LibraryIconKey>(
-    library?.icon_key ?? 'folder'
-  );
-  const [colorKey, setColorKey] = useState<LibraryColorKey>(
-    library?.color_key ?? 'primary'
-  );
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [isCoverRemoved, setIsCoverRemoved] = useState(false);
   const [coverError, setCoverError] = useState<string | null>(null);
@@ -121,8 +107,6 @@ export default function LibraryFormDialog({
       payload: {
         name: name.trim(),
         description: description.trim() || null,
-        icon_key: iconKey,
-        color_key: colorKey,
       },
       coverAction: getCoverAction(),
     });
@@ -158,7 +142,7 @@ export default function LibraryFormDialog({
             className="text-text-600 mt-1 text-sm"
           >
             {isEditing
-              ? 'Update this collection’s details and appearance.'
+              ? 'Update this collection’s details and cover.'
               : 'Group recipes by meal type, occasion, or any collection you use.'}
           </p>
         </div>
@@ -173,60 +157,6 @@ export default function LibraryFormDialog({
             onChange={(event) => setName(event.currentTarget.value)}
           />
         </label>
-        <fieldset>
-          <legend className="text-text-800 text-sm font-bold">Icon</legend>
-          <div className="mt-2 grid grid-cols-5 gap-2 sm:grid-cols-10">
-            {libraryIconOptions.map((option) => {
-              const Icon = libraryIcons[option.key];
-              const isSelected = option.key === iconKey;
-
-              return (
-                <button
-                  key={option.key}
-                  type="button"
-                  aria-label={option.label}
-                  aria-pressed={isSelected}
-                  className={`border-background-300 bg-background-50 text-text-700 flex h-10 items-center justify-center rounded-lg border transition ${
-                    isSelected
-                      ? 'border-primary bg-primary-50 text-primary border-2 shadow-sm'
-                      : 'hover:bg-background-100'
-                  }`}
-                  disabled={isAwaitingCoverRetry}
-                  onClick={() => setIconKey(option.key)}
-                >
-                  <Icon className="h-5 w-5" />
-                </button>
-              );
-            })}
-          </div>
-        </fieldset>
-        <fieldset>
-          <legend className="text-text-800 text-sm font-bold">
-            Card color
-          </legend>
-          <div className="mt-2 flex gap-2">
-            {libraryColorOptions.map((option) => {
-              const isSelected = option.key === colorKey;
-
-              return (
-                <button
-                  key={option.key}
-                  type="button"
-                  aria-pressed={isSelected}
-                  className={`h-9 rounded-full border px-4 text-sm transition ${libraryColorClasses[option.key]} ${
-                    isSelected
-                      ? 'border-2 font-bold shadow-sm'
-                      : 'font-normal hover:brightness-95'
-                  }`}
-                  disabled={isAwaitingCoverRetry}
-                  onClick={() => setColorKey(option.key)}
-                >
-                  {option.label}
-                </button>
-              );
-            })}
-          </div>
-        </fieldset>
         <div className="flex flex-col gap-3">
           <div className="flex items-baseline justify-between gap-3">
             <p className="text-text-800 text-sm font-bold">

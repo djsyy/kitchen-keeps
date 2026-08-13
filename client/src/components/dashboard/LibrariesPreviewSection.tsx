@@ -1,5 +1,5 @@
 import { LuArrowRight, LuClock3, LuFolderPlus, LuPlus } from 'react-icons/lu';
-import { libraryColorClasses, libraryIcons } from '../../config/libraryIcons';
+import LibraryImagePlaceholder from '../library/LibraryImagePlaceholder';
 import EmptyState from './EmptyState';
 import SectionHeader from './SectionHeader';
 import type { LibraryPreview } from './types';
@@ -18,43 +18,32 @@ function LibraryCard({
   library: LibraryPreview;
   onOpen: (libraryId: number) => void;
 }) {
-  const LibraryIcon = libraryIcons[library.iconKey];
-  const colorClass = libraryColorClasses[library.colorKey];
-
   return (
     <button
       type="button"
-      className={`bg-background-50 hover:bg-background-100 relative w-full overflow-hidden rounded-lg border text-left shadow-sm transition hover:shadow-md ${
-        library.coverImageUrl
-          ? 'border-background-300'
-          : colorClass.split(' ')[0]
-      }`}
+      className="border-background-300 bg-background-50 hover:bg-background-100 relative w-full overflow-hidden rounded-lg border text-left shadow-sm transition hover:shadow-md"
       onClick={() => onOpen(library.id)}
     >
-      {library.coverImageUrl && (
+      {library.coverImageUrl ? (
         <img
           src={library.coverImageUrl}
           alt=""
           className="h-32 w-full object-cover"
         />
+      ) : (
+        <LibraryImagePlaceholder
+          className="h-32 w-full"
+          iconClassName="h-8 w-8"
+        />
       )}
       <div
-        className={`flex items-start justify-between gap-4 ${
-          library.coverImageUrl ? 'p-5' : 'p-5 pb-0'
-        }`}
+        className="flex items-start justify-between gap-4 p-5"
       >
-        {!library.coverImageUrl && (
-          <span
-            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg ${colorClass}`}
-          >
-            <LibraryIcon className="h-5 w-5" />
-          </span>
-        )}
         <span className="bg-background-100 text-text-700 rounded-full px-3 py-1 text-sm font-bold">
           {library.recipeCount}
         </span>
       </div>
-      <div className={library.coverImageUrl ? 'px-5 pb-5' : 'p-5 pt-4'}>
+      <div className="px-5 pb-5">
         <h3 className="text-text-950 text-xl font-bold">{library.title}</h3>
         <p className="text-text-600 mt-2 line-clamp-2 min-h-10 text-sm leading-5">
           {library.description || 'No description yet.'}

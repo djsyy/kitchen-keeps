@@ -1,8 +1,8 @@
 import { type MouseEvent, useState } from 'react';
 import { LuEllipsisVertical, LuPlus, LuSearch } from 'react-icons/lu';
-import { libraryColorClasses, libraryIcons } from '../../config/libraryIcons';
 import useCardOptionsMenu from '../../hooks/useCardOptionsMenu';
 import type { Library } from '../../services/libraryService';
+import LibraryImagePlaceholder from './LibraryImagePlaceholder';
 
 type LibraryGridProps = {
   libraries: Library[];
@@ -55,7 +55,7 @@ export default function LibraryGrid({
         />
       </div>
       {visibleLibraries.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {visibleLibraries.map((library) => (
             <LibraryCard
               key={library.id}
@@ -88,61 +88,32 @@ function LibraryCard({
 }) {
   const { containerRef, isOptionsOpen, setIsOptionsOpen, toggleOptions } =
     useCardOptionsMenu<HTMLElement>();
-  const Icon = libraryIcons[library.icon_key];
-  const colorClass = libraryColorClasses[library.color_key];
-
   return (
     <article
       ref={containerRef}
-      className={`bg-background-50 hover:bg-background-100 relative cursor-pointer overflow-hidden rounded-3xl border shadow-sm transition hover:shadow-md ${
-        library.cover_image_url
-          ? 'border-background-300'
-          : colorClass.split(' ')[0]
-      }`}
+      className="border-background-300 bg-background-50 relative cursor-pointer overflow-hidden rounded-2xl border shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
       onClick={() => onOpen(library)}
     >
-      {library.cover_image_url && (
+      {library.cover_image_url ? (
         <img
           src={library.cover_image_url}
           alt=""
-          className="h-44 w-full object-cover"
+          className="h-40 w-full object-cover"
+        />
+      ) : (
+        <LibraryImagePlaceholder
+          className="h-40 w-full"
+          iconClassName="h-9 w-9"
         />
       )}
-      <div
-        className={
-          library.cover_image_url ? 'absolute top-4 right-4' : 'p-5 pb-0'
-        }
-      >
-        {!library.cover_image_url && (
-          <div className="flex justify-between">
-            <span
-              className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${colorClass}`}
-            >
-              <Icon className="h-6 w-6" />
-            </span>
-            <LibraryOptionsButton
-              libraryName={library.name}
-              isOptionsOpen={isOptionsOpen}
-              hasCover={false}
-              onClick={(event) => {
-                event.stopPropagation();
-                toggleOptions();
-              }}
-            />
-          </div>
-        )}
-        {library.cover_image_url && (
-          <LibraryOptionsButton
-            libraryName={library.name}
-            isOptionsOpen={isOptionsOpen}
-            hasCover
-            onClick={(event) => {
-              event.stopPropagation();
-              toggleOptions();
-            }}
-          />
-        )}
-      </div>
+      <LibraryOptionsButton
+        libraryName={library.name}
+        isOptionsOpen={isOptionsOpen}
+        onClick={(event) => {
+          event.stopPropagation();
+          toggleOptions();
+        }}
+      />
       {isOptionsOpen && (
         <LibraryCardOptions
           onClick={(event) => event.stopPropagation()}
@@ -151,7 +122,7 @@ function LibraryCard({
           onDelete={() => onDelete(library)}
         />
       )}
-      <div className={library.cover_image_url ? 'p-5' : 'p-5 pt-8'}>
+      <div className="p-5">
         <h2 className="text-text-950 text-xl font-bold">{library.name}</h2>
         {library.description && (
           <p className="text-text-600 mt-2 line-clamp-2 text-sm leading-5">
@@ -166,12 +137,10 @@ function LibraryCard({
 function LibraryOptionsButton({
   libraryName,
   isOptionsOpen,
-  hasCover,
   onClick,
 }: {
   libraryName: string;
   isOptionsOpen: boolean;
-  hasCover: boolean;
   onClick: (event: MouseEvent<HTMLButtonElement>) => void;
 }) {
   return (
@@ -180,9 +149,7 @@ function LibraryOptionsButton({
       aria-label={`Show options for ${libraryName}`}
       aria-expanded={isOptionsOpen}
       aria-haspopup="menu"
-      className={`text-text-600 hover:bg-background-100 hover:text-text-950 focus-visible:outline-primary rounded-md p-1 transition focus-visible:outline-2 focus-visible:outline-offset-2 ${
-        hasCover ? 'bg-background-50/90 shadow-sm' : ''
-      }`}
+      className="bg-background-50/90 text-text-600 hover:bg-background-100 hover:text-text-950 focus-visible:outline-primary absolute top-3 right-3 rounded-md p-1 shadow-sm transition focus-visible:outline-2 focus-visible:outline-offset-2"
       onClick={onClick}
     >
       <LuEllipsisVertical className="h-5 w-5" />

@@ -15,12 +15,12 @@ import LibraryFormDialog, {
   type LibraryCoverAction,
   type LibraryFormSubmission,
 } from '../components/library/LibraryFormDialog';
+import LibraryImagePlaceholder from '../components/library/LibraryImagePlaceholder';
 import LibraryRecipePickerDialog from '../components/library/LibraryRecipePickerDialog';
 import RecipeImagePlaceholder from '../components/recipes/RecipeImagePlaceholder';
 import Navbar from '../components/layout/Navbar';
 import ErrorMessage from '../components/ui/ErrorMessage';
 import { LibraryDetailSkeleton } from '../components/ui/LoadingSkeletons';
-import { libraryColorClasses, libraryIcons } from '../config/libraryIcons';
 import useCardOptionsMenu from '../hooks/useCardOptionsMenu';
 import {
   addRecipeToLibrary,
@@ -191,11 +191,6 @@ export default function LibraryPage() {
     setPendingCoverAction(null);
     await invalidateLibraryViews();
   };
-  const LibraryIcon = library ? libraryIcons[library.icon_key] : LuBookOpen;
-  const colorClass = library
-    ? libraryColorClasses[library.color_key]
-    : libraryColorClasses.primary;
-
   if (isValidLibraryId && isPending) {
     return <LibraryDetailSkeleton />;
   }
@@ -231,13 +226,10 @@ export default function LibraryPage() {
                   className="h-52 w-full object-cover"
                 />
               ) : (
-                <div className="p-6 pb-0">
-                  <span
-                    className={`flex h-14 w-14 items-center justify-center rounded-2xl border ${colorClass}`}
-                  >
-                    <LibraryIcon className="h-7 w-7" />
-                  </span>
-                </div>
+                <LibraryImagePlaceholder
+                  className="h-52 w-full"
+                  iconClassName="h-10 w-10"
+                />
               )}
               <div className="p-6">
                 <h1 className="text-text-950 text-3xl font-bold">

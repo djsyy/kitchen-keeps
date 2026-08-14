@@ -4,6 +4,24 @@ Kitchen Keeps is a recipe organization and kitchen-prep application built to mak
 
 It keeps the workflow focused without turning into a full inventory-management or shopping application.
 
+## App Overview
+
+### Keep your kitchen organized
+
+![Kitchen Keeps dashboard](./README-assets/Dashboard%20Page.png)
+
+### Build recipes around what you have
+
+![Kitchen Keeps recipe overview](./README-assets/Recipe%20Page.png)
+
+### Maintain a simple Pantry
+
+![Kitchen Keeps Pantry](./README-assets/Pantry%20Page.png)
+
+### Check what you need before cooking
+
+![Kitchen Keeps ingredient checklist summary](./README-assets/Ingredient%20Checklist%20Summary.png)
+
 ## Features
 
 - Create recipes with metadata, ordered ingredients, preparation steps, and images.

@@ -76,8 +76,8 @@ export default function CookSessionCompletionSummaryModal({
             heading="Missing"
             emptyMessage="Nothing was marked as needed."
             items={neededItems}
-            itemClassName="border-primary-200 bg-primary-50 text-primary-950"
-            quantityClassName="text-primary-800"
+            itemClassName="border-brick-red-300 bg-brick-red-100 text-brick-red-950"
+            quantityClassName="text-brick-red-800"
           />
           <SummaryItemList
             heading="Not sure"

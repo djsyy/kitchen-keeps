@@ -28,8 +28,9 @@ const itemStatusOptions: {
   {
     label: 'Need it',
     status: 'need',
-    className: 'border-primary-300 bg-primary-50 text-primary-900',
-    selectedClassName: 'border-primary-500 bg-primary-200 text-primary-950',
+    className: 'border-brick-red-300 bg-brick-red-50 text-brick-red-900',
+    selectedClassName:
+      'border-brick-red-400 bg-brick-red-200 text-brick-red-950',
   },
 ];
 
@@ -84,7 +85,7 @@ export default function CookSessionIngredientsSection({
                 className="flex flex-col gap-3 py-4 first:pt-5 last:pb-5 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
-                  <p className="text-text-800 font-bold break-words">
+                  <p className="text-text-800 wrap-break-words font-bold">
                     {item.display_name}
                   </p>
                   {quantity && (

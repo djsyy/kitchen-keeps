@@ -179,11 +179,19 @@ export default function RecipeIngredientsSection({
         ) : (
           recipeIngredients.map((ingredient, index) => {
             const quantity = formatIngredientQuantity(ingredient);
+            const hasSupportingDetails = Boolean(
+              quantity ||
+              ingredient.preparation_note ||
+              ingredient.ingredient_id === null ||
+              ingredient.ingredient_status === 'hidden'
+            );
 
             return (
               <li
                 key={ingredient.id}
-                className="flex flex-col gap-3 py-4 text-sm first:pt-5 last:pb-5 sm:flex-row sm:gap-4"
+                className={`flex flex-col gap-3 py-4 text-sm first:pt-5 last:pb-5 sm:flex-row sm:gap-4 ${
+                  hasSupportingDetails ? 'sm:items-start' : 'sm:items-center'
+                }`}
               >
                 <span className="min-w-0 flex-1">
                   <span className="text-text-800 block font-bold break-words">
